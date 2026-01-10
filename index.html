@@ -71,6 +71,13 @@
       background:#000;
       transition: none;
       will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
+      -webkit-perspective: 1000px;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
 
     /* Mancave HUD */
@@ -160,7 +167,7 @@
 
     <!-- 3) INTERACTIVE LOOP -->
     <div class="layer" id="layerMancave">
-      <video id="mancaveVideo" autoplay loop playsinline muted preload="auto">
+      <video id="mancaveVideo" autoplay loop playsinline muted preload="auto" playbackRate="1.0">
         <source src="./interactive.mp4" type="video/mp4" />
       </video>
 
@@ -325,6 +332,10 @@
       if (!skipHash) location.hash = "#mancave";
       targetX = 0; targetY = 0; currentX = 0; currentY = 0;
       setHint("Tap hotspots to explore.");
+      
+      // Ensure smooth playback
+      mancaveVideo.playbackRate = 1.0;
+      
       try { await mancaveVideo.play(); } catch (e) { /* playback blocked until user gesture */ }
     }
 
@@ -389,6 +400,23 @@
     // Debug helpers
     doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
     mancaveVideo.addEventListener("error", () => showPanel("Missing video", "Interactive video not found (check filename/path)."));
+
+    // Ensure smooth looping for interactive video
+    mancaveVideo.addEventListener("loadedmetadata", () => {
+      mancaveVideo.playbackRate = 1.0;
+    });
+    
+    mancaveVideo.addEventListener("waiting", () => {
+      // Video is buffering - this helps prevent stuttering
+      console.log("Buffering...");
+    });
+
+    mancaveVideo.addEventListener("playing", () => {
+      // Ensure playback rate stays consistent
+      if (mancaveVideo.playbackRate !== 1.0) {
+        mancaveVideo.playbackRate = 1.0;
+      }
+    });
 
     // Preload assets, then enable hash navigation
       Promise.all([
