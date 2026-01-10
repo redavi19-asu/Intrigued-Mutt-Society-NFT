@@ -67,7 +67,7 @@
     video{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit:cover;
+      object-fit:contain;
       background:#000;
       transition: none;
       will-change: transform;
@@ -126,6 +126,7 @@
 
     /* Mancave hotspots (tweak positions) */
     .mancave-hotspots .hotspot{ z-index:12; }
+    #hs-dog-left{ left: 2%; top: 35%; width: 32%; height: 35%; }
     #hs-cards{ left: 32%; top: 48%; width: 28%; height: 22%; }
     #hs-darts{ left: 76%; top: 16%; width: 20%; height: 24%; }
     #hs-dominoes{ left: 40%; top: 74%; width: 26%; height: 18%; }
@@ -133,6 +134,7 @@
     @media (max-width: 768px){
       #hs-door{ left: 4%; top: 26%; width: 26%; height: 36%; }
 
+      #hs-dog-left{ left: 1%; top: 32%; width: 40%; height: 38%; }
       #hs-cards{ left: 18%; top: 50%; width: 60%; height: 24%; }
       #hs-darts{ left: 62%; top: 14%; width: 34%; height: 26%; }
       #hs-dominoes{ left: 20%; top: 76%; width: 58%; height: 18%; }
@@ -172,6 +174,7 @@
       </div>
 
       <div class="mancave-hotspots">
+        <div class="hotspot" id="hs-dog-left" data-label="Dog"></div>
         <div class="hotspot" id="hs-cards" data-label="Cards"></div>
         <div class="hotspot" id="hs-darts" data-label="Darts"></div>
         <div class="hotspot" id="hs-dominoes" data-label="Dominoes"></div>
@@ -216,6 +219,7 @@
     const hsCards = document.getElementById("hs-cards");
     const hsDarts = document.getElementById("hs-darts");
     const hsDominoes = document.getElementById("hs-dominoes");
+    const hsDogLeft = document.getElementById("hs-dog-left");
 
     // Panels and overlays
     const panelShell = document.getElementById("panelShell");
@@ -378,7 +382,7 @@
     });
 
     // Hotspots
-    hsCards.addEventListener("click", () => showPanel("Cards", "Join the hand."));
+    hsDogLeft.addEventListener("click", () => showPanel("Dog", "The first pup on the left."));
     hsDarts.addEventListener("click", () => showPanel("Darts", "Aim steady."));
     hsDominoes.addEventListener("click", () => showPanel("Dominoes", "Keep it smooth."));
 
