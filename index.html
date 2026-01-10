@@ -69,7 +69,8 @@
       width:100%; height:100%;
       object-fit:cover;
       background:#000;
-      transition: transform .25s ease;
+      transition: none;
+      will-change: transform;
     }
 
     /* Mancave HUD */
@@ -312,16 +313,15 @@
       location.hash = "";
       targetX = 0; targetY = 0;
       setHint("Tap the door to enter.");
-      showPanel("Landing", "Back to the exterior.", { autoHide: 1400 });
     }
 
     async function goMancave(skipHash){
       doorVideo.pause();
       showLayer(layerMancave);
       if (!skipHash) location.hash = "#mancave";
+      targetX = 0; targetY = 0; currentX = 0; currentY = 0;
       setHint("Tap hotspots to explore.");
       try { await mancaveVideo.play(); } catch (e) { /* playback blocked until user gesture */ }
-      showPanel("Clubhouse ready", "Tap a hotspot to explore the space.", { autoHide: 1800 });
     }
 
     function handleHashNavigation(initial){
@@ -334,13 +334,12 @@
 
     // Scene 1 -> Scene 2
     hsDoor.addEventListener("click", async () => {
-      showPanel("Entering", "Walking to the clubhouse.", { autoHide: 1400 });
       showLayer(layerDoor);
 
       // user gesture click allows play on mobile
       doorVideo.currentTime = 0;
       try { await doorVideo.play(); }
-      catch(e){ showPanel("Tap again", "Playback was blocked.", { autoHide: 1800 }); }
+      catch(e){ /* playback blocked until another tap */ }
     });
 
     // Scene 2 -> Scene 3
@@ -354,23 +353,21 @@
     });
 
     // Parallax on interactive loop
-    stage.addEventListener("mousemove", (e) => {
+    stage.addEventListener("mousemove", () => {
+      // Parallax disabled in mancave to avoid loop seam jerk
       if (!layerMancave.classList.contains("active")) return;
-      const r = stage.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width - 0.5;
-      const ny = (e.clientY - r.top) / r.height - 0.5;
-      targetX = nx * 14;
-      targetY = ny * 10;
+      targetX = 0;
+      targetY = 0;
     });
 
     function tick(){
-      currentX += (targetX - currentX) * 0.06;
-      currentY += (targetY - currentY) * 0.06;
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
 
       if (layerMancave.classList.contains("active")) {
-        mancaveVideo.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.02)`;
+        mancaveVideo.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
       } else {
-        mancaveVideo.style.transform = `translate(0px, 0px) scale(1)`;
+        mancaveVideo.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
       }
       requestAnimationFrame(tick);
     }
@@ -378,35 +375,31 @@
 
     btnReset.addEventListener("click", () => {
       targetX = 0; targetY = 0;
-      showPanel("View reset", "Parallax centered.", { autoHide: 1200 });
     });
 
     // Hotspots
-    hsCards.addEventListener("click", () => showPanel("Cards", "Join the hand and pull up a seat."));
-    hsDarts.addEventListener("click", () => showPanel("Darts", "Aim steady. Bullseyes welcome."));
-    hsDominoes.addEventListener("click", () => showPanel("Dominoes", "Line them up, but do not slam the table."));
+    hsCards.addEventListener("click", () => showPanel("Cards", "Join the hand."));
+    hsDarts.addEventListener("click", () => showPanel("Darts", "Aim steady."));
+    hsDominoes.addEventListener("click", () => showPanel("Dominoes", "Keep it smooth."));
 
     // Debug helpers
     doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
     mancaveVideo.addEventListener("error", () => showPanel("Missing video", "Interactive video not found (check filename/path)."));
 
     // Preload assets, then enable hash navigation
-    Promise.all([
-      imageReady("./landing.png"),
-      videoReady(doorVideo),
-      videoReady(mancaveVideo)
-    ]).then(() => {
-      loader.classList.add("hide");
-      setHint("Tap the door to enter.");
-      applySound();
-      handleHashNavigation(true);
-      if (location.hash !== "#mancave") {
-        showPanel("Ready", "Tap the door to begin.", { autoHide: 1500 });
-      }
-    }).catch((err) => {
-      loader.classList.add("hide");
-      showPanel("Load issue", err.message);
-    });
+      Promise.all([
+        imageReady("./landing.png"),
+        videoReady(doorVideo),
+        videoReady(mancaveVideo)
+      ]).then(() => {
+        loader.classList.add("hide");
+        setHint("Tap the door to enter.");
+        applySound();
+        handleHashNavigation(true);
+      }).catch((err) => {
+        loader.classList.add("hide");
+        showPanel("Load issue", err.message);
+      });
 
     window.addEventListener("hashchange", () => handleHashNavigation(false));
   </script>
