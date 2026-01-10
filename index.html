@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Intrigued Mutts — Scenes</title>
+
+  <style>
+    :root{
+      --ui:#fff;
+      --ui2: rgba(255,255,255,.14);
+      --glass: rgba(0,0,0,.45);
+    }
+    *{ box-sizing:border-box; }
+    body{ margin:0; background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; overflow:hidden; }
+    .stage{ position:relative; width:100vw; height:100vh; background:#000; }
+
+    /* Shared layers */
+    .layer{ position:absolute; inset:0; display:none; }
+    .layer.active{ display:block; }
+
+    /* Landing image */
+    .landing img{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover;
+      transform: scale(1.02);
+    }
+
+    /* Hotspot */
+    .hotspot{
+      position:absolute;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.08);
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      z-index:5;
+    }
+    .hotspot:hover{
+      transform: scale(1.02);
+      border-color: rgba(255,255,255,.32);
+      background: rgba(255,255,255,.06);
+    }
+    .hotspot::after{
+      content: attr(data-label);
+      position:absolute; left:10px; top:10px;
+      font-size:12px; opacity:.9;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--ui2);
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      pointer-events:none;
+    }
+
+    /* Door hotspot placement (tweak as needed) */
+    #hs-door{
+      left: 7%;
+      top: 28%;
+      width: 18%;
+      height: 32%;
+    }
+
+    /* Video layers */
+    video{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      background:#000;
+    }
+
+    /* Mancave HUD */
+    .hud{
+      position:absolute; left:16px; right:16px; top:16px;
+      display:flex; align-items:center; justify-content:space-between;
+      z-index:10;
+      pointer-events:none;
+    }
+    .badge{
+      pointer-events:auto;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--ui2);
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      display:flex; gap:10px; align-items:center;
+    }
+    .badge b{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+    .badge span{ font-size:12px; opacity:.8; }
+
+    .btn{
+      pointer-events:auto;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--ui2);
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      transition: transform .15s ease, background .15s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+
+    .toast{
+      position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
+      z-index:20;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--ui2);
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      min-width: 260px;
+      text-align:center;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+
+    /* Mancave hotspots (tweak positions) */
+    .mancave-hotspots .hotspot{ z-index:12; }
+    #hs-cards{ left: 32%; top: 48%; width: 28%; height: 22%; }
+    #hs-darts{ left: 76%; top: 16%; width: 20%; height: 24%; }
+    #hs-dominoes{ left: 40%; top: 74%; width: 26%; height: 18%; }
+
+    @media (max-width: 768px){
+      #hs-door{ left: 4%; top: 26%; width: 26%; height: 36%; }
+
+      #hs-cards{ left: 18%; top: 50%; width: 60%; height: 24%; }
+      #hs-darts{ left: 62%; top: 14%; width: 34%; height: 26%; }
+      #hs-dominoes{ left: 20%; top: 76%; width: 58%; height: 18%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stage" id="stage">
+
+    <!-- 1) LANDING -->
+    <div class="layer landing active" id="layerLanding">
+      <img src="./landing.png" alt="Intrigued Mutts landing" />
+      <div class="hotspot" id="hs-door" data-label="Enter"></div>
+    </div>
+
+    <!-- 2) WALK TO DOOR (plays once) -->
+    <div class="layer" id="layerDoor">
+      <video id="doorVideo" playsinline muted preload="auto">
+        <source src="./thewalktodoor.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <!-- 3) INTERACTIVE LOOP -->
+    <div class="layer" id="layerMancave">
+      <video id="mancaveVideo" autoplay loop playsinline muted preload="auto">
+        <source src="./interactive.mp4" type="video/mp4" />
+      </video>
+
+      <div class="hud">
+        <div class="badge"><b>Intrigued Mutts</b><span>Clubhouse</span></div>
+        <div style="display:flex; gap:10px;">
+          <div class="btn" id="btnBack">Back</div>
+          <div class="btn" id="btnReset">Reset view</div>
+        </div>
+      </div>
+
+      <div class="mancave-hotspots">
+        <div class="hotspot" id="hs-cards" data-label="Cards"></div>
+        <div class="hotspot" id="hs-darts" data-label="Darts"></div>
+        <div class="hotspot" id="hs-dominoes" data-label="Dominoes"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">Ready.</div>
+  </div>
+
+  <script>
+    // Layers
+    const layerLanding = document.getElementById("layerLanding");
+    const layerDoor = document.getElementById("layerDoor");
+    const layerMancave = document.getElementById("layerMancave");
+
+    // Videos
+    const doorVideo = document.getElementById("doorVideo");
+    const mancaveVideo = document.getElementById("mancaveVideo");
+
+    // Controls
+    const hsDoor = document.getElementById("hs-door");
+    const btnBack = document.getElementById("btnBack");
+    const btnReset = document.getElementById("btnReset");
+
+    const hsCards = document.getElementById("hs-cards");
+    const hsDarts = document.getElementById("hs-darts");
+    const hsDominoes = document.getElementById("hs-dominoes");
+
+    // Toast
+    const toast = document.getElementById("toast");
+    let toastTimer = null;
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toast.classList.remove("show"), 1400);
+    }
+
+    function showLayer(which){
+      layerLanding.classList.remove("active");
+      layerDoor.classList.remove("active");
+      layerMancave.classList.remove("active");
+      which.classList.add("active");
+    }
+
+    // Scene 1 -> Scene 2
+    hsDoor.addEventListener("click", async () => {
+      showToast("Entering…");
+      showLayer(layerDoor);
+
+      // user gesture click allows play on mobile
+      doorVideo.currentTime = 0;
+      try { await doorVideo.play(); }
+      catch(e){ showToast("Tap again (autoplay blocked)."); }
+    });
+
+    // Scene 2 -> Scene 3
+    doorVideo.addEventListener("ended", async () => {
+      showLayer(layerMancave);
+      showToast("Clubhouse ready.");
+      try { await mancaveVideo.play(); } catch(e){}
+    });
+
+    // Back
+    btnBack.addEventListener("click", () => {
+      doorVideo.pause();
+      showLayer(layerLanding);
+      showToast("Back to landing.");
+      targetX = 0; targetY = 0;
+    });
+
+    // Parallax on interactive loop
+    const stage = document.getElementById("stage");
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
+    stage.addEventListener("mousemove", (e) => {
+      if (!layerMancave.classList.contains("active")) return;
+      const r = stage.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5;
+      const ny = (e.clientY - r.top) / r.height - 0.5;
+      targetX = nx * 14;
+      targetY = ny * 10;
+    });
+
+    function tick(){
+      currentX += (targetX - currentX) * 0.06;
+      currentY += (targetY - currentY) * 0.06;
+
+      if (layerMancave.classList.contains("active")) {
+        mancaveVideo.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.02)`;
+      } else {
+        mancaveVideo.style.transform = `translate(0px, 0px) scale(1)`;
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    btnReset.addEventListener("click", () => {
+      targetX = 0; targetY = 0;
+      showToast("View reset.");
+    });
+
+    // Hotspots (replace with panels later)
+    hsCards.addEventListener("click", () => showToast("🃏 Cards: join the hand."));
+    hsDarts.addEventListener("click", () => showToast("🎯 Darts: bullseye time."));
+    hsDominoes.addEventListener("click", () => showToast("🁫 Dominoes: don’t slam the table."));
+
+    // Debug helpers
+    doorVideo.addEventListener("error", () => showToast("Door video not found (check filename/path)."));
+    mancaveVideo.addEventListener("error", () => showToast("Interactive video not found (check filename/path)."));
+  </script>
+</body>
+</html>
