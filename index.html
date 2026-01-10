@@ -29,6 +29,13 @@
       object-fit:cover;
       transform: scale(1.02);
     }
+    
+    @media (orientation: landscape) {
+      .landing img{
+        object-fit: cover;
+        object-position: center;
+      }
+    }
 
     /* Hotspot */
     .hotspot{
@@ -75,7 +82,7 @@
     video{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit:contain;
+      object-fit:cover;
       background:#000;
       transition: none;
       will-change: transform;
@@ -86,6 +93,12 @@
       -webkit-perspective: 1000px;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
+    }
+    
+    @media (orientation: landscape) {
+      video{
+        object-fit: cover;
+      }
     }
 
     /* Mancave HUD */
@@ -230,20 +243,87 @@
       .panel p{ font-size: 12px; }
     }
     
-    @media (orientation: landscape) and (max-height: 500px){
+    /* Landscape mobile optimization */
+    @media (orientation: landscape) and (max-height: 600px){
+      .hud{
+        flex-direction: row;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        gap: 4px;
+      }
+      
+      .badge{
+        font-size: 9px;
+        padding: 4px 6px;
+        flex-shrink: 1;
+      }
+      .badge b{ font-size: 9px; }
+      .badge span{ font-size: 8px; }
+      
+      .hud > div:last-child{
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      
+      .btn{
+        font-size: 9px;
+        padding: 4px 8px;
+        min-height: 32px;
+      }
+      
+      .panel{
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      
+      .hint{
+        bottom: 8px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        font-size: 10px;
+        padding: 4px 10px;
+      }
+      
+      .hotspot::after{
+        font-size: 9px;
+        padding: 3px 6px;
+      }
+      
+      .loader{
+        font-size: 12px;
+      }
+      .spinner{
+        width: 36px;
+        height: 36px;
+      }
+    }
+    
+    /* Ultra-compact for very short screens */
+    @media (orientation: landscape) and (max-height: 450px){
       .hud{
         top: 4px;
         left: 4px;
         right: 4px;
       }
       .badge, .btn{
-        font-size: 10px;
-        padding: 4px 6px;
+        font-size: 8px;
+        padding: 3px 5px;
+        min-height: 28px;
       }
       .hint{
+        font-size: 9px;
+        padding: 3px 8px;
         bottom: 4px;
-        font-size: 10px;
       }
+      .panel{
+        max-height: 85vh;
+        padding: 12px;
+      }
+      .panel h3{ font-size: 13px; }
+      .panel p{ font-size: 11px; }
     }
   </style>
 </head>
