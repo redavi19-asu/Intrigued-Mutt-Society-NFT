@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Intrigued Mutts — Scenes</title>
+  <title>Intrigued Mutts - Scenes</title>
 
   <style>
     :root{
       --ui:#fff;
       --ui2: rgba(255,255,255,.14);
       --glass: rgba(0,0,0,.45);
+      --glow: rgba(120,180,255,.45);
     }
     *{ box-sizing:border-box; }
     body{ margin:0; background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; overflow:hidden; }
@@ -33,13 +34,15 @@
       border:1px solid rgba(255,255,255,.18);
       background: rgba(0,0,0,.08);
       cursor:pointer;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
       z-index:5;
     }
-    .hotspot:hover{
-      transform: scale(1.02);
+    .hotspot:hover,
+    .hotspot:focus-visible{
+      transform: scale(1.03);
       border-color: rgba(255,255,255,.32);
       background: rgba(255,255,255,.06);
+      box-shadow: 0 0 18px 6px var(--glow);
     }
     .hotspot::after{
       content: attr(data-label);
@@ -66,6 +69,7 @@
       width:100%; height:100%;
       object-fit:cover;
       background:#000;
+      transition: transform .25s ease;
     }
 
     /* Mancave HUD */
@@ -100,24 +104,24 @@
     }
     .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
 
-    .toast{
-      position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
-      z-index:20;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--ui2);
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(10px);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .2s ease, transform .2s ease;
-      min-width: 260px;
-      text-align:center;
-    }
-    .toast.show{
-      opacity:1;
-      transform: translateX(-50%) translateY(-6px);
-    }
+    /* Modal panel (replaces toast) */
+    .panel-shell{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:30; opacity:0; transition: opacity .25s ease; }
+    .panel-shell.show{ opacity:1; pointer-events:auto; }
+    .panel-backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.6); backdrop-filter: blur(2px); }
+    .panel{ position:relative; width:min(420px, 92vw); background: rgba(12,12,12,.9); border:1px solid var(--ui2); border-radius:18px; padding:18px; box-shadow: 0 10px 40px rgba(0,0,0,.6); z-index:1; }
+    .panel h3{ margin:0 0 8px; font-size:18px; letter-spacing:.02em; }
+    .panel p{ margin:0 0 12px; color: rgba(255,255,255,.85); line-height:1.5; font-size:14px; }
+    .panel .panel-actions{ display:flex; justify-content:flex-end; gap:10px; }
+
+    /* Loader */
+    .loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; z-index:40; background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.08), rgba(0,0,0,.85)); color:var(--ui); text-align:center; transition: opacity .3s ease, visibility .3s ease; }
+    .loader.hide{ opacity:0; visibility:hidden; }
+    .spinner{ width:48px; height:48px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:var(--ui); animation: spin 1s linear infinite; }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    /* Mobile hint */
+    .hint{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:10px 14px; border-radius:14px; border:1px solid var(--ui2); background: var(--glass); backdrop-filter: blur(10px); font-size:13px; z-index:22; display:none; }
+    .hint.show{ display:flex; gap:8px; align-items:center; }
 
     /* Mancave hotspots (tweak positions) */
     .mancave-hotspots .hotspot{ z-index:12; }
@@ -160,6 +164,7 @@
       <div class="hud">
         <div class="badge"><b>Intrigued Mutts</b><span>Clubhouse</span></div>
         <div style="display:flex; gap:10px;">
+          <div class="btn" id="btnSound">Sound off</div>
           <div class="btn" id="btnBack">Back</div>
           <div class="btn" id="btnReset">Reset view</div>
         </div>
@@ -172,7 +177,23 @@
       </div>
     </div>
 
-    <div class="toast" id="toast">Ready.</div>
+    <div class="hint" id="hint" aria-live="polite">Tap hotspots to explore.</div>
+
+    <div class="loader" id="loader" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>Loading clubhouse assets...</div>
+    </div>
+
+    <div class="panel-shell" id="panelShell" aria-live="polite">
+      <div class="panel-backdrop"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+        <h3 id="panelTitle">Update</h3>
+        <p id="panelBody">Ready.</p>
+        <div class="panel-actions">
+          <div class="btn" id="panelClose">Close</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -189,20 +210,27 @@
     const hsDoor = document.getElementById("hs-door");
     const btnBack = document.getElementById("btnBack");
     const btnReset = document.getElementById("btnReset");
+    const btnSound = document.getElementById("btnSound");
 
     const hsCards = document.getElementById("hs-cards");
     const hsDarts = document.getElementById("hs-darts");
     const hsDominoes = document.getElementById("hs-dominoes");
 
-    // Toast
-    const toast = document.getElementById("toast");
-    let toastTimer = null;
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>toast.classList.remove("show"), 1400);
-    }
+    // Panels and overlays
+    const panelShell = document.getElementById("panelShell");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelBody = document.getElementById("panelBody");
+    const panelClose = document.getElementById("panelClose");
+    const loader = document.getElementById("loader");
+    const hint = document.getElementById("hint");
+
+    const stage = document.getElementById("stage");
+    const isTouch = window.matchMedia('(pointer:coarse)').matches;
+
+    let panelTimer = null;
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+    let soundOn = false;
 
     function showLayer(which){
       layerLanding.classList.remove("active");
@@ -211,37 +239,121 @@
       which.classList.add("active");
     }
 
+    function showPanel(title, message, options = {}){
+      panelTitle.textContent = title;
+      panelBody.textContent = message;
+      panelShell.classList.add("show");
+      clearTimeout(panelTimer);
+      if (options.autoHide) {
+        panelTimer = setTimeout(hidePanel, options.autoHide);
+      }
+    }
+
+    function hidePanel(){
+      panelShell.classList.remove("show");
+      clearTimeout(panelTimer);
+    }
+
+    panelClose.addEventListener("click", hidePanel);
+    panelShell.addEventListener("click", (e) => {
+      if (e.target.classList.contains("panel-backdrop")) hidePanel();
+    });
+
+    function setHint(text){
+      if (!isTouch) {
+        hint.classList.remove("show");
+        return;
+      }
+      hint.textContent = text;
+      hint.classList.add("show");
+    }
+
+    function applySound(){
+      doorVideo.muted = !soundOn;
+      mancaveVideo.muted = !soundOn;
+      btnSound.textContent = soundOn ? "Sound on" : "Sound off";
+    }
+
+    btnSound.addEventListener("click", () => {
+      soundOn = !soundOn;
+      applySound();
+      if (soundOn) {
+        showPanel("Sound on", "Audio is now enabled.", { autoHide: 1500 });
+      }
+    });
+
+    function videoReady(video){
+      return new Promise((resolve, reject) => {
+        if (video.readyState >= 2) {
+          resolve();
+          return;
+        }
+        const handleReady = () => resolve();
+        const handleError = () => reject(new Error("Video failed to load: " + video.currentSrc));
+        video.addEventListener("canplay", handleReady, { once: true });
+        video.addEventListener("error", handleError, { once: true });
+        video.load();
+      });
+    }
+
+    function imageReady(src){
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Image failed to load: " + src));
+        img.src = src;
+      });
+    }
+
+    function goLanding(){
+      doorVideo.pause();
+      mancaveVideo.pause();
+      showLayer(layerLanding);
+      location.hash = "";
+      targetX = 0; targetY = 0;
+      setHint("Tap the door to enter.");
+      showPanel("Landing", "Back to the exterior.", { autoHide: 1400 });
+    }
+
+    async function goMancave(skipHash){
+      doorVideo.pause();
+      showLayer(layerMancave);
+      if (!skipHash) location.hash = "#mancave";
+      setHint("Tap hotspots to explore.");
+      try { await mancaveVideo.play(); } catch (e) { /* playback blocked until user gesture */ }
+      showPanel("Clubhouse ready", "Tap a hotspot to explore the space.", { autoHide: 1800 });
+    }
+
+    function handleHashNavigation(initial){
+      if (location.hash === "#mancave") {
+        goMancave(true);
+      } else if (!initial) {
+        goLanding();
+      }
+    }
+
     // Scene 1 -> Scene 2
     hsDoor.addEventListener("click", async () => {
-      showToast("Entering…");
+      showPanel("Entering", "Walking to the clubhouse.", { autoHide: 1400 });
       showLayer(layerDoor);
 
       // user gesture click allows play on mobile
       doorVideo.currentTime = 0;
       try { await doorVideo.play(); }
-      catch(e){ showToast("Tap again (autoplay blocked)."); }
+      catch(e){ showPanel("Tap again", "Playback was blocked.", { autoHide: 1800 }); }
     });
 
     // Scene 2 -> Scene 3
     doorVideo.addEventListener("ended", async () => {
-      showLayer(layerMancave);
-      showToast("Clubhouse ready.");
-      try { await mancaveVideo.play(); } catch(e){}
+      await goMancave();
     });
 
     // Back
     btnBack.addEventListener("click", () => {
-      doorVideo.pause();
-      showLayer(layerLanding);
-      showToast("Back to landing.");
-      targetX = 0; targetY = 0;
+      goLanding();
     });
 
     // Parallax on interactive loop
-    const stage = document.getElementById("stage");
-    let targetX = 0, targetY = 0;
-    let currentX = 0, currentY = 0;
-
     stage.addEventListener("mousemove", (e) => {
       if (!layerMancave.classList.contains("active")) return;
       const r = stage.getBoundingClientRect();
@@ -266,17 +378,37 @@
 
     btnReset.addEventListener("click", () => {
       targetX = 0; targetY = 0;
-      showToast("View reset.");
+      showPanel("View reset", "Parallax centered.", { autoHide: 1200 });
     });
 
-    // Hotspots (replace with panels later)
-    hsCards.addEventListener("click", () => showToast("🃏 Cards: join the hand."));
-    hsDarts.addEventListener("click", () => showToast("🎯 Darts: bullseye time."));
-    hsDominoes.addEventListener("click", () => showToast("🁫 Dominoes: don’t slam the table."));
+    // Hotspots
+    hsCards.addEventListener("click", () => showPanel("Cards", "Join the hand and pull up a seat."));
+    hsDarts.addEventListener("click", () => showPanel("Darts", "Aim steady. Bullseyes welcome."));
+    hsDominoes.addEventListener("click", () => showPanel("Dominoes", "Line them up, but do not slam the table."));
 
     // Debug helpers
-    doorVideo.addEventListener("error", () => showToast("Door video not found (check filename/path)."));
-    mancaveVideo.addEventListener("error", () => showToast("Interactive video not found (check filename/path)."));
+    doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
+    mancaveVideo.addEventListener("error", () => showPanel("Missing video", "Interactive video not found (check filename/path)."));
+
+    // Preload assets, then enable hash navigation
+    Promise.all([
+      imageReady("./landing.png"),
+      videoReady(doorVideo),
+      videoReady(mancaveVideo)
+    ]).then(() => {
+      loader.classList.add("hide");
+      setHint("Tap the door to enter.");
+      applySound();
+      handleHashNavigation(true);
+      if (location.hash !== "#mancave") {
+        showPanel("Ready", "Tap the door to begin.", { autoHide: 1500 });
+      }
+    }).catch((err) => {
+      loader.classList.add("hide");
+      showPanel("Load issue", err.message);
+    });
+
+    window.addEventListener("hashchange", () => handleHashNavigation(false));
   </script>
 </body>
 </html>
