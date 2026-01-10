@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
   <title>Intrigued Mutts - Scenes</title>
 
   <style>
@@ -36,9 +39,14 @@
       cursor:pointer;
       transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
       z-index:5;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      min-width: 44px;
+      min-height: 44px;
     }
     .hotspot:hover,
-    .hotspot:focus-visible{
+    .hotspot:focus-visible,
+    .hotspot:active{
       transform: scale(1.03);
       border-color: rgba(255,255,255,.32);
       background: rgba(255,255,255,.06);
@@ -86,6 +94,8 @@
       display:flex; align-items:center; justify-content:space-between;
       z-index:10;
       pointer-events:none;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .badge{
       pointer-events:auto;
@@ -109,8 +119,15 @@
       backdrop-filter: blur(8px);
       transition: transform .15s ease, background .15s ease;
       user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+    .btn:hover,
+    .btn:active{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
 
     /* Modal panel (replaces toast) */
     .panel-shell{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:30; opacity:0; transition: opacity .25s ease; }
@@ -139,12 +156,94 @@
     #hs-dominoes{ left: 40%; top: 74%; width: 26%; height: 18%; }
 
     @media (max-width: 768px){
+      .hud{
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .badge{
+        font-size: 11px;
+        padding: 8px 10px;
+      }
+      .badge b{ font-size: 11px; }
+      .badge span{ font-size: 10px; }
+      
+      .hud > div:last-child{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: space-between;
+      }
+      
+      .btn{
+        padding: 8px 10px;
+        font-size: 12px;
+        flex: 1;
+        justify-content: center;
+      }
+      
+      .panel{
+        width: calc(100vw - 32px);
+        padding: 16px;
+      }
+      .panel h3{ font-size: 16px; }
+      .panel p{ font-size: 13px; }
+      
+      .hint{
+        bottom: 12px;
+        font-size: 12px;
+        padding: 8px 12px;
+        left: 8px;
+        right: 8px;
+        transform: none;
+        max-width: calc(100vw - 16px);
+      }
+      
+      .hotspot::after{
+        font-size: 11px;
+        padding: 4px 8px;
+        left: 6px;
+        top: 6px;
+      }
+
       #hs-door{ left: 4%; top: 26%; width: 26%; height: 36%; }
 
       #hs-dog-left{ left: 1%; top: 32%; width: 40%; height: 38%; }
       #hs-cards{ left: 18%; top: 50%; width: 60%; height: 24%; }
       #hs-darts{ left: 62%; top: 14%; width: 34%; height: 26%; }
       #hs-dominoes{ left: 20%; top: 76%; width: 58%; height: 18%; }
+    }
+    
+    @media (max-width: 480px){
+      .badge{
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+      .btn{
+        font-size: 11px;
+        padding: 6px 8px;
+      }
+      .panel h3{ font-size: 14px; }
+      .panel p{ font-size: 12px; }
+    }
+    
+    @media (orientation: landscape) and (max-height: 500px){
+      .hud{
+        top: 4px;
+        left: 4px;
+        right: 4px;
+      }
+      .badge, .btn{
+        font-size: 10px;
+        padding: 4px 6px;
+      }
+      .hint{
+        bottom: 4px;
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -243,6 +342,20 @@
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
     let soundOn = false;
+    let lastTapTime = 0;
+    
+    // Prevent pull-to-refresh on mobile
+    document.body.style.overscrollBehavior = 'none';
+    
+    // Prevent double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
 
     function showLayer(which){
       layerLanding.classList.remove("active");
@@ -258,6 +371,10 @@
       clearTimeout(panelTimer);
       if (options.autoHide) {
         panelTimer = setTimeout(hidePanel, options.autoHide);
+      }
+      // Haptic feedback on mobile
+      if (navigator.vibrate && isTouch) {
+        navigator.vibrate(10);
       }
     }
 
@@ -348,7 +465,9 @@
     }
 
     // Scene 1 -> Scene 2
-    hsDoor.addEventListener("click", async () => {
+    hsDoor.addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (navigator.vibrate && isTouch) navigator.vibrate(20);
       showLayer(layerDoor);
 
       // user gesture click allows play on mobile
@@ -363,7 +482,9 @@
     });
 
     // Back
-    btnBack.addEventListener("click", () => {
+    btnBack.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (navigator.vibrate && isTouch) navigator.vibrate(10);
       goLanding();
     });
 
@@ -392,10 +513,18 @@
       targetX = 0; targetY = 0;
     });
 
-    // Hotspots
-    hsDogLeft.addEventListener("click", () => showPanel("Dog", "The first pup on the left."));
-    hsDarts.addEventListener("click", () => showPanel("Darts", "Aim steady."));
-    hsDominoes.addEventListener("click", () => showPanel("Dominoes", "Keep it smooth."));
+    // Hotspots with touch feedback
+    function addHotspotClick(element, title, message) {
+      element.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (navigator.vibrate && isTouch) navigator.vibrate(10);
+        showPanel(title, message);
+      });
+    }
+    
+    addHotspotClick(hsDogLeft, "Dog", "The first pup on the left.");
+    addHotspotClick(hsDarts, "Darts", "Aim steady.");
+    addHotspotClick(hsDominoes, "Dominoes", "Keep it smooth.");
 
     // Debug helpers
     doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
