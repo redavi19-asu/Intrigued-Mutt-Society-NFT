@@ -57,6 +57,21 @@
       position: relative;
     }
 
+    @media (orientation: landscape) and (max-height: 550px){
+      .landing{
+        gap: 12px;
+        padding: 12px 10px 24px;
+      }
+      .title-graphic{
+        width: min(85vw, 520px);
+        max-height: 50vh;
+        background-size: contain;
+      }
+      .enter-btn{
+        margin-top: 6px;
+      }
+    }
+
     .title-graphic{
       width: min(960px, 98vw);
       max-width: 1200px;
@@ -322,6 +337,7 @@
         left: max(8px, env(safe-area-inset-left, 0px));
         right: max(8px, env(safe-area-inset-right, 0px));
         gap: 4px;
+        display: none;
       }
       
       .badge{
@@ -336,6 +352,7 @@
         display: flex;
         gap: 4px;
         flex-shrink: 0;
+        display: none;
       }
       
       .btn{
@@ -356,6 +373,7 @@
         transform: translateX(-50%);
         font-size: 10px;
         padding: 4px 10px;
+        display: none;
       }
       
       .loader{
@@ -372,6 +390,7 @@
         top: max(4px, env(safe-area-inset-top, 0px));
         left: max(4px, env(safe-area-inset-left, 0px));
         right: max(4px, env(safe-area-inset-right, 0px));
+        display: none;
       }
       .badge, .btn{
         font-size: 8px;
