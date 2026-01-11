@@ -8,6 +8,10 @@
   <meta name="theme-color" content="#000000" />
   <title>Intrigued Mutts - Scenes</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --ui:#fff;
@@ -17,12 +21,12 @@
     }
     *{ box-sizing:border-box; margin:0; padding:0; }
     html, body{ height:100%; }
-     body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-     /* Stage uses dynamic viewport units + safe area padding */
+    body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+    /* Stage uses dynamic viewport units + safe area padding */
     .stage{
       position:fixed;
       inset:0;
-      /* Fallback first; override with dvh when supported */
       width: 100vw;
       height: calc(var(--vh, 1vh) * 100);
       background:#000;
@@ -35,18 +39,127 @@
     @supports (width: 100dvw){
       .stage{ width: 100dvw; }
     }
+
     /* Shared layers */
     .layer{ position:absolute; inset:0; display:none; }
     .layer.active{ display:block; }
 
-    /* Landing image */
+    /* Landing overlay content */
+    .landing{
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      gap: 24px;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .ims-title{
+      margin: 0;
+      display: grid;
+      gap: 10px;
+      text-align: center;
+      transform: translateY(-120vh);
+      filter: drop-shadow(0 16px 22px rgba(0,0,0,.25));
+      will-change: transform;
+      z-index: 3;
+    }
+
+    /* Drop + bounce */
+    .ims-title.drop-in{
+      animation: dropIn 1.05s cubic-bezier(.18,.88,.32,1.15) forwards;
+    }
+
+    @keyframes dropIn{
+      0%   { transform: translateY(-120vh); }
+      70%  { transform: translateY(0); }
+      82%  { transform: translateY(-18px); }
+      92%  { transform: translateY(0); }
+      97%  { transform: translateY(-7px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Drop + bounce */
+    .ims-title.drop-in{
+      animation: dropIn 1.05s cubic-bezier(.18,.88,.32,1.15) forwards;
+    }
+
+    @keyframes dropIn{
+      0%   { transform: translateY(-120vh); }
+      70%  { transform: translateY(0); }
+      82%  { transform: translateY(-18px); }
+      92%  { transform: translateY(0); }
+      97%  { transform: translateY(-7px); }
+      100% { transform: translateY(0); }
+    }
+
+    .word{
+      display: inline-flex;
+      justify-content: center;
+      gap: .02em;
+      line-height: 0.92;
+    }
+
+    /* ✅ FIX: SOLID COLOR PER LETTER (NO GRADIENTS) */
+    .letter{
+      font-family: "Luckiest Guy", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: clamp(56px, 9vw, 124px);
+      letter-spacing: 0.02em;
+      display: inline-block;
+
+      /* color comes from JS per letter */
+      color: var(--c, #ffffff);
+
+      /* ✅ thicker outline like your reference */
+      -webkit-text-stroke: 18px #000;
+      paint-order: stroke fill;
+
+      /* ✅ glow + depth */
+      text-shadow:
+        0 10px 0 rgba(0,0,0,.33),
+        0 0 14px rgba(255,255,255,.16),
+        0 0 26px rgba(120,180,255,.10);
+    }
+
+    /* Slight size variation like the example */
+    .word-mutts .letter{
+      font-size: clamp(64px, 10.5vw, 142px);
+    }
+    .word-society .letter{
+      font-size: clamp(52px, 8.5vw, 112px);
+    }
+
+    .enter-btn{
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      padding: 12px 24px;
+      border-radius: 14px;
+      border: 2px solid rgba(0,0,0,.2);
+      background: rgba(255,255,255,.85);
+      cursor: pointer;
+      transition: transform .12s ease, opacity .2s ease;
+      z-index: 3;
+    }
+    .enter-btn:disabled{
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .enter-btn:not(:disabled):active{
+      transform: translateX(-50%) translateY(2px);
+    }
+
+    /* Landing image (your existing) */
     .landing img{
       position:absolute; inset:0; width:100%; height:100%;
-      object-fit:fill; /* stretch to fill viewport without cropping */
+      object-fit:fill;
       object-position:center;
+      pointer-events: none; /* allow clicks to reach Enter button */
     }
-    
-    /* Fill screen in both orientations */
+
     @media (orientation: portrait){
       .landing img{ object-fit: fill; object-position: center; }
     }
@@ -87,26 +200,26 @@
       pointer-events:none;
     }
 
-    /* Door hotspot placement (tweak as needed) */
+    /* Door hotspot placement (hidden; Enter button drives entry) */
     #hs-door{
       left: 7%;
       top: 28%;
       width: 18%;
       height: 32%;
+      display: none;
     }
 
     /* Video layers */
     video{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit:fill; /* stretch to fill viewport without cropping */
+      object-fit:fill;
       object-position:center;
       background:#000;
       backface-visibility:hidden;
       -webkit-backface-visibility:hidden;
     }
-    
-    /* Fill screen in both orientations */
+
     @media (orientation: portrait){
       video{ object-fit: fill; object-position: center; }
     }
@@ -189,35 +302,35 @@
         flex-direction: column;
         align-items: stretch;
       }
-      
+
       .badge{
         font-size: 11px;
         padding: 8px 10px;
       }
       .badge b{ font-size: 11px; }
       .badge span{ font-size: 10px; }
-      
+
       .hud > div:last-child{
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
         justify-content: space-between;
       }
-      
+
       .btn{
         padding: 8px 10px;
         font-size: 12px;
         flex: 1;
         justify-content: center;
       }
-      
+
       .panel{
         width: calc(100vw - 32px);
         padding: 16px;
       }
       .panel h3{ font-size: 16px; }
       .panel p{ font-size: 13px; }
-      
+
       .hint{
         bottom: 12px;
         font-size: 12px;
@@ -227,7 +340,7 @@
         transform: none;
         max-width: calc(100vw - 16px);
       }
-      
+
       .hotspot::after{
         font-size: 11px;
         padding: 4px 8px;
@@ -242,7 +355,7 @@
       #hs-darts{ left: 62%; top: 14%; width: 34%; height: 26%; }
       #hs-dominoes{ left: 20%; top: 76%; width: 58%; height: 18%; }
     }
-    
+
     @media (max-width: 480px){
       .badge{
         font-size: 10px;
@@ -255,7 +368,7 @@
       .panel h3{ font-size: 14px; }
       .panel p{ font-size: 12px; }
     }
-    
+
     /* Landscape mobile optimization */
     @media (orientation: landscape) and (max-height: 600px){
       .hud{
@@ -265,7 +378,7 @@
         right: 8px;
         gap: 4px;
       }
-      
+
       .badge{
         font-size: 9px;
         padding: 4px 6px;
@@ -273,24 +386,24 @@
       }
       .badge b{ font-size: 9px; }
       .badge span{ font-size: 8px; }
-      
+
       .hud > div:last-child{
         display: flex;
         gap: 4px;
         flex-shrink: 0;
       }
-      
+
       .btn{
         font-size: 9px;
         padding: 4px 8px;
         min-height: 32px;
       }
-      
+
       .panel{
         max-height: 80vh;
         overflow-y: auto;
       }
-      
+
       .hint{
         bottom: 8px;
         left: 50%;
@@ -299,12 +412,12 @@
         font-size: 10px;
         padding: 4px 10px;
       }
-      
+
       .hotspot::after{
         font-size: 9px;
         padding: 3px 6px;
       }
-      
+
       .loader{
         font-size: 12px;
       }
@@ -313,7 +426,7 @@
         height: 36px;
       }
     }
-    
+
     /* Ultra-compact for very short screens */
     @media (orientation: landscape) and (max-height: 450px){
       .hud{
@@ -347,7 +460,20 @@
     <!-- 1) LANDING -->
     <div class="layer landing active" id="layerLanding">
       <img src="./landing.png" alt="Intrigued Mutts landing" />
-      <div class="hotspot" id="hs-door" data-label="Enter"></div>
+      
+      <div id="landing" class="landing">
+        <h1 class="ims-title" aria-label="Intrigued Mutts Society">
+          <span class="word word-intrigued" data-word="Intrigued"></span>
+          <span class="word word-mutts" data-word="Mutts"></span>
+          <span class="word word-society" data-word="Society"></span>
+        </h1>
+
+        <button id="enterBtn" class="enter-btn" type="button" disabled>
+          Enter
+        </button>
+      </div>
+      
+      <div class="hotspot" id="hs-door" data-label="Enter" style="display:none;"></div>
     </div>
 
     <!-- 2) WALK TO DOOR (plays once) -->
@@ -450,10 +576,10 @@
     let soundOn = false;
     let fitMode = false; // default to Stretch (fill) so landing covers viewport
     let lastTapTime = 0;
-    
+
     // Prevent pull-to-refresh on mobile
     document.body.style.overscrollBehavior = 'none';
-    
+
     // Prevent double-tap zoom
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
@@ -479,7 +605,6 @@
       if (options.autoHide) {
         panelTimer = setTimeout(hidePanel, options.autoHide);
       }
-      // Haptic feedback on mobile
       if (navigator.vibrate && isTouch) {
         navigator.vibrate(10);
       }
@@ -505,35 +630,29 @@
     }
 
     function applySound(){
-      doorVideo.muted = !soundOn;
-      mancaveVideo.muted = !soundOn;
+      const shouldMute = !soundOn;
+      doorVideo.muted = shouldMute;
+      mancaveVideo.muted = shouldMute;
       btnSound.textContent = soundOn ? "Sound on" : "Sound off";
     }
 
     function applyFitMode(){
-      // Resolve landing image element when landing layer is present
       const landingImg = document.querySelector('.landing img');
-
-      // Stretch (fill) removes letterboxing; Fit keeps full image with bars
       const fitValue = fitMode ? 'contain' : 'fill';
       const label = fitMode ? 'View: Fit' : 'View: Stretch';
 
-      // Apply to landing image
       if (landingImg) {
         landingImg.style.objectFit = fitValue;
         landingImg.style.objectPosition = 'center';
       }
 
-      // Apply to both videos
       doorVideo.style.objectFit = fitValue;
       doorVideo.style.objectPosition = 'center';
       mancaveVideo.style.objectFit = fitValue;
       mancaveVideo.style.objectPosition = 'center';
 
-      // Update button label
       btnFitFill.textContent = label;
 
-      // Persist preference
       try { localStorage.setItem('viewFitMode', fitMode ? '1' : '0'); } catch(_){ }
     }
 
@@ -542,7 +661,6 @@
     try {
       const savedVersion = localStorage.getItem('viewPrefVersion');
       if (savedVersion !== VIEW_PREF_VERSION) {
-        // Reset to fill when upgrading preference version to avoid stale "fit" state
         fitMode = false;
         localStorage.setItem('viewFitMode', '0');
         localStorage.setItem('viewPrefVersion', VIEW_PREF_VERSION);
@@ -599,16 +717,31 @@
     }
 
     async function goMancave(skipHash){
+      // Stop door video cleanly
       doorVideo.pause();
+      doorVideo.currentTime = 0;
+
+      // Show interactive layer
       showLayer(layerMancave);
       if (!skipHash) location.hash = "#mancave";
       targetX = 0; targetY = 0; currentX = 0; currentY = 0;
       setHint("Tap hotspots to explore.");
-      
-      // Ensure smooth playback
+
+      // Prepare and play interactive loop
       mancaveVideo.playbackRate = 1.0;
+      mancaveVideo.muted = !soundOn;
+      mancaveVideo.currentTime = 0;
+      mancaveVideo.load();
       
-      try { await mancaveVideo.play(); } catch (e) { /* playback blocked until user gesture */ }
+      try { 
+        const playPromise = mancaveVideo.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+        }
+      } catch (e) { 
+        console.error("Mancave play error:", e);
+        showPanel("Video Error", "Interactive video couldn't start. " + e.message);
+      }
     }
 
     function handleHashNavigation(initial){
@@ -625,10 +758,16 @@
       if (navigator.vibrate && isTouch) navigator.vibrate(20);
       showLayer(layerDoor);
 
-      // user gesture click allows play on mobile
+      doorVideo.pause();
       doorVideo.currentTime = 0;
+      doorVideo.muted = !soundOn;
+      doorVideo.load();
       try { await doorVideo.play(); }
-      catch(e){ /* playback blocked until another tap */ }
+      catch(err){
+        console.error("Door play error (hotspot), retry muted:", err);
+        doorVideo.muted = true;
+        try { await doorVideo.play(); } catch(err2){ console.error("Door retry failed:", err2); }
+      }
     });
 
     // Scene 2 -> Scene 3
@@ -645,7 +784,6 @@
 
     // Parallax on interactive loop
     stage.addEventListener("mousemove", () => {
-      // Parallax disabled in mancave to avoid loop seam jerk
       if (!layerMancave.classList.contains("active")) return;
       targetX = 0;
       targetY = 0;
@@ -670,49 +808,99 @@
         showPanel(title, message);
       });
     }
-    
+
     addHotspotClick(hsDogLeft, "Dog", "The first pup on the left.");
     addHotspotClick(hsDarts, "Darts", "Aim steady.");
     addHotspotClick(hsDominoes, "Dominoes", "Keep it smooth.");
 
-    // Debug helpers
     doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
     mancaveVideo.addEventListener("error", () => showPanel("Missing video", "Interactive video not found (check filename/path)."));
 
-    // Ensure smooth looping for interactive video
     mancaveVideo.addEventListener("loadedmetadata", () => {
       mancaveVideo.playbackRate = 1.0;
     });
-    
-    mancaveVideo.addEventListener("waiting", () => {
-      // Video is buffering - this helps prevent stuttering
-      console.log("Buffering...");
-    });
 
     mancaveVideo.addEventListener("playing", () => {
-      // Ensure playback rate stays consistent
       if (mancaveVideo.playbackRate !== 1.0) {
         mancaveVideo.playbackRate = 1.0;
       }
     });
 
     // Preload assets, then enable hash navigation
-      Promise.all([
-        imageReady("./landing.png"),
-        videoReady(doorVideo),
-        videoReady(mancaveVideo)
-      ]).then(() => {
-        loader.classList.add("hide");
-        setHint("Tap the door to enter.");
-        applySound();
-        applyFitMode();
-        handleHashNavigation(true);
-      }).catch((err) => {
-        loader.classList.add("hide");
-        showPanel("Load issue", err.message);
-      });
+    Promise.all([
+      imageReady("./landing.png"),
+      videoReady(doorVideo),
+      videoReady(mancaveVideo)
+    ]).then(() => {
+      loader.classList.add("hide");
+      setHint("Tap the door to enter.");
+      applySound();
+      applyFitMode();
+      handleHashNavigation(true);
+    }).catch((err) => {
+      loader.classList.add("hide");
+      showPanel("Load issue", err.message);
+    });
 
     window.addEventListener("hashchange", () => handleHashNavigation(false));
+
+    // Builds per-letter spans so we can control the look and keep spacing nice
+    function buildWord(el, text) {
+      el.innerHTML = "";
+      for (const ch of text) {
+        const s = document.createElement("span");
+        s.className = "letter";
+        s.textContent = ch;
+        el.appendChild(s);
+      }
+    }
+
+    const title = document.querySelector(".ims-title");
+    const enterBtn = document.getElementById("enterBtn");
+
+    document.querySelectorAll(".word").forEach(wordEl => {
+      buildWord(wordEl, wordEl.dataset.word || "");
+    });
+
+    // Start animation on load
+    window.addEventListener("load", () => {
+      title.classList.add("drop-in");
+
+      // Enable enter after the drop finishes
+      title.addEventListener("animationend", () => {
+        enterBtn.disabled = false;
+        enterBtn.focus();
+      }, { once: true });
+    });
+
+    enterBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (navigator.vibrate && isTouch) navigator.vibrate(20);
+
+      // Show door layer and start the door video
+      showLayer(layerDoor);
+      doorVideo.pause();
+      doorVideo.currentTime = 0;
+      doorVideo.muted = !soundOn;
+      doorVideo.load();
+
+      try {
+        const playPromise = doorVideo.play();
+        if (playPromise) await playPromise;
+      } catch (err) {
+        console.error("Door play error, retry muted:", err);
+        // Fallback: force muted play to satisfy autoplay policies
+        doorVideo.muted = true;
+        try {
+          const retry = doorVideo.play();
+          if (retry) await retry;
+        } catch (err2) {
+          console.error("Door play retry failed:", err2);
+          showPanel("Video Error", "Unable to start the door video. " + err2.message);
+        }
+      }
+    });
   </script>
 </body>
 </html>
