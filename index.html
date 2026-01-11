@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#000000" />
@@ -15,9 +15,19 @@
       --glass: rgba(0,0,0,.45);
       --glow: rgba(120,180,255,.45);
     }
-    *{ box-sizing:border-box; }
-    body{ margin:0; background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; overflow:hidden; }
-    .stage{ position:relative; width:100vw; height:100vh; background:#000; }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; }
+     body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+     /* Stage uses dynamic viewport units + safe area padding */
+     .stage{
+       position:fixed;
+       inset:0;
+       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+       width: 100dvw;
+       height: 100dvh;
+       /* Fallback for browsers without dvh */
+       height: calc(var(--vh, 1vh) * 100);
+       background:#000;
 
     /* Shared layers */
     .layer{ position:absolute; inset:0; display:none; }
@@ -26,14 +36,21 @@
     /* Landing image */
     .landing img{
       position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover;
-      transform: scale(1.02);
+      object-fit:contain;
+      object-position: center;
     }
     
-    @media (orientation: landscape) {
+    /* Ensure landing fits safe area (portrait/landscape) */
+    @media (orientation: portrait){
       .landing img{
-        object-fit: cover;
-        object-position: center;
+        max-width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      }
+    }
+    @media (orientation: landscape){
+      .landing img{
+        max-width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       }
     }
 
@@ -82,22 +99,24 @@
     video{
       position:absolute; inset:0;
       width:100%; height:100%;
-      object-fit:cover;
+      object-fit:contain;
+      object-position: center;
       background:#000;
-      transition: none;
-      will-change: transform;
-      transform: translateZ(0);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      perspective: 1000px;
-      -webkit-perspective: 1000px;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
     }
     
-    @media (orientation: landscape) {
+    /* Ensure videos fit safe area (portrait/landscape) */
+    @media (orientation: portrait){
       video{
-        object-fit: cover;
+        max-width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      }
+    }
+    @media (orientation: landscape){
+      video{
+        max-width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       }
     }
 
@@ -387,6 +406,17 @@
   </div>
 
   <script>
+    // iPhone viewport fallback: keep --vh in sync with innerHeight
+    (function(){
+      const setVh = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      setVh();
+      window.addEventListener('resize', setVh);
+      window.addEventListener('orientationchange', () => setTimeout(setVh, 250));
+    })();
+
     // Layers
     const layerLanding = document.getElementById("layerLanding");
     const layerDoor = document.getElementById("layerDoor");
@@ -579,12 +609,6 @@
     function tick(){
       currentX += (targetX - currentX) * 0.08;
       currentY += (targetY - currentY) * 0.08;
-
-      if (layerMancave.classList.contains("active")) {
-        mancaveVideo.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
-      } else {
-        mancaveVideo.style.transform = `translate3d(0px, 0px, 0) scale(1)`;
-      }
       requestAnimationFrame(tick);
     }
     tick();
