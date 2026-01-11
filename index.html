@@ -151,7 +151,8 @@
       left: max(16px, env(safe-area-inset-left, 0px));
       right: max(16px, env(safe-area-inset-right, 0px));
       top: max(16px, env(safe-area-inset-top, 0px));
-      display:flex; align-items:center; justify-content:space-between;
+      display:none;
+      align-items:center; justify-content:space-between;
       z-index:10;
       pointer-events:none;
       flex-wrap: wrap;
@@ -212,6 +213,7 @@
       justify-content: center;
       font-size: 16px;
       font-weight: 900;
+      font-family: 'Luckiest Guy', cursive;
       color: #000;
       text-shadow: 0 0 4px rgba(255,255,255,.9), 0 2px 4px rgba(0,0,0,.8);
       user-select: none;
@@ -247,7 +249,7 @@
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
     .hint{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:10px 14px; border-radius:14px; border:1px solid var(--ui2); background: var(--glass); backdrop-filter: blur(10px); font-size:13px; z-index:22; display:none; }
-    .hint.show{ display:flex; gap:8px; align-items:center; }
+    .hint.show{ display:none; }
 
     @media (max-width: 768px){
       .hud{
@@ -256,6 +258,7 @@
         right: max(8px, env(safe-area-inset-right, 0px));
         flex-direction: column;
         align-items: stretch;
+        display: none;
       }
       
       .badge{
@@ -294,6 +297,7 @@
         right: 8px;
         transform: none;
         max-width: calc(100vw - 16px);
+        display: none;
       }
       
     }
