@@ -18,30 +18,12 @@
       --ui2: rgba(255,255,255,.14);
       --glass: rgba(0,0,0,.45);
       --glow: rgba(120,180,255,.45);
-    }
-    *{ box-sizing:border-box; margin:0; padding:0; }
-    html, body{ height:100%; }
-    body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#000000" />
-  <title>Intrigued Mutts - Scenes</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --ui:#fff;
-      --ui2: rgba(255,255,255,.14);
-      --glass: rgba(0,0,0,.45);
-      --glow: rgba(120,180,255,.45);
+      --hotspot-open-left: 10%;
+      --hotspot-open-top: 30%;
+      --hotspot-table-left: 45%;
+      --hotspot-table-top: 80%;
+      --hotspot-dart-left: 80%;
+      --hotspot-dart-top: 25%;
     }
     *{ box-sizing:border-box; margin:0; padding:0; }
     html, body{ height:100%; }
@@ -69,6 +51,7 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
+      place-content: center;
       gap: 24px;
       overflow: hidden;
       position: relative;
@@ -106,16 +89,31 @@
       padding: 12px 18px;
       border-radius: 14px;
       border: 2px solid rgba(0,0,0,.2);
-      background: rgba(255,255,255,.85);
+      background: rgba(255,255,255,.94);
       cursor: pointer;
-      transition: transform .12s ease, opacity .2s ease;
+      transition: transform .12s ease, opacity .2s ease, box-shadow .2s ease;
+      box-shadow: 0 0 0 0 rgba(120,180,255,.75), 0 14px 36px rgba(0,0,0,.38);
+      animation: pulseGlow 2.1s ease-in-out infinite;
     }
     .enter-btn:disabled{
       opacity: .45;
       cursor: not-allowed;
+      animation: none;
+      box-shadow: none;
     }
     .enter-btn:not(:disabled):active{
       transform: translateY(2px);
+      box-shadow: 0 0 0 6px rgba(120,180,255,.45), 0 8px 20px rgba(0,0,0,.42);
+    }
+    .enter-btn:not(:disabled):focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 10px rgba(120,180,255,.55), 0 16px 34px rgba(0,0,0,.48);
+    }
+
+    @keyframes pulseGlow{
+      0%{ box-shadow: 0 0 0 0 rgba(120,180,255,.75), 0 14px 36px rgba(0,0,0,.38); }
+      50%{ box-shadow: 0 0 0 14px rgba(120,180,255,.28), 0 20px 42px rgba(0,0,0,.44); }
+      100%{ box-shadow: 0 0 0 0 rgba(120,180,255,.75), 0 14px 36px rgba(0,0,0,.38); }
     }
 
     .landing img{
@@ -149,7 +147,10 @@
     }
 
     .hud{
-      position:absolute; left:16px; right:16px; top:16px;
+      position:absolute;
+      left: max(16px, env(safe-area-inset-left, 0px));
+      right: max(16px, env(safe-area-inset-right, 0px));
+      top: max(16px, env(safe-area-inset-top, 0px));
       display:flex; align-items:center; justify-content:space-between;
       z-index:10;
       pointer-events:none;
@@ -196,6 +197,50 @@
     .panel p{ margin:0 0 12px; color: rgba(255,255,255,.85); line-height:1.5; font-size:14px; }
     .panel .panel-actions{ display:flex; justify-content:flex-end; gap:10px; }
 
+    .hotspot{
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 3px solid rgba(255,255,255,.5);
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      color: #000;
+      text-shadow: 0 0 4px rgba(255,255,255,.9), 0 2px 4px rgba(0,0,0,.8);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 0 20px rgba(0,255,0,.3);
+    }
+    .hotspot::after{
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(0,255,0,.6);
+      animation: hotspotPulse 1.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hotspot:hover,
+    .hotspot:active{
+      transform: scale(1.5);
+      background: rgba(255,255,255,.3);
+      box-shadow: 0 0 30px rgba(0,255,0,.5);
+    }
+
+    @keyframes hotspotPulse{
+      0%{ transform: scale(1); opacity: 1; }
+      50%{ transform: scale(2); opacity: 0.3; }
+      100%{ transform: scale(1); opacity: 1; }
+    }
+
     .loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; z-index:40; background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.08), rgba(0,0,0,.85)); color:var(--ui); text-align:center; transition: opacity .3s ease, visibility .3s ease; }
     .loader.hide{ opacity:0; visibility:hidden; }
     .spinner{ width:48px; height:48px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:var(--ui); animation: spin 1s linear infinite; }
@@ -206,9 +251,9 @@
 
     @media (max-width: 768px){
       .hud{
-        top: 8px;
-        left: 8px;
-        right: 8px;
+        top: max(8px, env(safe-area-inset-top, 0px));
+        left: max(8px, env(safe-area-inset-left, 0px));
+        right: max(8px, env(safe-area-inset-right, 0px));
         flex-direction: column;
         align-items: stretch;
       }
@@ -269,9 +314,9 @@
     @media (orientation: landscape) and (max-height: 600px){
       .hud{
         flex-direction: row;
-        top: 8px;
-        left: 8px;
-        right: 8px;
+        top: max(8px, env(safe-area-inset-top, 0px));
+        left: max(8px, env(safe-area-inset-left, 0px));
+        right: max(8px, env(safe-area-inset-right, 0px));
         gap: 4px;
       }
       
@@ -320,9 +365,9 @@
     
     @media (orientation: landscape) and (max-height: 450px){
       .hud{
-        top: 4px;
-        left: 4px;
-        right: 4px;
+        top: max(4px, env(safe-area-inset-top, 0px));
+        left: max(4px, env(safe-area-inset-left, 0px));
+        right: max(4px, env(safe-area-inset-right, 0px));
       }
       .badge, .btn{
         font-size: 8px;
@@ -379,6 +424,10 @@
           <div class="btn" id="btnReset">Reset view</div>
         </div>
       </div>
+
+      <button class="hotspot" id="hotspotOpen" style="left: var(--hotspot-open-left); top: var(--hotspot-open-top);">About</button>
+      <button class="hotspot" id="hotspotTable" style="left: var(--hotspot-table-left); top: var(--hotspot-table-top);">Merch</button>
+      <button class="hotspot" id="hotspotDart" style="left: var(--hotspot-dart-left); top: var(--hotspot-dart-top);">NFT</button>
 
     </div>
 
@@ -582,6 +631,24 @@
       try { await mancaveVideo.play(); } catch (e) { }
     }
 
+    function setupSeamlessLoop(video){
+      // Nudge playhead before the end to avoid visible pause on loop.
+      const JUMP_POINT = 0.08;
+      const THRESHOLD = 0.18;
+      video.loop = true;
+      video.addEventListener("timeupdate", () => {
+        if (!video.duration || video.paused || video.ended) return;
+        if (video.duration - video.currentTime <= THRESHOLD) {
+          video.currentTime = JUMP_POINT;
+          video.play();
+        }
+      });
+      video.addEventListener("ended", () => {
+        video.currentTime = JUMP_POINT;
+        video.play();
+      });
+    }
+
     function handleHashNavigation(initial){
       if (location.hash === "#mancave") {
         goMancave(true);
@@ -649,6 +716,31 @@
         mancaveVideo.playbackRate = 1.0;
       }
     });
+
+    setupSeamlessLoop(mancaveVideo);
+
+    function wireHotspot(id, action){
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("click", () => {
+        if (navigator.vibrate && isTouch) navigator.vibrate(20);
+        handleHotspotAction(action);
+      });
+    }
+
+    function handleHotspotAction(action){
+      if (action === "about") {
+        showPanel("About Intrigued Mutts", "Intrigued Mutts Society is a unique NFT project featuring adorable and mischievous dog characters. Each mutt has its own personality and backstory. Join our community of dog lovers and collectors!", { autoHide: 5000 });
+      } else if (action === "merch") {
+        showPanel("Merchandise", "Check out our official merchandise store for t-shirts, hoodies, mugs, and more featuring your favorite Intrigued Mutts. Coming soon!", { autoHide: 3000 });
+      } else if (action === "nfts") {
+        showPanel("NFT Collection", "Explore our exclusive NFT collection on OpenSea. Each mutt is uniquely generated with rare traits. Start collecting today!", { autoHide: 3000 });
+      }
+    }
+
+    wireHotspot("hotspotOpen", "about");
+    wireHotspot("hotspotTable", "merch");
+    wireHotspot("hotspotDart", "nfts");
 
     imageReady("./landing.png").finally(() => {
       loader.classList.add("hide");
