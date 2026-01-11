@@ -367,6 +367,7 @@
         <div class="badge"><b>Intrigued Mutts</b><span>Clubhouse</span></div>
         <div style="display:flex; gap:10px;">
           <div class="btn" id="btnSound">Sound off</div>
+          <div class="btn" id="btnFitFill">View: Fill</div>
           <div class="btn" id="btnBack">Back</div>
           <div class="btn" id="btnReset">Reset view</div>
         </div>
@@ -425,6 +426,7 @@
     const btnBack = document.getElementById("btnBack");
     const btnReset = document.getElementById("btnReset");
     const btnSound = document.getElementById("btnSound");
+    const btnFitFill = document.getElementById("btnFitFill");
 
     const hsCards = document.getElementById("hs-cards");
     const hsDarts = document.getElementById("hs-darts");
@@ -446,6 +448,7 @@
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
     let soundOn = false;
+    let fitMode = false; // false = Fill (cover), true = Fit (contain)
     let lastTapTime = 0;
     
     // Prevent pull-to-refresh on mobile
@@ -507,12 +510,50 @@
       btnSound.textContent = soundOn ? "Sound on" : "Sound off";
     }
 
+    function applyFitMode(){
+      // Resolve landing image element when landing layer is present
+      const landingImg = document.querySelector('.landing img');
+
+      const fitValue = fitMode ? 'contain' : 'cover';
+      const label = fitMode ? 'View: Fit' : 'View: Fill';
+
+      // Apply to landing image
+      if (landingImg) {
+        landingImg.style.objectFit = fitValue;
+        landingImg.style.objectPosition = 'center';
+      }
+
+      // Apply to both videos
+      doorVideo.style.objectFit = fitValue;
+      doorVideo.style.objectPosition = 'center';
+      mancaveVideo.style.objectFit = fitValue;
+      mancaveVideo.style.objectPosition = 'center';
+
+      // Update button label
+      btnFitFill.textContent = label;
+
+      // Persist preference
+      try { localStorage.setItem('viewFitMode', fitMode ? '1' : '0'); } catch(_){}
+    }
+
+    // Restore persisted preference
+    try {
+      const saved = localStorage.getItem('viewFitMode');
+      fitMode = saved === '1';
+    } catch(_){}
+
     btnSound.addEventListener("click", () => {
       soundOn = !soundOn;
       applySound();
       if (soundOn) {
         showPanel("Sound on", "Audio is now enabled.", { autoHide: 1500 });
       }
+    });
+
+    btnFitFill.addEventListener("click", () => {
+      fitMode = !fitMode;
+      applyFitMode();
+      showPanel(fitMode ? "Fit mode" : "Fill mode", fitMode ? "Showing full content (may add bars)." : "Filling screen (may crop edges).", { autoHide: 1600 });
     });
 
     function videoReady(video){
@@ -654,6 +695,7 @@
         loader.classList.add("hide");
         setHint("Tap the door to enter.");
         applySound();
+        applyFitMode();
         handleHashNavigation(true);
       }).catch((err) => {
         loader.classList.add("hide");
