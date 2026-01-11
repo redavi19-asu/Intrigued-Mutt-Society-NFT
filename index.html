@@ -75,12 +75,30 @@
     }
 
     .title-graphic{
-      width: min(520px, 90vw);
-      max-width: 520px;
+      width: min(960px, 98vw);
+      max-width: 1200px;
       aspect-ratio: 16 / 7;
+      background-image: url('./intrigued-mutts-society-transparent.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
+      filter: drop-shadow(0 16px 22px rgba(0,0,0,.28));
+      transform: translateY(-140vh);
+      will-change: transform, opacity;
+      opacity: 0;
+    }
+
+    .title-graphic.drop-in{
+      animation: dropInTitle 1.05s cubic-bezier(.18,.88,.32,1.15) forwards;
+    }
+
+    @keyframes dropInTitle{
+      0%   { transform: translateY(-140vh); opacity: 0; }
+      68%  { transform: translateY(0); opacity: 1; }
+      80%  { transform: translateY(-16px); opacity: 1; }
+      90%  { transform: translateY(0); opacity: 1; }
+      96%  { transform: translateY(-6px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 1; }
     }
 
     .enter-btn{
@@ -413,6 +431,7 @@
     const loader = document.getElementById("loader");
     const hint = document.getElementById("hint");
     const enterBtn = document.getElementById("enterBtn");
+    const titleGraphic = document.getElementById("titleGraphic");
 
     const stage = document.getElementById("stage");
     const isTouch = window.matchMedia('(pointer:coarse)').matches;
@@ -636,7 +655,18 @@
       setHint("Tap Enter to start.");
       applySound();
       applyFitMode();
-      enterBtn.disabled = false;
+      if (titleGraphic) {
+        titleGraphic.classList.remove("drop-in");
+        void titleGraphic.offsetWidth; // force reflow to restart animation
+        titleGraphic.classList.add("drop-in");
+        titleGraphic.addEventListener("animationend", () => {
+          enterBtn.disabled = false;
+          enterBtn.focus();
+        }, { once: true });
+        setTimeout(() => { enterBtn.disabled = false; }, 1600);
+      } else {
+        enterBtn.disabled = false;
+      }
       handleHashNavigation(true);
     });
 
