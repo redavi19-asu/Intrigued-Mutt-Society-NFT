@@ -166,7 +166,7 @@
       left: max(16px, env(safe-area-inset-left, 0px));
       right: max(16px, env(safe-area-inset-right, 0px));
       top: max(16px, env(safe-area-inset-top, 0px));
-      display:none;
+      display:none !important;
       align-items:center; justify-content:space-between;
       z-index:10;
       pointer-events:none;
@@ -263,8 +263,8 @@
     .spinner{ width:48px; height:48px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:var(--ui); animation: spin 1s linear infinite; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    .hint{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:10px 14px; border-radius:14px; border:1px solid var(--ui2); background: var(--glass); backdrop-filter: blur(10px); font-size:13px; z-index:22; display:none; }
-    .hint.show{ display:none; }
+    .hint{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:10px 14px; border-radius:14px; border:1px solid var(--ui2); background: var(--glass); backdrop-filter: blur(10px); font-size:13px; z-index:22; display:none !important; }
+    .hint.show{ display:none !important; }
 
     @media (max-width: 768px){
       .hud{
@@ -273,7 +273,7 @@
         right: max(8px, env(safe-area-inset-right, 0px));
         flex-direction: column;
         align-items: stretch;
-        display: none;
+        display: none !important;
       }
       
       .badge{
@@ -312,7 +312,7 @@
         right: 8px;
         transform: none;
         max-width: calc(100vw - 16px);
-        display: none;
+        display: none !important;
       }
       
     }
