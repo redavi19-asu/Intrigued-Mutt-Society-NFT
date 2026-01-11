@@ -22,8 +22,31 @@
     *{ box-sizing:border-box; margin:0; padding:0; }
     html, body{ height:100%; }
     body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
+  <title>Intrigued Mutts - Scenes</title>
 
-    /* Stage uses dynamic viewport units + safe area padding */
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ui:#fff;
+      --ui2: rgba(255,255,255,.14);
+      --glass: rgba(0,0,0,.45);
+      --glow: rgba(120,180,255,.45);
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; }
+    body{ background:#000; color:var(--ui); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
     .stage{
       position:fixed;
       inset:0;
@@ -32,7 +55,6 @@
       background:#000;
     }
 
-    /* Prefer dynamic viewport units when supported */
     @supports (height: 100dvh){
       .stage{ height: 100dvh; }
     }
@@ -40,11 +62,9 @@
       .stage{ width: 100dvw; }
     }
 
-    /* Shared layers */
     .layer{ position:absolute; inset:0; display:none; }
     .layer.active{ display:block; }
 
-    /* Landing overlay content */
     .landing{
       min-height: 100vh;
       display: grid;
@@ -52,114 +72,40 @@
       gap: 24px;
       overflow: hidden;
       position: relative;
-      z-index: 2;
     }
 
-    .ims-title{
-      margin: 0;
-      display: grid;
-      gap: 10px;
-      text-align: center;
-      transform: translateY(-120vh);
-      filter: drop-shadow(0 16px 22px rgba(0,0,0,.25));
-      will-change: transform;
-      z-index: 3;
-    }
-
-    /* Drop + bounce */
-    .ims-title.drop-in{
-      animation: dropIn 1.05s cubic-bezier(.18,.88,.32,1.15) forwards;
-    }
-
-    @keyframes dropIn{
-      0%   { transform: translateY(-120vh); }
-      70%  { transform: translateY(0); }
-      82%  { transform: translateY(-18px); }
-      92%  { transform: translateY(0); }
-      97%  { transform: translateY(-7px); }
-      100% { transform: translateY(0); }
-    }
-
-    /* Drop + bounce */
-    .ims-title.drop-in{
-      animation: dropIn 1.05s cubic-bezier(.18,.88,.32,1.15) forwards;
-    }
-
-    @keyframes dropIn{
-      0%   { transform: translateY(-120vh); }
-      70%  { transform: translateY(0); }
-      82%  { transform: translateY(-18px); }
-      92%  { transform: translateY(0); }
-      97%  { transform: translateY(-7px); }
-      100% { transform: translateY(0); }
-    }
-
-    .word{
-      display: inline-flex;
-      justify-content: center;
-      gap: .02em;
-      line-height: 0.92;
-    }
-
-    /* ✅ FIX: SOLID COLOR PER LETTER (NO GRADIENTS) */
-    .letter{
-      font-family: "Luckiest Guy", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      font-size: clamp(56px, 9vw, 124px);
-      letter-spacing: 0.02em;
-      display: inline-block;
-
-      /* color comes from JS per letter */
-      color: var(--c, #ffffff);
-
-      /* ✅ thicker outline like your reference */
-      -webkit-text-stroke: 18px #000;
-      paint-order: stroke fill;
-
-      /* ✅ glow + depth */
-      text-shadow:
-        0 10px 0 rgba(0,0,0,.33),
-        0 0 14px rgba(255,255,255,.16),
-        0 0 26px rgba(120,180,255,.10);
-    }
-
-    /* Slight size variation like the example */
-    .word-mutts .letter{
-      font-size: clamp(64px, 10.5vw, 142px);
-    }
-    .word-society .letter{
-      font-size: clamp(52px, 8.5vw, 112px);
+    .title-graphic{
+      width: min(520px, 90vw);
+      max-width: 520px;
+      aspect-ratio: 16 / 7;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
     .enter-btn{
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
       font-size: 18px;
-      padding: 12px 24px;
+      padding: 12px 18px;
       border-radius: 14px;
       border: 2px solid rgba(0,0,0,.2);
       background: rgba(255,255,255,.85);
       cursor: pointer;
       transition: transform .12s ease, opacity .2s ease;
-      z-index: 3;
     }
     .enter-btn:disabled{
       opacity: .45;
       cursor: not-allowed;
     }
     .enter-btn:not(:disabled):active{
-      transform: translateX(-50%) translateY(2px);
+      transform: translateY(2px);
     }
 
-    /* Landing image (your existing) */
     .landing img{
       position:absolute; inset:0; width:100%; height:100%;
       object-fit:fill;
       object-position:center;
-      pointer-events: none; /* allow clicks to reach Enter button */
     }
-
+    
     @media (orientation: portrait){
       .landing img{ object-fit: fill; object-position: center; }
     }
@@ -167,49 +113,6 @@
       .landing img{ object-fit: fill; object-position: center; }
     }
 
-    /* Hotspot */
-    .hotspot{
-      position:absolute;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.08);
-      cursor:pointer;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
-      z-index:5;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      min-width: 44px;
-      min-height: 44px;
-    }
-    .hotspot:hover,
-    .hotspot:focus-visible,
-    .hotspot:active{
-      transform: scale(1.03);
-      border-color: rgba(255,255,255,.32);
-      background: rgba(255,255,255,.06);
-      box-shadow: 0 0 18px 6px var(--glow);
-    }
-    .hotspot::after{
-      content: attr(data-label);
-      position:absolute; left:10px; top:10px;
-      font-size:12px; opacity:.9;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid var(--ui2);
-      background: var(--glass);
-      backdrop-filter: blur(8px);
-      pointer-events:none;
-    }
-
-    /* Door hotspot placement (hidden; Enter button drives entry) */
-    #hs-door{
-      left: 7%;
-      top: 28%;
-      width: 18%;
-      height: 32%;
-      display: none;
-    }
-
-    /* Video layers */
     video{
       position:absolute; inset:0;
       width:100%; height:100%;
@@ -219,7 +122,7 @@
       backface-visibility:hidden;
       -webkit-backface-visibility:hidden;
     }
-
+    
     @media (orientation: portrait){
       video{ object-fit: fill; object-position: center; }
     }
@@ -227,7 +130,6 @@
       video{ object-fit: fill; object-position: center; }
     }
 
-    /* Mancave HUD */
     .hud{
       position:absolute; left:16px; right:16px; top:16px;
       display:flex; align-items:center; justify-content:space-between;
@@ -268,7 +170,6 @@
     .btn:hover,
     .btn:active{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
 
-    /* Modal panel (replaces toast) */
     .panel-shell{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:30; opacity:0; transition: opacity .25s ease; }
     .panel-shell.show{ opacity:1; pointer-events:auto; }
     .panel-backdrop{ position:absolute; inset:0; background: rgba(0,0,0,.6); backdrop-filter: blur(2px); }
@@ -277,22 +178,13 @@
     .panel p{ margin:0 0 12px; color: rgba(255,255,255,.85); line-height:1.5; font-size:14px; }
     .panel .panel-actions{ display:flex; justify-content:flex-end; gap:10px; }
 
-    /* Loader */
     .loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; z-index:40; background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.08), rgba(0,0,0,.85)); color:var(--ui); text-align:center; transition: opacity .3s ease, visibility .3s ease; }
     .loader.hide{ opacity:0; visibility:hidden; }
     .spinner{ width:48px; height:48px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:var(--ui); animation: spin 1s linear infinite; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    /* Mobile hint */
     .hint{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%); padding:10px 14px; border-radius:14px; border:1px solid var(--ui2); background: var(--glass); backdrop-filter: blur(10px); font-size:13px; z-index:22; display:none; }
     .hint.show{ display:flex; gap:8px; align-items:center; }
-
-    /* Mancave hotspots (tweak positions) */
-    .mancave-hotspots .hotspot{ z-index:12; }
-    #hs-dog-left{ left: 2%; top: 35%; width: 32%; height: 35%; }
-    #hs-cards{ left: 32%; top: 48%; width: 28%; height: 22%; }
-    #hs-darts{ left: 76%; top: 16%; width: 20%; height: 24%; }
-    #hs-dominoes{ left: 40%; top: 74%; width: 26%; height: 18%; }
 
     @media (max-width: 768px){
       .hud{
@@ -302,35 +194,35 @@
         flex-direction: column;
         align-items: stretch;
       }
-
+      
       .badge{
         font-size: 11px;
         padding: 8px 10px;
       }
       .badge b{ font-size: 11px; }
       .badge span{ font-size: 10px; }
-
+      
       .hud > div:last-child{
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
         justify-content: space-between;
       }
-
+      
       .btn{
         padding: 8px 10px;
         font-size: 12px;
         flex: 1;
         justify-content: center;
       }
-
+      
       .panel{
         width: calc(100vw - 32px);
         padding: 16px;
       }
       .panel h3{ font-size: 16px; }
       .panel p{ font-size: 13px; }
-
+      
       .hint{
         bottom: 12px;
         font-size: 12px;
@@ -340,22 +232,9 @@
         transform: none;
         max-width: calc(100vw - 16px);
       }
-
-      .hotspot::after{
-        font-size: 11px;
-        padding: 4px 8px;
-        left: 6px;
-        top: 6px;
-      }
-
-      #hs-door{ left: 4%; top: 26%; width: 26%; height: 36%; }
-
-      #hs-dog-left{ left: 1%; top: 32%; width: 40%; height: 38%; }
-      #hs-cards{ left: 18%; top: 50%; width: 60%; height: 24%; }
-      #hs-darts{ left: 62%; top: 14%; width: 34%; height: 26%; }
-      #hs-dominoes{ left: 20%; top: 76%; width: 58%; height: 18%; }
+      
     }
-
+    
     @media (max-width: 480px){
       .badge{
         font-size: 10px;
@@ -368,8 +247,7 @@
       .panel h3{ font-size: 14px; }
       .panel p{ font-size: 12px; }
     }
-
-    /* Landscape mobile optimization */
+    
     @media (orientation: landscape) and (max-height: 600px){
       .hud{
         flex-direction: row;
@@ -378,7 +256,7 @@
         right: 8px;
         gap: 4px;
       }
-
+      
       .badge{
         font-size: 9px;
         padding: 4px 6px;
@@ -386,24 +264,24 @@
       }
       .badge b{ font-size: 9px; }
       .badge span{ font-size: 8px; }
-
+      
       .hud > div:last-child{
         display: flex;
         gap: 4px;
         flex-shrink: 0;
       }
-
+      
       .btn{
         font-size: 9px;
         padding: 4px 8px;
         min-height: 32px;
       }
-
+      
       .panel{
         max-height: 80vh;
         overflow-y: auto;
       }
-
+      
       .hint{
         bottom: 8px;
         left: 50%;
@@ -412,12 +290,7 @@
         font-size: 10px;
         padding: 4px 10px;
       }
-
-      .hotspot::after{
-        font-size: 9px;
-        padding: 3px 6px;
-      }
-
+      
       .loader{
         font-size: 12px;
       }
@@ -426,8 +299,7 @@
         height: 36px;
       }
     }
-
-    /* Ultra-compact for very short screens */
+    
     @media (orientation: landscape) and (max-height: 450px){
       .hud{
         top: 4px;
@@ -457,33 +329,24 @@
 <body>
   <div class="stage" id="stage">
 
-    <!-- 1) LANDING -->
     <div class="layer landing active" id="layerLanding">
       <img src="./landing.png" alt="Intrigued Mutts landing" />
       
       <div id="landing" class="landing">
-        <h1 class="ims-title" aria-label="Intrigued Mutts Society">
-          <span class="word word-intrigued" data-word="Intrigued"></span>
-          <span class="word word-mutts" data-word="Mutts"></span>
-          <span class="word word-society" data-word="Society"></span>
-        </h1>
+        <div id="titleGraphic" class="title-graphic" aria-label="Title graphic"></div>
 
         <button id="enterBtn" class="enter-btn" type="button" disabled>
           Enter
         </button>
       </div>
-      
-      <div class="hotspot" id="hs-door" data-label="Enter" style="display:none;"></div>
     </div>
 
-    <!-- 2) WALK TO DOOR (plays once) -->
     <div class="layer" id="layerDoor">
       <video id="doorVideo" playsinline muted preload="auto">
         <source src="./thewalktodoor.mp4" type="video/mp4" />
       </video>
     </div>
 
-    <!-- 3) INTERACTIVE LOOP -->
     <div class="layer" id="layerMancave">
       <video id="mancaveVideo" autoplay loop playsinline muted preload="auto" playbackRate="1.0">
         <source src="./interactive.mp4" type="video/mp4" />
@@ -499,12 +362,6 @@
         </div>
       </div>
 
-      <div class="mancave-hotspots">
-        <div class="hotspot" id="hs-dog-left" data-label="Dog"></div>
-        <div class="hotspot" id="hs-cards" data-label="Cards"></div>
-        <div class="hotspot" id="hs-darts" data-label="Darts"></div>
-        <div class="hotspot" id="hs-dominoes" data-label="Dominoes"></div>
-      </div>
     </div>
 
     <div class="hint" id="hint" aria-live="polite">Tap hotspots to explore.</div>
@@ -527,7 +384,6 @@
   </div>
 
   <script>
-    // iPhone viewport fallback: keep --vh in sync with innerHeight
     (function(){
       const setVh = () => {
         const vh = window.innerHeight * 0.01;
@@ -538,34 +394,25 @@
       window.addEventListener('orientationchange', () => setTimeout(setVh, 250));
     })();
 
-    // Layers
     const layerLanding = document.getElementById("layerLanding");
     const layerDoor = document.getElementById("layerDoor");
     const layerMancave = document.getElementById("layerMancave");
 
-    // Videos
     const doorVideo = document.getElementById("doorVideo");
     const mancaveVideo = document.getElementById("mancaveVideo");
 
-    // Controls
-    const hsDoor = document.getElementById("hs-door");
     const btnBack = document.getElementById("btnBack");
     const btnReset = document.getElementById("btnReset");
     const btnSound = document.getElementById("btnSound");
     const btnFitFill = document.getElementById("btnFitFill");
 
-    const hsCards = document.getElementById("hs-cards");
-    const hsDarts = document.getElementById("hs-darts");
-    const hsDominoes = document.getElementById("hs-dominoes");
-    const hsDogLeft = document.getElementById("hs-dog-left");
-
-    // Panels and overlays
     const panelShell = document.getElementById("panelShell");
     const panelTitle = document.getElementById("panelTitle");
     const panelBody = document.getElementById("panelBody");
     const panelClose = document.getElementById("panelClose");
     const loader = document.getElementById("loader");
     const hint = document.getElementById("hint");
+    const enterBtn = document.getElementById("enterBtn");
 
     const stage = document.getElementById("stage");
     const isTouch = window.matchMedia('(pointer:coarse)').matches;
@@ -574,13 +421,11 @@
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
     let soundOn = false;
-    let fitMode = false; // default to Stretch (fill) so landing covers viewport
+    let fitMode = false;
     let lastTapTime = 0;
-
-    // Prevent pull-to-refresh on mobile
+    
     document.body.style.overscrollBehavior = 'none';
-
-    // Prevent double-tap zoom
+    
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
       const now = Date.now();
@@ -630,14 +475,14 @@
     }
 
     function applySound(){
-      const shouldMute = !soundOn;
-      doorVideo.muted = shouldMute;
-      mancaveVideo.muted = shouldMute;
+      doorVideo.muted = !soundOn;
+      mancaveVideo.muted = !soundOn;
       btnSound.textContent = soundOn ? "Sound on" : "Sound off";
     }
 
     function applyFitMode(){
       const landingImg = document.querySelector('.landing img');
+
       const fitValue = fitMode ? 'contain' : 'fill';
       const label = fitMode ? 'View: Fit' : 'View: Stretch';
 
@@ -656,7 +501,6 @@
       try { localStorage.setItem('viewFitMode', fitMode ? '1' : '0'); } catch(_){ }
     }
 
-    // Restore persisted preference
     const VIEW_PREF_VERSION = '2';
     try {
       const savedVersion = localStorage.getItem('viewPrefVersion');
@@ -684,20 +528,6 @@
       showPanel(fitMode ? "Fit mode" : "Fill mode", fitMode ? "Showing full content (may add bars)." : "Filling screen (may crop edges).", { autoHide: 1600 });
     });
 
-    function videoReady(video){
-      return new Promise((resolve, reject) => {
-        if (video.readyState >= 2) {
-          resolve();
-          return;
-        }
-        const handleReady = () => resolve();
-        const handleError = () => reject(new Error("Video failed to load: " + video.currentSrc));
-        video.addEventListener("canplay", handleReady, { once: true });
-        video.addEventListener("error", handleError, { once: true });
-        video.load();
-      });
-    }
-
     function imageReady(src){
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -713,35 +543,24 @@
       showLayer(layerLanding);
       location.hash = "";
       targetX = 0; targetY = 0;
-      setHint("Tap the door to enter.");
+      setHint("Tap Enter to start.");
     }
 
     async function goMancave(skipHash){
-      // Stop door video cleanly
+      // Reset door video and switch layers
       doorVideo.pause();
       doorVideo.currentTime = 0;
 
-      // Show interactive layer
       showLayer(layerMancave);
       if (!skipHash) location.hash = "#mancave";
       targetX = 0; targetY = 0; currentX = 0; currentY = 0;
-      setHint("Tap hotspots to explore.");
-
-      // Prepare and play interactive loop
-      mancaveVideo.playbackRate = 1.0;
-      mancaveVideo.muted = !soundOn;
-      mancaveVideo.currentTime = 0;
-      mancaveVideo.load();
+      setHint("");
       
-      try { 
-        const playPromise = mancaveVideo.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-        }
-      } catch (e) { 
-        console.error("Mancave play error:", e);
-        showPanel("Video Error", "Interactive video couldn't start. " + e.message);
-      }
+      mancaveVideo.playbackRate = 1.0;
+      mancaveVideo.currentTime = 0;
+      mancaveVideo.muted = !soundOn;
+      
+      try { await mancaveVideo.play(); } catch (e) { }
     }
 
     function handleHashNavigation(initial){
@@ -752,37 +571,32 @@
       }
     }
 
-    // Scene 1 -> Scene 2
-    hsDoor.addEventListener("click", async (e) => {
-      e.preventDefault();
-      if (navigator.vibrate && isTouch) navigator.vibrate(20);
+    async function startDoorVideo(){
       showLayer(layerDoor);
-
       doorVideo.pause();
       doorVideo.currentTime = 0;
-      doorVideo.muted = !soundOn;
-      doorVideo.load();
-      try { await doorVideo.play(); }
-      catch(err){
-        console.error("Door play error (hotspot), retry muted:", err);
-        doorVideo.muted = true;
-        try { await doorVideo.play(); } catch(err2){ console.error("Door retry failed:", err2); }
-      }
-    });
+      doorVideo.playbackRate = 1.0;
+      doorVideo.muted = true; // ensure autoplay compliance
 
-    // Scene 2 -> Scene 3
+      try {
+        const playPromise = doorVideo.play();
+        if (playPromise) await playPromise;
+        if (soundOn) doorVideo.muted = false;
+      } catch (err) {
+        showPanel("Video Error", "Unable to start the door video. " + err.message);
+      }
+    }
+
     doorVideo.addEventListener("ended", async () => {
       await goMancave();
     });
 
-    // Back
     btnBack.addEventListener("click", (e) => {
       e.preventDefault();
       if (navigator.vibrate && isTouch) navigator.vibrate(10);
       goLanding();
     });
 
-    // Parallax on interactive loop
     stage.addEventListener("mousemove", () => {
       if (!layerMancave.classList.contains("active")) return;
       targetX = 0;
@@ -800,24 +614,15 @@
       targetX = 0; targetY = 0;
     });
 
-    // Hotspots with touch feedback
-    function addHotspotClick(element, title, message) {
-      element.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (navigator.vibrate && isTouch) navigator.vibrate(10);
-        showPanel(title, message);
-      });
-    }
-
-    addHotspotClick(hsDogLeft, "Dog", "The first pup on the left.");
-    addHotspotClick(hsDarts, "Darts", "Aim steady.");
-    addHotspotClick(hsDominoes, "Dominoes", "Keep it smooth.");
-
     doorVideo.addEventListener("error", () => showPanel("Missing video", "Door video not found (check filename/path)."));
     mancaveVideo.addEventListener("error", () => showPanel("Missing video", "Interactive video not found (check filename/path)."));
 
     mancaveVideo.addEventListener("loadedmetadata", () => {
       mancaveVideo.playbackRate = 1.0;
+    });
+    
+    mancaveVideo.addEventListener("waiting", () => {
+      console.log("Buffering...");
     });
 
     mancaveVideo.addEventListener("playing", () => {
@@ -826,80 +631,19 @@
       }
     });
 
-    // Preload assets, then enable hash navigation
-    Promise.all([
-      imageReady("./landing.png"),
-      videoReady(doorVideo),
-      videoReady(mancaveVideo)
-    ]).then(() => {
+    imageReady("./landing.png").finally(() => {
       loader.classList.add("hide");
-      setHint("Tap the door to enter.");
+      setHint("Tap Enter to start.");
       applySound();
       applyFitMode();
+      enterBtn.disabled = false;
       handleHashNavigation(true);
-    }).catch((err) => {
-      loader.classList.add("hide");
-      showPanel("Load issue", err.message);
     });
 
     window.addEventListener("hashchange", () => handleHashNavigation(false));
 
-    // Builds per-letter spans so we can control the look and keep spacing nice
-    function buildWord(el, text) {
-      el.innerHTML = "";
-      for (const ch of text) {
-        const s = document.createElement("span");
-        s.className = "letter";
-        s.textContent = ch;
-        el.appendChild(s);
-      }
-    }
-
-    const title = document.querySelector(".ims-title");
-    const enterBtn = document.getElementById("enterBtn");
-
-    document.querySelectorAll(".word").forEach(wordEl => {
-      buildWord(wordEl, wordEl.dataset.word || "");
-    });
-
-    // Start animation on load
-    window.addEventListener("load", () => {
-      title.classList.add("drop-in");
-
-      // Enable enter after the drop finishes
-      title.addEventListener("animationend", () => {
-        enterBtn.disabled = false;
-        enterBtn.focus();
-      }, { once: true });
-    });
-
-    enterBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (navigator.vibrate && isTouch) navigator.vibrate(20);
-
-      // Show door layer and start the door video
-      showLayer(layerDoor);
-      doorVideo.pause();
-      doorVideo.currentTime = 0;
-      doorVideo.muted = !soundOn;
-      doorVideo.load();
-
-      try {
-        const playPromise = doorVideo.play();
-        if (playPromise) await playPromise;
-      } catch (err) {
-        console.error("Door play error, retry muted:", err);
-        // Fallback: force muted play to satisfy autoplay policies
-        doorVideo.muted = true;
-        try {
-          const retry = doorVideo.play();
-          if (retry) await retry;
-        } catch (err2) {
-          console.error("Door play retry failed:", err2);
-          showPanel("Video Error", "Unable to start the door video. " + err2.message);
-        }
-      }
+    enterBtn.addEventListener("click", async () => {
+      await startDoorVideo();
     });
   </script>
 </body>
