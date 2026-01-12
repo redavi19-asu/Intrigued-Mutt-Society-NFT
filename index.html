@@ -720,6 +720,10 @@
       await goMancave();
     });
 
+    merchVideo.addEventListener("ended", () => {
+      window.location.href = "./merch.html";
+    });
+
     btnBack.addEventListener("click", (e) => {
       e.preventDefault();
       if (navigator.vibrate && isTouch) navigator.vibrate(10);
