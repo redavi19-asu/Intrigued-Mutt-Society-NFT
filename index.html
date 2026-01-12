@@ -235,6 +235,8 @@
       -webkit-tap-highlight-color: transparent;
       box-shadow: 0 0 20px rgba(0,255,0,.3);
     }
+    #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
+    #hotspotDart{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
     .hotspot::after{
       content: '';
       position: absolute;
@@ -245,12 +247,18 @@
       animation: hotspotPulse 1.5s ease-in-out infinite;
       pointer-events: none;
     }
+    #hotspotTable::after{ background: rgba(255,140,0,.55); }
+    #hotspotDart::after{ background: rgba(255,80,140,.55); }
     .hotspot:hover,
     .hotspot:active{
       transform: scale(1.5);
       background: rgba(255,255,255,.3);
       box-shadow: 0 0 30px rgba(0,255,0,.5);
     }
+    #hotspotTable:hover,
+    #hotspotTable:active{ box-shadow: 0 0 30px rgba(255,140,0,.7); background: rgba(255,210,150,.5); }
+    #hotspotDart:hover,
+    #hotspotDart:active{ box-shadow: 0 0 30px rgba(255,80,140,.7); background: rgba(255,170,210,.5); }
 
     @keyframes hotspotPulse{
       0%{ transform: scale(1); opacity: 1; }
