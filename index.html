@@ -90,6 +90,40 @@
       animation: dropInTitle 4s cubic-bezier(.18,.88,.32,1.15) forwards;
     }
 
+    .about-graphic{
+      position:absolute;
+      left:50%; top:50%; transform: translate(-50%, -50%) translateY(-140vh);
+      width: min(1200px, 96vw);
+      height: min(88vh, 96vw * 9 / 16);
+      aspect-ratio: 16 / 9;
+      background-image: url('./aboutimage.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,.32));
+      opacity: 0;
+      display: none;
+      pointer-events: auto;
+      will-change: transform, opacity;
+    }
+
+    .about-graphic.show{ display:block; }
+    .about-graphic.drop-in{ animation: dropInAbout 4s cubic-bezier(.18,.88,.32,1.15) forwards; }
+
+    .about-close{
+      position:absolute;
+      right: 18px;
+      top: 18px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--ui2);
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      cursor:pointer;
+      user-select:none;
+      z-index:32;
+    }
+
     @keyframes dropInTitle{
       0%   { transform: translateY(-140vh); opacity: 0; }
       68%  { transform: translateY(0); opacity: 1; }
@@ -97,6 +131,15 @@
       90%  { transform: translateY(0); opacity: 1; }
       96%  { transform: translateY(-6px); opacity: 1; }
       100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes dropInAbout{
+      0%   { transform: translate(-50%, -50%) translateY(-140vh); opacity: 0; }
+      68%  { transform: translate(-50%, -50%) translateY(0); opacity: 1; }
+      80%  { transform: translate(-50%, -50%) translateY(-16px); opacity: 1; }
+      90%  { transform: translate(-50%, -50%) translateY(0); opacity: 1; }
+      96%  { transform: translate(-50%, -50%) translateY(-6px); opacity: 1; }
+      100% { transform: translate(-50%, -50%) translateY(0); opacity: 1; }
     }
 
     .enter-btn{
@@ -466,11 +509,10 @@
       <video id="aboutVideo" playsinline muted preload="auto">
         <source src="./Grok-Video-224B4657-9E53-4376-97C9-F61FEBCC7D21.mp4" type="video/mp4" />
       </video>
+      <div id="aboutGraphic" class="about-graphic" aria-label="About Intrigued Mutts graphic"></div>
+      <div class="about-close" id="aboutClose">Close</div>
       <div class="hud">
         <div class="badge"><b>Intrigued Mutts</b><span>About</span></div>
-        <div style="display:flex; gap:10px;">
-          <div class="btn" id="btnAboutBack">Back</div>
-        </div>
       </div>
     </div>
 
@@ -527,13 +569,14 @@
     const mancaveVideo = document.getElementById("mancaveVideo");
     const merchVideo = document.getElementById("merchVideo");
     const aboutVideo = document.getElementById("aboutVideo");
+    const aboutGraphic = document.getElementById("aboutGraphic");
 
     const btnBack = document.getElementById("btnBack");
     const btnReset = document.getElementById("btnReset");
     const btnSound = document.getElementById("btnSound");
     const btnFitFill = document.getElementById("btnFitFill");
     const btnMerchBack = document.getElementById("btnMerchBack");
-    const btnAboutBack = document.getElementById("btnAboutBack");
+    const aboutClose = document.getElementById("aboutClose");
 
     const panelShell = document.getElementById("panelShell");
     const panelTitle = document.getElementById("panelTitle");
@@ -752,8 +795,11 @@
     });
 
     aboutVideo.addEventListener("ended", () => {
-      showLayer(layerMancave);
-      mancaveVideo.play();
+      if (!aboutGraphic) return;
+      aboutGraphic.classList.remove("show", "drop-in");
+      void aboutGraphic.offsetWidth;
+      aboutGraphic.classList.add("show", "drop-in");
+      aboutGraphic.focus?.();
     });
 
     btnBack.addEventListener("click", (e) => {
@@ -770,14 +816,32 @@
       showLayer(layerMancave);
     });
 
-    btnAboutBack.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (navigator.vibrate && isTouch) navigator.vibrate(10);
+    function closeAbout(){
       aboutVideo.pause();
       aboutVideo.currentTime = 0;
+      if (aboutGraphic) {
+        aboutGraphic.classList.remove("show", "drop-in");
+      }
       showLayer(layerMancave);
       mancaveVideo.play();
+    }
+
+    aboutClose.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (navigator.vibrate && isTouch) navigator.vibrate(10);
+      closeAbout();
     });
+
+    layerAbout.addEventListener("click", () => {
+      closeAbout();
+    });
+
+    if (aboutGraphic) {
+      aboutGraphic.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeAbout();
+      });
+    }
 
     stage.addEventListener("mousemove", () => {
       if (!layerMancave.classList.contains("active")) return;
@@ -827,6 +891,7 @@
     function handleHotspotAction(action){
       if (action === "about") {
         showLayer(layerAbout);
+        aboutGraphic.classList.remove("show", "drop-in");
         aboutVideo.currentTime = 0;
         aboutVideo.play();
       } else if (action === "merch") {
