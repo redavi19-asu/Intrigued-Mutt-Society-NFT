@@ -462,6 +462,18 @@
 
     </div>
 
+    <div class="layer" id="layerAbout">
+      <video id="aboutVideo" playsinline muted preload="auto">
+        <source src="./Grok-Video-224B4657-9E53-4376-97C9-F61FEBCC7D21.mp4" type="video/mp4" />
+      </video>
+      <div class="hud">
+        <div class="badge"><b>Intrigued Mutts</b><span>About</span></div>
+        <div style="display:flex; gap:10px;">
+          <div class="btn" id="btnAboutBack">Back</div>
+        </div>
+      </div>
+    </div>
+
     <div class="layer" id="layerMerch">
       <video id="merchVideo" playsinline muted preload="auto">
         <source src="./Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4" type="video/mp4" />
@@ -509,16 +521,19 @@
     const layerDoor = document.getElementById("layerDoor");
     const layerMancave = document.getElementById("layerMancave");
     const layerMerch = document.getElementById("layerMerch");
+    const layerAbout = document.getElementById("layerAbout");
 
     const doorVideo = document.getElementById("doorVideo");
     const mancaveVideo = document.getElementById("mancaveVideo");
     const merchVideo = document.getElementById("merchVideo");
+    const aboutVideo = document.getElementById("aboutVideo");
 
     const btnBack = document.getElementById("btnBack");
     const btnReset = document.getElementById("btnReset");
     const btnSound = document.getElementById("btnSound");
     const btnFitFill = document.getElementById("btnFitFill");
     const btnMerchBack = document.getElementById("btnMerchBack");
+    const btnAboutBack = document.getElementById("btnAboutBack");
 
     const panelShell = document.getElementById("panelShell");
     const panelTitle = document.getElementById("panelTitle");
@@ -555,6 +570,7 @@
       layerDoor.classList.remove("active");
       layerMancave.classList.remove("active");
       layerMerch.classList.remove("active");
+      layerAbout.classList.remove("active");
       which.classList.add("active");
     }
 
@@ -594,6 +610,7 @@
       doorVideo.muted = !soundOn;
       mancaveVideo.muted = !soundOn;
       merchVideo.muted = !soundOn;
+      aboutVideo.muted = !soundOn;
       btnSound.textContent = soundOn ? "Sound on" : "Sound off";
     }
 
@@ -614,6 +631,8 @@
       mancaveVideo.style.objectPosition = 'center';
       merchVideo.style.objectFit = fitValue;
       merchVideo.style.objectPosition = 'center';
+      aboutVideo.style.objectFit = fitValue;
+      aboutVideo.style.objectPosition = 'center';
 
       btnFitFill.textContent = label;
 
@@ -732,6 +751,11 @@
       window.location.href = "./merch.html";
     });
 
+    aboutVideo.addEventListener("ended", () => {
+      showLayer(layerMancave);
+      mancaveVideo.play();
+    });
+
     btnBack.addEventListener("click", (e) => {
       e.preventDefault();
       if (navigator.vibrate && isTouch) navigator.vibrate(10);
@@ -744,6 +768,15 @@
       merchVideo.pause();
       merchVideo.currentTime = 0;
       showLayer(layerMancave);
+    });
+
+    btnAboutBack.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (navigator.vibrate && isTouch) navigator.vibrate(10);
+      aboutVideo.pause();
+      aboutVideo.currentTime = 0;
+      showLayer(layerMancave);
+      mancaveVideo.play();
     });
 
     stage.addEventListener("mousemove", () => {
@@ -793,7 +826,9 @@
 
     function handleHotspotAction(action){
       if (action === "about") {
-        showPanel("About Intrigued Mutts", "Intrigued Mutts Society is a unique NFT project featuring adorable and mischievous dog characters. Each mutt has its own personality and backstory. Join our community of dog lovers and collectors!", { autoHide: 5000 });
+        showLayer(layerAbout);
+        aboutVideo.currentTime = 0;
+        aboutVideo.play();
       } else if (action === "merch") {
         showLayer(layerMerch);
         merchVideo.play();
