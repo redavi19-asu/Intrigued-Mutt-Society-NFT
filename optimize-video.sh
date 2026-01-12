@@ -7,11 +7,11 @@
 # - yuv420p pixel format for compatibility
 # - Optimized bitrate for smooth streaming
 
-INPUT="interactive.mp4"
-OUTPUT="interactive-optimized.mp4"
-BACKUP="interactive-original.mp4"
+INPUT="Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4"
+OUTPUT="Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4"
+BACKUP="Grok-Video-original.mp4"
 
-echo "🎬 Optimizing interactive.mp4 for smooth playback..."
+echo "🎬 Optimizing Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4 for smooth playback..."
 
 # Check if ffmpeg is installed
 if ! command -v ffmpeg &> /dev/null; then
@@ -22,7 +22,7 @@ fi
 
 # Check if input file exists
 if [ ! -f "$INPUT" ]; then
-    echo "❌ Error: $INPUT not found!"
+    echo "❌ Error: Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4 not found!"
     exit 1
 fi
 
