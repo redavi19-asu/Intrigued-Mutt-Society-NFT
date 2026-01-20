@@ -536,6 +536,19 @@
       </div>
     </div>
 
+    <div class="layer" id="layerNfts">
+      <video id="nftsVideo" playsinline muted preload="auto">
+        <source src="./grok-video-240f3a12-788c-43f2-a4ad-366678dec6bf.mp4" type="video/mp4" />
+      </video>
+
+      <div class="hud">
+        <div class="badge"><b>Intrigued Mutts</b><span>NFTs</span></div>
+        <div style="display:flex; gap:10px;">
+          <div class="btn" id="btnNftsBack">Back</div>
+        </div>
+      </div>
+    </div>
+
     <div class="hint" id="hint" aria-live="polite">Tap hotspots to explore.</div>
 
     <div class="loader" id="loader" aria-live="polite">
@@ -571,11 +584,13 @@
     const layerMancave = document.getElementById("layerMancave");
     const layerMerch = document.getElementById("layerMerch");
     const layerAbout = document.getElementById("layerAbout");
+    const layerNfts = document.getElementById("layerNfts");
 
     const doorVideo = document.getElementById("doorVideo");
     const mancaveVideo = document.getElementById("mancaveVideo");
     const merchVideo = document.getElementById("merchVideo");
     const aboutVideo = document.getElementById("aboutVideo");
+    const nftsVideo = document.getElementById("nftsVideo");
     const aboutGraphic = document.getElementById("aboutGraphic");
 
     const btnBack = document.getElementById("btnBack");
@@ -583,6 +598,7 @@
     const btnSound = document.getElementById("btnSound");
     const btnFitFill = document.getElementById("btnFitFill");
     const btnMerchBack = document.getElementById("btnMerchBack");
+    const btnNftsBack = document.getElementById("btnNftsBack");
     const aboutClose = document.getElementById("aboutClose");
 
     const panelShell = document.getElementById("panelShell");
@@ -621,6 +637,7 @@
       layerMancave.classList.remove("active");
       layerMerch.classList.remove("active");
       layerAbout.classList.remove("active");
+      layerNfts.classList.remove("active");
       which.classList.add("active");
     }
 
@@ -661,6 +678,7 @@
       mancaveVideo.muted = !soundOn;
       merchVideo.muted = !soundOn;
       aboutVideo.muted = !soundOn;
+      nftsVideo.muted = !soundOn;
       btnSound.textContent = soundOn ? "Sound on" : "Sound off";
     }
 
@@ -683,6 +701,8 @@
       merchVideo.style.objectPosition = 'center';
       aboutVideo.style.objectFit = fitValue;
       aboutVideo.style.objectPosition = 'center';
+      nftsVideo.style.objectFit = fitValue;
+      nftsVideo.style.objectPosition = 'center';
 
       btnFitFill.textContent = label;
 
@@ -728,6 +748,12 @@
     function goLanding(){
       doorVideo.pause();
       mancaveVideo.pause();
+      merchVideo.pause();
+      merchVideo.currentTime = 0;
+      aboutVideo.pause();
+      aboutVideo.currentTime = 0;
+      nftsVideo.pause();
+      nftsVideo.currentTime = 0;
       showLayer(layerLanding);
       location.hash = "";
       targetX = 0; targetY = 0;
@@ -801,6 +827,11 @@
       window.location.href = "./merch.html";
     });
 
+    nftsVideo.addEventListener("ended", () => {
+      nftsVideo.currentTime = 0;
+      showLayer(layerMancave);
+    });
+
     aboutVideo.addEventListener("ended", () => {
       if (!aboutGraphic) return;
       aboutGraphic.classList.remove("show", "drop-in");
@@ -820,6 +851,14 @@
       if (navigator.vibrate && isTouch) navigator.vibrate(10);
       merchVideo.pause();
       merchVideo.currentTime = 0;
+      showLayer(layerMancave);
+    });
+
+    btnNftsBack.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (navigator.vibrate && isTouch) navigator.vibrate(10);
+      nftsVideo.pause();
+      nftsVideo.currentTime = 0;
       showLayer(layerMancave);
     });
 
@@ -905,7 +944,10 @@
         showLayer(layerMerch);
         merchVideo.play();
       } else if (action === "nfts") {
-        showPanel("NFT Collection", "Explore our exclusive NFT collection on OpenSea. Each mutt is uniquely generated with rare traits. Start collecting today!", { autoHide: 3000 });
+        showLayer(layerNfts);
+        nftsVideo.currentTime = 0;
+        nftsVideo.muted = !soundOn;
+        nftsVideo.play().catch(() => {});
       }
     }
 
