@@ -11,125 +11,83 @@
 
   <style>
     :root{
-      --bg0:#05060a;
-      --panel: rgba(255,255,255,.08);
-      --panel2: rgba(255,255,255,.06);
-      --border: rgba(255,255,255,.16);
-      --muted: rgba(255,255,255,.72);
-      --text: #f7f9ff;
+      --bg:
+        radial-gradient(circle at 20% 20%, rgba(120,180,255,.12), transparent 35%),
+        radial-gradient(circle at 80% 10%, rgba(255,140,120,.12), transparent 35%),
+        radial-gradient(circle at 50% 70%, rgba(180,255,200,.12), transparent 35%),
+        #05060a;
 
-      --accent: rgba(120,180,255,.22);
-      --accent2: rgba(255,140,120,.20);
-      --shadow: 0 20px 40px rgba(0,0,0,.45);
+      --panel: rgba(255,255,255,.08);
+      --border: rgba(255,255,255,.16);
+      --glow: rgba(120,180,255,.35);
+      --text: #f7f9ff;
+      --muted: rgba(247,249,255,.75);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
-    html,body{ height:100%; }
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color: var(--text);
-      background: var(--bg0);
-      overflow-x:hidden;
-    }
+    html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:var(--text); }
+    body{ display:flex; align-items:center; justify-content:center; padding:24px; }
 
-    /* --- THEME BACKGROUND LAYERS --- */
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      z-index:-3;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(120,180,255,.14), transparent 38%),
-        radial-gradient(circle at 80% 10%, rgba(255,140,120,.12), transparent 40%),
-        radial-gradient(circle at 50% 80%, rgba(180,255,200,.10), transparent 40%),
-        linear-gradient(180deg, rgba(255,255,255,.02), transparent 45%),
-        #05060a;
-    }
-
-    /* Your character/logo layer (black & white vibe) */
-    body::after{
-      content:"";
-      position:fixed; inset:0;
-      z-index:-2;
-      pointer-events:none;
-      opacity:.22;
-      background-image:
-        url("./intrigued-mutts-society-transparent.png"),
-        url("./intrigued-mutts-society-transparent.png");
-      background-repeat: no-repeat, no-repeat;
-      background-size: 520px auto, 520px auto;
-      background-position: -40px 80px, calc(100% + 40px) 140px;
-      filter: grayscale(1) contrast(1.15);
-    }
-
-    /* optional subtle texture from landing.png if you want it */
-    .texture{
-      position:fixed; inset:0;
-      z-index:-1;
-      pointer-events:none;
-      opacity:.10;
-      background:url("./landing.png") center/cover no-repeat;
-      filter: grayscale(1) blur(1px) contrast(1.1);
-      mix-blend-mode: screen;
-    }
-
-    .wrap{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 26px 18px 60px;
-    }
+    /* Optional: drop in your own background image (black/white dogs etc) */
+    /* body{ background: url("./your-bg.png") center/cover fixed, var(--bg); } */
 
     .shell{
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      box-shadow: var(--shadow), 0 0 0 12px rgba(120,180,255,.04);
+      width:min(1100px, 100%);
+      padding:28px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.35);
+      box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
       backdrop-filter: blur(10px);
-      overflow:hidden;
     }
 
     .topbar{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap:14px;
-      padding: 22px 22px 10px;
+      gap:16px;
+      margin-bottom:14px;
     }
 
-    .titleRow{
+    .title{
       display:flex;
-      align-items:flex-start;
-      gap:12px;
-      min-width: 0;
+      align-items:center;
+      gap:14px;
+    }
+    .title h1{
+      font-family: 'Luckiest Guy', cursive;
+      letter-spacing: .02em;
+      font-size: clamp(28px, 4vw, 44px);
+      color: #f9fbff;
+      text-shadow: 0 4px 14px rgba(0,0,0,.45);
+      line-height: 1;
     }
 
     .pill{
-      margin-top:4px;
-      padding:7px 11px;
-      border-radius:999px;
+      padding:8px 12px;
+      border-radius:20px;
+      background: rgba(255,255,255,.10);
       border:1px solid var(--border);
-      background: rgba(255,255,255,.08);
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      white-space:nowrap;
-      opacity:.9;
-    }
-
-    h1{
-      font-family:"Luckiest Guy", cursive;
-      font-size: clamp(26px, 4vw, 44px);
-      letter-spacing:.02em;
-      text-shadow: 0 4px 14px rgba(0,0,0,.45);
-      line-height:1.0;
-      margin-top:2px;
+      font-size:13px;
+      letter-spacing:.05em;
+      text-transform: uppercase;
+      margin-top: 6px;
     }
 
     .sub{
       margin-top:10px;
       color: var(--muted);
-      line-height:1.45;
-      max-width: 720px;
-      font-size:15px;
+      line-height:1.5;
+      font-size: 15px;
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-top:6px;
     }
 
     .btn{
@@ -137,351 +95,540 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding: 10px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.08);
-      color: #eaf2ff;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.10);
+      color: #e8f1ff;
       text-decoration:none;
-      font-weight:700;
+      font-weight:650;
       cursor:pointer;
-      user-select:none;
-      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      user-select:none;
       white-space:nowrap;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.12); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.22); }
-    .btn.primary{ background: rgba(120,180,255,.16); }
-    .btn.primary:hover{ background: rgba(120,180,255,.22); }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.28); background: rgba(255,255,255,.14); }
+    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.25); }
+    .btn.primary{ background: rgba(120,180,255,.14); }
+    .btn.primary:hover{ background: rgba(120,180,255,.20); }
 
-    .controls{
+    .row{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
       gap:12px;
-      padding: 14px 22px 18px;
-      border-top: 1px solid rgba(255,255,255,.08);
+      align-items:center;
+      margin-top:16px;
+      flex-wrap:wrap;
     }
-
     .search{
-      flex:1;
+      flex: 1 1 420px;
       display:flex;
       align-items:center;
       gap:10px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
     }
     .search input{
       width:100%;
-      border:none;
       outline:none;
-      background: transparent;
+      border:0;
+      background:transparent;
       color: var(--text);
       font-size: 14px;
     }
     .meta{
       margin-top:10px;
-      padding: 0 22px 8px;
+      font-size: 13px;
+      color: rgba(247,249,255,.65);
       display:flex;
       justify-content:space-between;
       gap:12px;
-      color: rgba(255,255,255,.70);
-      font-size: 13px;
+      flex-wrap:wrap;
     }
-    .meta code{ color: rgba(255,255,255,.78); }
-
-    .content{
-      padding: 12px 22px 22px;
-    }
-
-    .notice{
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(0,0,0,.18);
-      padding: 12px 14px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-      color: rgba(255,255,255,.80);
-      font-size: 13px;
-      line-height:1.4;
-    }
-    .notice strong{ color:#fff; }
 
     .grid{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 640px){
-      .topbar{ flex-direction:column; }
-      .controls{ flex-direction:column; align-items:stretch; }
-      .grid{ grid-template-columns: 1fr; }
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap:16px;
+      margin-top:16px;
     }
 
     .card{
-      border: 1px solid rgba(255,255,255,.14);
-      background: var(--panel2);
-      border-radius: 16px;
-      overflow:hidden;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      overflow:hidden;
       display:flex;
       flex-direction:column;
-      min-height: 280px;
+      min-height: 320px;
     }
 
-    /* THIS fixes the “image too huge” problem */
-    .img{
+    /* ✅ THIS fixes the “shirt too big” problem */
+    .imgWrap{
       width:100%;
-      height: 160px;             /* <— controls height */
-      background: rgba(0,0,0,.22);
+      height: 190px;                 /* <- adjust if you want taller/shorter */
+      background: rgba(0,0,0,.18);
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
-      position:relative;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      cursor:pointer;
     }
-    .img img{
-      width:100%;
-      height:100%;
-      object-fit: cover;         /* <— crops nicely */
-      display:block;
-      filter: contrast(1.02);
+    .imgWrap img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;           /* <- keeps whole shirt inside */
+      padding: 10px;
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,.35));
     }
 
     .cardBody{
-      padding: 12px 12px 14px;
+      padding:14px;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:10px;
       flex:1;
     }
-
     .name{
-      font-weight: 900;
-      font-size: 15px;
-      letter-spacing:.01em;
+      font-size: 16px;
+      font-weight: 800;
+      cursor:pointer;
     }
     .small{
-      color: rgba(255,255,255,.70);
       font-size: 12px;
+      color: rgba(247,249,255,.65);
     }
 
-    .row{
-      margin-top:auto;
+    .priceRow{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      margin-top:auto;
     }
-
-    .priceTag{
-      padding: 6px 10px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.16);
-      border-radius: 999px;
+    .tag{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.07);
       font-size: 12px;
-      color: rgba(255,255,255,.80);
-      white-space:nowrap;
+      color: rgba(247,249,255,.85);
     }
 
-    .err{
-      color: #ffd1d1;
-      border: 1px solid rgba(255,120,120,.25);
-      background: rgba(255,0,0,.08);
+    .buyBtn{
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(120,180,255,.14);
+      color:#e8f1ff;
+      font-weight:800;
+      cursor:pointer;
+      transition: .12s ease;
+    }
+    .buyBtn:hover{ background: rgba(120,180,255,.20); transform: translateY(-1px); }
+    .buyBtn:active{ transform: translateY(0); }
+
+    .hint{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(247,249,255,.75);
+      font-size: 13px;
     }
 
-    .footerNote{
-      padding: 14px 22px 18px;
-      color: rgba(255,255,255,.65);
-      font-size: 12px;
-      border-top: 1px solid rgba(255,255,255,.08);
+    /* Modal */
+    .modalBack{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .modal{
+      width: min(980px, 100%);
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(20,22,28,.92);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 30px 70px rgba(0,0,0,.6);
+      overflow:hidden;
+    }
+    .modalTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .modalTitle{
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+    .close{
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight: 900;
+    }
+    .modalBody{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 16px;
+    }
+    .bigImg{
+      width:100%;
+      height: 360px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .bigImg img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 12px;
+      filter: drop-shadow(0 18px 26px rgba(0,0,0,.45));
+    }
+
+    .variants{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      min-height: 360px;
+    }
+    .variants h3{ font-size: 14px; opacity: .95; }
+    .variantList{
+      overflow:auto;
+      max-height: 240px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.14);
+    }
+    .variantRow{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 13px;
+      color: rgba(247,249,255,.88);
+    }
+    .variantRow:last-child{ border-bottom: 0; }
+
+    @media (max-width: 860px){
+      .modalBody{ grid-template-columns: 1fr; }
+      .bigImg{ height: 300px; }
+      .variants{ min-height: unset; }
     }
   </style>
 </head>
 
 <body>
-  <div class="texture"></div>
+  <div class="shell">
+    <div class="topbar">
+      <div>
+        <div class="title">
+          <div class="pill">Merch</div>
+          <h1>Intrigued Mutts Collection</h1>
+        </div>
+        <div class="sub">
+          Live storefront demo: pulls products from Printful and creates Square checkout links when you click <b>Buy</b>.
+        </div>
+      </div>
 
-  <div class="wrap">
-    <div class="shell">
+      <div class="actions">
+        <a class="btn" href="./index.html#mancave">Back to Clubhouse</a>
+        <button class="btn primary" id="refreshBtn">Refresh products</button>
+      </div>
+    </div>
 
-      <div class="topbar">
-        <div>
-          <div class="titleRow">
-            <div class="pill">Merch</div>
-            <div>
-              <h1>Intrigued Mutts Collection</h1>
-              <div class="sub">
-                Live storefront demo: pulls products from Printful and creates Square checkout links when you click <strong>Buy</strong>.
-              </div>
-            </div>
+    <div class="row">
+      <div class="search">
+        <span style="opacity:.7">🔎</span>
+        <input id="search" placeholder="Search products (ex: hoodie, shirt, mug)..." />
+      </div>
+    </div>
+
+    <div class="meta">
+      <div id="statusText">Loaded 0 product(s).</div>
+      <div>API: <span id="apiText" style="opacity:.85"></span></div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="hint">
+      Tip: If you see no items, it means Printful returned an empty list for your store (or your token doesn’t have access to store products).
+      <br><br>
+      Next upgrades: real pricing, variants (sizes/colors), and a “Checkout” modal that feels like your brand.
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalBack" id="modalBack" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle" id="modalTitle">Product</div>
+        <button class="close" id="closeModal">Close ✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="bigImg"><img id="modalImg" alt=""></div>
+        <div class="variants">
+          <h3>Sizes / Variants</h3>
+          <div class="small" id="variantNote">Click “Load variants” to pull sizes/colors from Printful.</div>
+          <button class="btn primary" id="loadVariantsBtn" style="align-self:flex-start;">Load variants</button>
+          <div class="variantList" id="variantList"></div>
+
+          <div style="margin-top:auto; display:flex; gap:10px; flex-wrap:wrap;">
+            <div class="tag" id="modalPid">product id: —</div>
+            <button class="buyBtn" id="modalBuyBtn">Buy (test)</button>
+          </div>
+          <div class="small" style="margin-top:6px; opacity:.7;">
+            Sandbox note: Square will show a sandbox checkout/testing page until you switch to production keys/endpoints.
           </div>
         </div>
-
-        <a class="btn" href="./index.html#mancave" aria-label="Back to clubhouse">Back to Clubhouse</a>
       </div>
-
-      <div class="controls">
-        <div class="search" role="search">
-          <span style="opacity:.75">🔎</span>
-          <input id="q" type="search" placeholder="Search products (ex: hoodie, shirt, mug)..." />
-        </div>
-
-        <button id="refresh" class="btn primary" type="button">Refresh products</button>
-      </div>
-
-      <div class="meta">
-        <div id="status">Loading…</div>
-        <div>API: <code id="apiLabel"></code></div>
-      </div>
-
-      <div class="content">
-        <div id="notice" class="notice">
-          <strong>Tip:</strong> If you see no items, it usually means Printful returned an empty list for your store (or the token has no store products).
-        </div>
-
-        <div id="grid" class="grid"></div>
-      </div>
-
-      <div class="footerNote">
-        Next upgrades: real pricing, variants (sizes/colors), and a “Checkout” modal that feels like your brand.
-      </div>
-
     </div>
   </div>
 
   <script>
-    // ✅ IMPORTANT: Your Worker base
+    // ✅ Set this once. (Your screenshot shows this exact API host)
     const API_BASE = "https://mutts-api.redavi19.workers.dev";
-    document.getElementById("apiLabel").textContent = API_BASE;
+    document.getElementById("apiText").textContent = API_BASE;
 
     const grid = document.getElementById("grid");
-    const statusEl = document.getElementById("status");
-    const qEl = document.getElementById("q");
+    const statusText = document.getElementById("statusText");
+    const search = document.getElementById("search");
+    const refreshBtn = document.getElementById("refreshBtn");
 
-    let products = [];
+    // Modal elements
+    const modalBack = document.getElementById("modalBack");
+    const closeModal = document.getElementById("closeModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalImg = document.getElementById("modalImg");
+    const modalPid = document.getElementById("modalPid");
+    const modalBuyBtn = document.getElementById("modalBuyBtn");
+    const loadVariantsBtn = document.getElementById("loadVariantsBtn");
+    const variantList = document.getElementById("variantList");
+    const variantNote = document.getElementById("variantNote");
 
-    function setStatus(msg, isError=false){
-      statusEl.textContent = msg;
-      const notice = document.getElementById("notice");
-      notice.classList.toggle("err", !!isError);
-      if (isError) notice.innerHTML = "<strong>Heads up:</strong> " + msg;
-      else notice.innerHTML = "<strong>Tip:</strong> If you see no items, it usually means Printful returned an empty list for your store (or the token has no store products).";
+    let allProducts = [];
+    let activeProduct = null;
+    let activeVariant = null;
+
+    function moneyFromRetail(retailPrice) {
+      // Printful often returns retail_price as string like "20.00"
+      const num = Number(retailPrice);
+      if (Number.isFinite(num) && num > 0) return Math.round(num * 100);
+      return 2000; // fallback $20.00
     }
 
-    function moneyCentsToUSD(cents){
-      const n = Number(cents || 0);
-      return "$" + (n / 100).toFixed(2);
+    function openModal(prod) {
+      activeProduct = prod;
+      activeVariant = null;
+
+      modalTitle.textContent = prod.name || "Product";
+      modalImg.src = prod.thumbnail_url || "";
+      modalImg.alt = prod.name || "Product";
+      modalPid.textContent = `product id: ${prod.id}`;
+
+      variantList.innerHTML = "";
+      variantNote.textContent = "Click “Load variants” to pull sizes/colors from Printful.";
+      modalBuyBtn.textContent = "Buy (test)";
+      modalBack.style.display = "flex";
+      modalBack.setAttribute("aria-hidden", "false");
     }
 
-    function render(list){
+    function hideModal() {
+      modalBack.style.display = "none";
+      modalBack.setAttribute("aria-hidden", "true");
+      activeProduct = null;
+      activeVariant = null;
+    }
+
+    closeModal.addEventListener("click", hideModal);
+    modalBack.addEventListener("click", (e) => {
+      if (e.target === modalBack) hideModal();
+    });
+
+    async function createCheckoutLink(name, amountCents) {
+      const res = await fetch(`${API_BASE}/api/checkout/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, amount: amountCents })
+      });
+
+      const data = await res.json();
+
+      // Square can return:
+      // - data.payment_link.url (short link)
+      // - data.payment_link.long_url
+      const url = data?.payment_link?.url || data?.payment_link?.long_url;
+      if (!url) {
+        console.log("Square response:", data);
+        alert("Checkout link not returned. Check console.");
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    async function loadProducts() {
+      statusText.textContent = "Loading products...";
       grid.innerHTML = "";
 
-      if (!list.length){
+      try {
+        const res = await fetch(`${API_BASE}/api/store/products`, { method: "GET" });
+        const data = await res.json();
+
+        allProducts = (data && data.result) ? data.result : [];
+        render();
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = "Error loading products (check console).";
+        grid.innerHTML = "";
+      }
+    }
+
+    function render() {
+      const q = (search.value || "").trim().toLowerCase();
+
+      const filtered = allProducts.filter(p => {
+        const name = (p.name || "").toLowerCase();
+        return !q || name.includes(q);
+      });
+
+      statusText.textContent = `Loaded ${filtered.length} product(s). Click Buy to test checkout.`;
+      grid.innerHTML = "";
+
+      if (!filtered.length) {
         grid.innerHTML = `
-          <div class="card" style="grid-column: 1 / -1; min-height: 140px;">
+          <div class="card" style="grid-column: 1 / -1; min-height:unset;">
             <div class="cardBody">
               <div class="name">No products found</div>
-              <div class="small">Hit “Refresh products” to pull again. If it stays empty, your Printful token/store is the issue.</div>
+              <div class="small">If your Printful store has products, hit “Refresh products”.</div>
             </div>
           </div>
         `;
         return;
       }
 
-      for (const p of list){
+      filtered.forEach(prod => {
         const card = document.createElement("div");
         card.className = "card";
 
-        const imgUrl = p.thumbnail_url || "";
-
-        // NOTE: price is placeholder until we wire real Printful variant pricing.
-        // For now it’s just to test Square checkout.
-        const testPriceCents = 2000;
+        const imgUrl = prod.thumbnail_url || "";
 
         card.innerHTML = `
-          <div class="img">
-            ${imgUrl ? `<img src="${imgUrl}" alt="${(p.name||"Product").replace(/"/g,"&quot;")}" />` : `<div class="small">No preview</div>`}
+          <div class="imgWrap" title="Click to view details">
+            <img src="${imgUrl}" alt="${(prod.name || "Product").replaceAll('"', "&quot;")}" />
           </div>
           <div class="cardBody">
-            <div class="name">${p.name || "Item"}</div>
-            <div class="small">product id: ${p.id ?? "-"}</div>
+            <div class="name" title="Click to view details">${prod.name || "Untitled product"}</div>
+            <div class="small">product id: ${prod.id}</div>
 
-            <div class="row">
-              <div class="priceTag">Test price: ${moneyCentsToUSD(testPriceCents)}</div>
-              <button class="btn primary" type="button">Buy</button>
+            <div class="priceRow">
+              <div class="tag">Test price: $20.00</div>
+              <button class="buyBtn">Buy</button>
             </div>
           </div>
         `;
 
-        const btn = card.querySelector("button");
-        btn.addEventListener("click", async () => {
-          btn.disabled = true;
-          btn.textContent = "Creating link…";
-          try{
-            const res = await fetch(API_BASE + "/api/checkout/create", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: p.name || "Item", amount: testPriceCents })
-            });
-            const data = await res.json();
+        const imgWrap = card.querySelector(".imgWrap");
+        const nameEl = card.querySelector(".name");
+        const buyBtn = card.querySelector(".buyBtn");
 
-            // Square response can include payment_link.url
-            const payUrl =
-              data?.payment_link?.url ||
-              data?.payment_link?.long_url ||
-              data?.url ||
-              null;
+        imgWrap.addEventListener("click", () => openModal(prod));
+        nameEl.addEventListener("click", () => openModal(prod));
 
-            if (!payUrl) throw new Error("No checkout URL returned.");
-
-            window.open(payUrl, "_blank", "noopener,noreferrer");
-          }catch(e){
-            alert("Checkout error: " + (e?.message || e));
-          }finally{
-            btn.disabled = false;
-            btn.textContent = "Buy";
-          }
+        buyBtn.addEventListener("click", async () => {
+          await createCheckoutLink(prod.name || "Item", 2000);
         });
 
         grid.appendChild(card);
-      }
+      });
     }
 
-    function filterAndRender(){
-      const q = (qEl.value || "").trim().toLowerCase();
-      if (!q) return render(products);
-      const filtered = products.filter(p => (p.name || "").toLowerCase().includes(q));
-      render(filtered);
-    }
+    // Variants: requires backend route `/api/store/products/:id` (Step 2 below)
+    loadVariantsBtn.addEventListener("click", async () => {
+      if (!activeProduct) return;
 
-    async function loadProducts(){
-      setStatus("Loading products…");
-      try{
-        const res = await fetch(API_BASE + "/api/store/products");
+      variantNote.textContent = "Loading variants...";
+      variantList.innerHTML = "";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/store/products/${activeProduct.id}`);
         const data = await res.json();
 
-        // Printful returns { code, result, ... }
-        products = Array.isArray(data?.result) ? data.result : [];
+        // Printful returns a "result" object with "sync_variants" or similar
+        const r = data?.result || {};
+        const variants = r?.sync_variants || r?.variants || [];
 
-        setStatus(`Loaded ${products.length} product(s). Click Buy to test checkout.`);
-        filterAndRender();
-      }catch(e){
-        setStatus("Could not load products. Check API URL or Worker logs.", true);
-        render([]);
+        if (!variants.length) {
+          variantNote.textContent = "No variants returned (this is normal if Printful doesn’t have size/color variants for that item yet).";
+          return;
+        }
+
+        variantNote.textContent = "Click a variant to select size/color. Then press Buy.";
+        variants.forEach((v) => {
+          const size = v?.size || v?.variant_name || v?.name || "Variant";
+          const color = v?.color ? ` • ${v.color}` : "";
+          const retail = v?.retail_price || v?.price || "";
+
+          const row = document.createElement("div");
+          row.className = "variantRow";
+          row.innerHTML = `
+            <div>${size}${color}</div>
+            <div style="opacity:.85">${retail ? "$" + retail : ""}</div>
+          `;
+
+          row.addEventListener("click", () => {
+            activeVariant = v;
+            const cents = moneyFromRetail(v?.retail_price);
+            modalBuyBtn.textContent = `Buy (${v?.retail_price ? "$" + v.retail_price : "test"})`;
+            modalBuyBtn.onclick = async () => {
+              const itemName = `${activeProduct.name || "Item"} - ${size}${color}`;
+              await createCheckoutLink(itemName, cents);
+            };
+          });
+
+          variantList.appendChild(row);
+        });
+
+      } catch (e) {
+        console.error(e);
+        variantNote.textContent = "Could not load variants (check console). You probably still need Step 2 backend route.";
       }
-    }
+    });
 
-    document.getElementById("refresh").addEventListener("click", loadProducts);
-    qEl.addEventListener("input", filterAndRender);
+    // Default modal buy (without variant selected)
+    modalBuyBtn.addEventListener("click", async () => {
+      if (!activeProduct) return;
+      await createCheckoutLink(activeProduct.name || "Item", 2000);
+    });
 
-    // initial load
+    refreshBtn.addEventListener("click", loadProducts);
+    search.addEventListener("input", render);
+
+    // Go
     loadProducts();
   </script>
 </body>
