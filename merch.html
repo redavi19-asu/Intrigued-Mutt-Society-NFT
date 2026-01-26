@@ -631,5 +631,50 @@
     // Go
     loadProducts();
   </script>
+  <style>
+  /* Smooth page transitions */
+  html.is-fading body {
+    opacity: 0;
+    transition: opacity 280ms ease;
+  }
+  body {
+    opacity: 1;
+    transition: opacity 280ms ease;
+  }
+</style>
+
+<script>
+  (function () {
+    // Fade IN on load
+    document.documentElement.classList.add("is-fading");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("is-fading");
+      });
+    });
+
+    // Fade OUT on navigation to merch.html
+    document.addEventListener("click", function (e) {
+      const a = e.target.closest("a");
+      if (!a) return;
+
+      const href = (a.getAttribute("href") || "").trim();
+
+      // Only intercept merch page links (you can add more later)
+      if (!href || !href.includes("merch.html")) return;
+
+      // Allow new tab / modifier keys to behave normally
+      if (a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+      e.preventDefault();
+      document.documentElement.classList.add("is-fading");
+
+      setTimeout(() => {
+        window.location.href = href;
+      }, 260);
+    });
+  })();
+</script>
+
 </body>
 </html>
