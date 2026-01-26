@@ -4,9 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Intrigued Mutts Merch</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg: radial-gradient(circle at 20% 20%, rgba(120,180,255,.12), transparent 35%),
@@ -17,9 +19,11 @@
       --border: rgba(255,255,255,.16);
       --glow: rgba(120,180,255,.35);
     }
+
     *{ box-sizing:border-box; margin:0; padding:0; }
     html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:#f7f9ff; }
     body{ display:flex; align-items:center; justify-content:center; padding:24px; }
+
     .shell{
       width:min(960px, 100%);
       padding:32px;
@@ -29,12 +33,14 @@
       box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
       backdrop-filter: blur(8px);
     }
+
     .title{
       display:flex;
       align-items:center;
       gap:14px;
       margin-bottom:18px;
     }
+
     .title h1{
       font-family: 'Luckiest Guy', cursive;
       letter-spacing: .02em;
@@ -42,6 +48,7 @@
       color: #f9fbff;
       text-shadow: 0 4px 14px rgba(0,0,0,.45);
     }
+
     .pill{
       padding:8px 12px;
       border-radius:20px;
@@ -51,13 +58,16 @@
       letter-spacing:.05em;
       text-transform: uppercase;
     }
+
     p{ line-height:1.6; font-size:16px; opacity:.92; }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap:16px;
       margin:24px 0;
     }
+
     .card{
       padding:16px;
       border-radius:14px;
@@ -65,7 +75,9 @@
       background: rgba(255,255,255,.06);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
+
     .card h3{ margin-bottom:8px; font-size:18px; }
+
     .cta{
       margin-top:6px;
       display:inline-flex;
@@ -80,44 +92,92 @@
       font-weight:600;
       box-shadow: 0 10px 24px rgba(0,0,0,.35);
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      cursor:pointer;
     }
+
     .cta:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.38); background: rgba(120,180,255,.18); }
     .cta:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.35); }
+
     footer{ margin-top:16px; font-size:13px; opacity:.7; }
+
     @media (max-width: 640px){
       .shell{ padding:22px; }
       .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
+
 <body>
+
   <div class="shell">
+
     <div class="title">
       <div class="pill">Merch</div>
       <h1>Intrigued Mutts Collection</h1>
     </div>
-    <p>Thanks for watching! Our merch store is spinning up. Grab early access to tees, hoodies, mugs, and prints featuring the Intrigued Mutts crew.</p>
+
+    <p>
+      Thanks for watching! Our merch store is spinning up.
+      Grab early access to tees, hoodies, mugs, and prints
+      featuring the Intrigued Mutts crew.
+    </p>
 
     <div class="grid">
       <div class="card">
         <h3>Early Access List</h3>
         <p>Join the drop list to get first dibs when items go live.</p>
       </div>
+
       <div class="card">
         <h3>Community Vote</h3>
         <p>Help pick the next designs. Cast your vote and see previews.</p>
       </div>
+
       <div class="card">
         <h3>Collector Perks</h3>
         <p>NFT holders get discounts and limited-run colorways.</p>
       </div>
     </div>
 
-    <a class="cta" href="#" aria-label="Notify me about merch launches">Notify me when live</a>
+    <!-- MAIN BUTTON -->
+    <a class="cta" id="notifyBtn">Notify me when live</a>
 
-    <a class="cta" style="margin-left:8px; background: rgba(255,255,255,.12);" href="./index.html#mancave" aria-label="Back to clubhouse">Back to Clubhouse</a>
+    <a class="cta"
+       style="margin-left:8px; background: rgba(255,255,255,.12);"
+       href="./index.html#mancave">
+       Back to Clubhouse
+    </a>
 
     <footer>Questions? Ping the crew in Discord.</footer>
+
   </div>
+
+  <!-- 🔥 BACKEND CONNECTION SCRIPT -->
+  <script>
+    const API_BASE = "https://mutts-api.redavi19.workers.dev";
+
+    document.getElementById("notifyBtn").addEventListener("click", async () => {
+      const email = prompt("Enter your email for merch updates:");
+
+      if (!email) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/waitlist`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+
+        if (res.ok) {
+          alert("✅ You're on the list!");
+        } else {
+          alert("❌ Server error.");
+        }
+      } catch (err) {
+        alert("❌ Could not reach server.");
+      }
+    });
+  </script>
+
 </body>
 </html>
