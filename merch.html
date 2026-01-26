@@ -4,381 +4,485 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Intrigued Mutts Merch</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg: radial-gradient(circle at 20% 20%, rgba(120,180,255,.12), transparent 35%),
-            radial-gradient(circle at 80% 10%, rgba(255,140,120,.12), transparent 35%),
-            radial-gradient(circle at 50% 70%, rgba(180,255,200,.12), transparent 35%),
-            #05060a;
+      --bg0:#05060a;
       --panel: rgba(255,255,255,.08);
+      --panel2: rgba(255,255,255,.06);
       --border: rgba(255,255,255,.16);
-      --glow: rgba(120,180,255,.35);
       --muted: rgba(255,255,255,.72);
+      --text: #f7f9ff;
+
+      --accent: rgba(120,180,255,.22);
+      --accent2: rgba(255,140,120,.20);
+      --shadow: 0 20px 40px rgba(0,0,0,.45);
     }
+
     *{ box-sizing:border-box; margin:0; padding:0; }
-    html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:#f7f9ff; }
-    body{ display:flex; align-items:center; justify-content:center; padding:24px; }
-    .shell{
-      width:min(1100px, 100%);
-      padding:32px;
-      border-radius:18px;
-      border:1px solid var(--border);
-      background: var(--panel);
-      box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
-      backdrop-filter: blur(8px);
+    html,body{ height:100%; }
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background: var(--bg0);
+      overflow-x:hidden;
     }
-    .title{
+
+    /* --- THEME BACKGROUND LAYERS --- */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      z-index:-3;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(120,180,255,.14), transparent 38%),
+        radial-gradient(circle at 80% 10%, rgba(255,140,120,.12), transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(180,255,200,.10), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,.02), transparent 45%),
+        #05060a;
+    }
+
+    /* Your character/logo layer (black & white vibe) */
+    body::after{
+      content:"";
+      position:fixed; inset:0;
+      z-index:-2;
+      pointer-events:none;
+      opacity:.22;
+      background-image:
+        url("./intrigued-mutts-society-transparent.png"),
+        url("./intrigued-mutts-society-transparent.png");
+      background-repeat: no-repeat, no-repeat;
+      background-size: 520px auto, 520px auto;
+      background-position: -40px 80px, calc(100% + 40px) 140px;
+      filter: grayscale(1) contrast(1.15);
+    }
+
+    /* optional subtle texture from landing.png if you want it */
+    .texture{
+      position:fixed; inset:0;
+      z-index:-1;
+      pointer-events:none;
+      opacity:.10;
+      background:url("./landing.png") center/cover no-repeat;
+      filter: grayscale(1) blur(1px) contrast(1.1);
+      mix-blend-mode: screen;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+
+    .shell{
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow), 0 0 0 12px rgba(120,180,255,.04);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .topbar{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:14px;
-      margin-bottom:18px;
-      flex-wrap:wrap;
+      padding: 22px 22px 10px;
     }
-    .title h1{
-      font-family: 'Luckiest Guy', cursive;
-      letter-spacing: .02em;
-      font-size: clamp(28px, 4vw, 42px);
-      color: #f9fbff;
-      text-shadow: 0 4px 14px rgba(0,0,0,.45);
-    }
-    .pill{
-      padding:8px 12px;
-      border-radius:20px;
-      background: rgba(255,255,255,.1);
-      border:1px solid var(--border);
-      font-size:13px;
-      letter-spacing:.05em;
-      text-transform: uppercase;
-    }
-    p{ line-height:1.6; font-size:16px; opacity:.92; }
-    .toprow{
+
+    .titleRow{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
+      align-items:flex-start;
       gap:12px;
-      margin:18px 0 10px;
-      flex-wrap:wrap;
+      min-width: 0;
     }
-    .search{
-      flex:1;
-      min-width: 220px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding:10px 12px;
-      border-radius:14px;
+
+    .pill{
+      margin-top:4px;
+      padding:7px 11px;
+      border-radius:999px;
       border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.08);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      opacity:.9;
     }
-    .search input{
-      width:100%;
-      border:0;
-      outline:0;
-      background: transparent;
-      color:#fff;
-      font-size:14px;
+
+    h1{
+      font-family:"Luckiest Guy", cursive;
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing:.02em;
+      text-shadow: 0 4px 14px rgba(0,0,0,.45);
+      line-height:1.0;
+      margin-top:2px;
     }
+
+    .sub{
+      margin-top:10px;
+      color: var(--muted);
+      line-height:1.45;
+      max-width: 720px;
+      font-size:15px;
+    }
+
     .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding:12px 16px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(120,180,255,.12);
-      color:#e8f1ff;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: #eaf2ff;
       text-decoration:none;
       font-weight:700;
       cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
       user-select:none;
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      white-space:nowrap;
     }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.38); background: rgba(120,180,255,.18); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.35); }
-    .btn.secondary{ background: rgba(255,255,255,.10); }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.12); }
+    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.22); }
+    .btn.primary{ background: rgba(120,180,255,.16); }
+    .btn.primary:hover{ background: rgba(120,180,255,.22); }
+
+    .controls{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 14px 22px 18px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .search{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .meta{
+      margin-top:10px;
+      padding: 0 22px 8px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      color: rgba(255,255,255,.70);
+      font-size: 13px;
+    }
+    .meta code{ color: rgba(255,255,255,.78); }
+
+    .content{
+      padding: 12px 22px 22px;
+    }
+
+    .notice{
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,.80);
+      font-size: 13px;
+      line-height:1.4;
+    }
+    .notice strong{ color:#fff; }
+
     .grid{
       display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap:16px;
-      margin:14px 0 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
     }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .topbar{ flex-direction:column; }
+      .controls{ flex-direction:column; align-items:stretch; }
+      .grid{ grid-template-columns: 1fr; }
+    }
+
     .card{
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      background: var(--panel2);
+      border-radius: 16px;
+      overflow:hidden;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
       display:flex;
       flex-direction:column;
-      gap:10px;
-      min-height: 320px;
+      min-height: 280px;
     }
-    .thumb{
+
+    /* THIS fixes the “image too huge” problem */
+    .img{
       width:100%;
-      height: 190px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25);
+      height: 160px;             /* <— controls height */
+      background: rgba(0,0,0,.22);
       display:flex;
       align-items:center;
       justify-content:center;
       overflow:hidden;
+      position:relative;
     }
-    .thumb img{
+    .img img{
       width:100%;
       height:100%;
-      object-fit: cover;
+      object-fit: cover;         /* <— crops nicely */
       display:block;
+      filter: contrast(1.02);
     }
+
+    .cardBody{
+      padding: 12px 12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
+    }
+
     .name{
-      font-size:16px;
-      font-weight:800;
+      font-weight: 900;
+      font-size: 15px;
       letter-spacing:.01em;
     }
-    .meta{
-      font-size:13px;
-      color: var(--muted);
-      opacity:.9;
+    .small{
+      color: rgba(255,255,255,.70);
+      font-size: 12px;
     }
+
     .row{
       margin-top:auto;
       display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
     }
-    .price{
-      font-weight:800;
-      font-size:15px;
+
+    .priceTag{
+      padding: 6px 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      border-radius: 999px;
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+      white-space:nowrap;
     }
-    .small{
-      font-size:12px;
-      opacity:.75;
-      margin-top:10px;
+
+    .err{
+      color: #ffd1d1;
+      border: 1px solid rgba(255,120,120,.25);
+      background: rgba(255,0,0,.08);
     }
-    .bar{
-      margin-top:10px;
-      padding:12px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(0,0,0,.18);
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-    }
-    .status{
-      font-size:14px;
-      color: rgba(255,255,255,.86);
-    }
-    .error{
-      color: #ffd3d3;
-      font-weight:700;
-    }
-    @media (max-width: 640px){
-      .shell{ padding:22px; }
-      .grid{ grid-template-columns: 1fr; }
+
+    .footerNote{
+      padding: 14px 22px 18px;
+      color: rgba(255,255,255,.65);
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
     }
   </style>
 </head>
+
 <body>
-  <div class="shell">
-    <div class="title">
-      <div style="display:flex; align-items:center; gap:14px;">
-        <div class="pill">Merch</div>
-        <h1>Intrigued Mutts Collection</h1>
+  <div class="texture"></div>
+
+  <div class="wrap">
+    <div class="shell">
+
+      <div class="topbar">
+        <div>
+          <div class="titleRow">
+            <div class="pill">Merch</div>
+            <div>
+              <h1>Intrigued Mutts Collection</h1>
+              <div class="sub">
+                Live storefront demo: pulls products from Printful and creates Square checkout links when you click <strong>Buy</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="btn" href="./index.html#mancave" aria-label="Back to clubhouse">Back to Clubhouse</a>
       </div>
-      <a class="btn secondary" href="./index.html#mancave">Back to Clubhouse</a>
-    </div>
 
-    <p>Live storefront demo: pulls products from Printful and creates Square checkout links when you click <b>Buy</b>.</p>
+      <div class="controls">
+        <div class="search" role="search">
+          <span style="opacity:.75">🔎</span>
+          <input id="q" type="search" placeholder="Search products (ex: hoodie, shirt, mug)..." />
+        </div>
 
-    <div class="toprow">
-      <div class="search" title="Filter products">
-        <span style="opacity:.75;">🔎</span>
-        <input id="q" placeholder="Search products (ex: hoodie, shirt, mug)..." />
+        <button id="refresh" class="btn primary" type="button">Refresh products</button>
       </div>
-      <button class="btn" id="refreshBtn">Refresh products</button>
-    </div>
 
-    <div class="bar">
-      <div class="status" id="status">Loading products…</div>
-      <div class="small">API: <span id="apiBaseLabel"></span></div>
-    </div>
+      <div class="meta">
+        <div id="status">Loading…</div>
+        <div>API: <code id="apiLabel"></code></div>
+      </div>
 
-    <div class="grid" id="grid"></div>
+      <div class="content">
+        <div id="notice" class="notice">
+          <strong>Tip:</strong> If you see no items, it usually means Printful returned an empty list for your store (or the token has no store products).
+        </div>
 
-    <div class="small">
-      Tip: If you see no items, it means Printful returned an empty list for your store (or your token store has no products).
+        <div id="grid" class="grid"></div>
+      </div>
+
+      <div class="footerNote">
+        Next upgrades: real pricing, variants (sizes/colors), and a “Checkout” modal that feels like your brand.
+      </div>
+
     </div>
   </div>
 
-<script>
-  // ✅ SET THIS TO YOUR WORKER URL (NO trailing slash)
-  const API_BASE = "https://mutts-api.redavi19.workers.dev";
+  <script>
+    // ✅ IMPORTANT: Your Worker base
+    const API_BASE = "https://mutts-api.redavi19.workers.dev";
+    document.getElementById("apiLabel").textContent = API_BASE;
 
-  // (Leave as-is)
-  document.getElementById("apiBaseLabel").textContent = API_BASE;
+    const grid = document.getElementById("grid");
+    const statusEl = document.getElementById("status");
+    const qEl = document.getElementById("q");
 
-  const grid = document.getElementById("grid");
-  const statusEl = document.getElementById("status");
-  const qEl = document.getElementById("q");
-  const refreshBtn = document.getElementById("refreshBtn");
+    let products = [];
 
-  let allProducts = [];
-
-  function moneyFromPrintful(p) {
-    // Printful doesn't always include a simple price on /store/products.
-    // So we show "From $X" only if we can find something.
-    // Many stores keep pricing in sync via variants; for now we keep it simple.
-    return null;
-  }
-
-  function pickImage(p) {
-    // Printful store product sometimes has:
-    // p.thumbnail_url OR p.files[0].preview_url OR p.sync_product?.thumbnail_url
-    return p.thumbnail_url
-      || (p.files && p.files[0] && (p.files[0].preview_url || p.files[0].thumbnail_url))
-      || (p.sync_product && p.sync_product.thumbnail_url)
-      || "";
-  }
-
-  function normalizeName(p) {
-    return (p.name || p.sync_product && p.sync_product.name || "Untitled").trim();
-  }
-
-  function setStatus(msg, isError=false) {
-    statusEl.textContent = msg;
-    statusEl.className = "status" + (isError ? " error" : "");
-  }
-
-  function render(list) {
-    grid.innerHTML = "";
-
-    if (!list.length) {
-      grid.innerHTML = `
-        <div class="card" style="min-height:auto;">
-          <div class="name">No products found</div>
-          <div class="meta">If your Printful store has products, hit “Refresh products”.</div>
-        </div>
-      `;
-      return;
+    function setStatus(msg, isError=false){
+      statusEl.textContent = msg;
+      const notice = document.getElementById("notice");
+      notice.classList.toggle("err", !!isError);
+      if (isError) notice.innerHTML = "<strong>Heads up:</strong> " + msg;
+      else notice.innerHTML = "<strong>Tip:</strong> If you see no items, it usually means Printful returned an empty list for your store (or the token has no store products).";
     }
 
-    for (const p of list) {
-      const name = normalizeName(p);
-      const img = pickImage(p);
-      const id = p.id;
-      const meta = [];
-      if (p.sync_product && p.sync_product.id) meta.push("sync #" + p.sync_product.id);
-      meta.push("product id: " + id);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="thumb">
-          ${img ? `<img src="${img}" alt="${name}">` : `<div style="opacity:.7;">No image</div>`}
-        </div>
-        <div class="name">${name}</div>
-        <div class="meta">${meta.join(" • ")}</div>
-        <div class="row">
-          <div class="price">Ready</div>
-          <button class="btn" data-id="${id}" data-name="${encodeURIComponent(name)}">Buy</button>
-        </div>
-      `;
-
-      card.querySelector("button").addEventListener("click", async (e) => {
-        const btn = e.currentTarget;
-        btn.disabled = true;
-        btn.textContent = "Creating…";
-        setStatus("Creating Square checkout link…");
-
-        try {
-          // Amount is in cents (USD) for this demo.
-          // ✅ Change this later to match the real product price/variant
-          const amountCents = 2000;
-
-          const res = await fetch(API_BASE + "/api/checkout/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: decodeURIComponent(btn.dataset.name),
-              amount: amountCents
-            })
-          });
-
-          if (!res.ok) {
-            const txt = await res.text();
-            throw new Error("Checkout create failed: " + res.status + " " + txt);
-          }
-
-          const data = await res.json();
-
-          // Your worker returns something like { payment_link: { url: "..." } }
-          const url = data?.payment_link?.url || data?.url || data?.paymentLink || "";
-          if (!url) throw new Error("No checkout URL in response.");
-
-          setStatus("Redirecting to Square checkout…");
-          window.location.href = url;
-
-        } catch (err) {
-          console.error(err);
-          setStatus("Error creating checkout link (check console).", true);
-          btn.disabled = false;
-          btn.textContent = "Buy";
-          alert("Checkout error. Open DevTools Console to see details.");
-        }
-      });
-
-      grid.appendChild(card);
+    function moneyCentsToUSD(cents){
+      const n = Number(cents || 0);
+      return "$" + (n / 100).toFixed(2);
     }
-  }
 
-  function applyFilter() {
-    const q = (qEl.value || "").toLowerCase().trim();
-    if (!q) return render(allProducts);
-    render(allProducts.filter(p => normalizeName(p).toLowerCase().includes(q)));
-  }
+    function render(list){
+      grid.innerHTML = "";
 
-  async function loadProducts() {
-    setStatus("Loading products…");
-    try {
-      const res = await fetch(API_BASE + "/api/store/products", { method: "GET" });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error("Products failed: " + res.status + " " + txt);
+      if (!list.length){
+        grid.innerHTML = `
+          <div class="card" style="grid-column: 1 / -1; min-height: 140px;">
+            <div class="cardBody">
+              <div class="name">No products found</div>
+              <div class="small">Hit “Refresh products” to pull again. If it stays empty, your Printful token/store is the issue.</div>
+            </div>
+          </div>
+        `;
+        return;
       }
-      const data = await res.json();
 
-      // Printful usually returns: { code: 200, result: [...], paging: ... }
-      allProducts = Array.isArray(data?.result) ? data.result : (Array.isArray(data) ? data : []);
-      setStatus("Loaded " + allProducts.length + " product(s). Click Buy to test checkout.");
-      applyFilter();
-    } catch (err) {
-      console.error(err);
-      setStatus("Failed to load products. (Open console)", true);
-      grid.innerHTML = `
-        <div class="card" style="min-height:auto;">
-          <div class="name">Could not load products</div>
-          <div class="meta">Make sure your API_BASE is correct and your worker endpoint works.</div>
-        </div>
-      `;
+      for (const p of list){
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const imgUrl = p.thumbnail_url || "";
+
+        // NOTE: price is placeholder until we wire real Printful variant pricing.
+        // For now it’s just to test Square checkout.
+        const testPriceCents = 2000;
+
+        card.innerHTML = `
+          <div class="img">
+            ${imgUrl ? `<img src="${imgUrl}" alt="${(p.name||"Product").replace(/"/g,"&quot;")}" />` : `<div class="small">No preview</div>`}
+          </div>
+          <div class="cardBody">
+            <div class="name">${p.name || "Item"}</div>
+            <div class="small">product id: ${p.id ?? "-"}</div>
+
+            <div class="row">
+              <div class="priceTag">Test price: ${moneyCentsToUSD(testPriceCents)}</div>
+              <button class="btn primary" type="button">Buy</button>
+            </div>
+          </div>
+        `;
+
+        const btn = card.querySelector("button");
+        btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          btn.textContent = "Creating link…";
+          try{
+            const res = await fetch(API_BASE + "/api/checkout/create", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: p.name || "Item", amount: testPriceCents })
+            });
+            const data = await res.json();
+
+            // Square response can include payment_link.url
+            const payUrl =
+              data?.payment_link?.url ||
+              data?.payment_link?.long_url ||
+              data?.url ||
+              null;
+
+            if (!payUrl) throw new Error("No checkout URL returned.");
+
+            window.open(payUrl, "_blank", "noopener,noreferrer");
+          }catch(e){
+            alert("Checkout error: " + (e?.message || e));
+          }finally{
+            btn.disabled = false;
+            btn.textContent = "Buy";
+          }
+        });
+
+        grid.appendChild(card);
+      }
     }
-  }
 
-  qEl.addEventListener("input", applyFilter);
-  refreshBtn.addEventListener("click", loadProducts);
+    function filterAndRender(){
+      const q = (qEl.value || "").trim().toLowerCase();
+      if (!q) return render(products);
+      const filtered = products.filter(p => (p.name || "").toLowerCase().includes(q));
+      render(filtered);
+    }
 
-  // Go
-  loadProducts();
-</script>
+    async function loadProducts(){
+      setStatus("Loading products…");
+      try{
+        const res = await fetch(API_BASE + "/api/store/products");
+        const data = await res.json();
+
+        // Printful returns { code, result, ... }
+        products = Array.isArray(data?.result) ? data.result : [];
+
+        setStatus(`Loaded ${products.length} product(s). Click Buy to test checkout.`);
+        filterAndRender();
+      }catch(e){
+        setStatus("Could not load products. Check API URL or Worker logs.", true);
+        render([]);
+      }
+    }
+
+    document.getElementById("refresh").addEventListener("click", loadProducts);
+    qEl.addEventListener("input", filterAndRender);
+
+    // initial load
+    loadProducts();
+  </script>
 </body>
 </html>
