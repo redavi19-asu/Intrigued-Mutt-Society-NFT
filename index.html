@@ -839,7 +839,8 @@
     });
 
     merchVideo.addEventListener("ended", () => {
-      window.location.href = "./merch.html";
+      // Use replace so browser Back returns to clubhouse, not merch overlay
+      window.location.replace("./merch.html");
     });
 
     nftsVideo.addEventListener("ended", () => {
