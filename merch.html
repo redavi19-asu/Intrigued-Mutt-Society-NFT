@@ -4,11 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Intrigued Mutts Merch</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-
   <style>
     :root{
       --bg: radial-gradient(circle at 20% 20%, rgba(120,180,255,.12), transparent 35%),
@@ -18,14 +16,13 @@
       --panel: rgba(255,255,255,.08);
       --border: rgba(255,255,255,.16);
       --glow: rgba(120,180,255,.35);
+      --muted: rgba(255,255,255,.72);
     }
-
     *{ box-sizing:border-box; margin:0; padding:0; }
     html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:#f7f9ff; }
     body{ display:flex; align-items:center; justify-content:center; padding:24px; }
-
     .shell{
-      width:min(960px, 100%);
+      width:min(1100px, 100%);
       padding:32px;
       border-radius:18px;
       border:1px solid var(--border);
@@ -33,14 +30,14 @@
       box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
       backdrop-filter: blur(8px);
     }
-
     .title{
       display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:14px;
       margin-bottom:18px;
+      flex-wrap:wrap;
     }
-
     .title h1{
       font-family: 'Luckiest Guy', cursive;
       letter-spacing: .02em;
@@ -48,7 +45,6 @@
       color: #f9fbff;
       text-shadow: 0 4px 14px rgba(0,0,0,.45);
     }
-
     .pill{
       padding:8px 12px;
       border-radius:20px;
@@ -58,30 +54,38 @@
       letter-spacing:.05em;
       text-transform: uppercase;
     }
-
     p{ line-height:1.6; font-size:16px; opacity:.92; }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap:16px;
-      margin:24px 0;
+    .toprow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:18px 0 10px;
+      flex-wrap:wrap;
     }
-
-    .card{
-      padding:16px;
+    .search{
+      flex:1;
+      min-width: 220px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 12px;
       border-radius:14px;
       border:1px solid var(--border);
       background: rgba(255,255,255,.06);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
-
-    .card h3{ margin-bottom:8px; font-size:18px; }
-
-    .cta{
-      margin-top:6px;
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      background: transparent;
+      color:#fff;
+      font-size:14px;
+    }
+    .btn{
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:8px;
       padding:12px 16px;
       border-radius:14px;
@@ -89,95 +93,292 @@
       background: rgba(120,180,255,.12);
       color:#e8f1ff;
       text-decoration:none;
-      font-weight:600;
+      font-weight:700;
+      cursor:pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.35);
       transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      cursor:pointer;
+      user-select:none;
     }
-
-    .cta:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.38); background: rgba(120,180,255,.18); }
-    .cta:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.35); }
-
-    footer{ margin-top:16px; font-size:13px; opacity:.7; }
-
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.38); background: rgba(120,180,255,.18); }
+    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.35); }
+    .btn.secondary{ background: rgba(255,255,255,.10); }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap:16px;
+      margin:14px 0 10px;
+    }
+    .card{
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height: 320px;
+    }
+    .thumb{
+      width:100%;
+      height: 190px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .name{
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:.01em;
+    }
+    .meta{
+      font-size:13px;
+      color: var(--muted);
+      opacity:.9;
+    }
+    .row{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .price{
+      font-weight:800;
+      font-size:15px;
+    }
+    .small{
+      font-size:12px;
+      opacity:.75;
+      margin-top:10px;
+    }
+    .bar{
+      margin-top:10px;
+      padding:12px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .status{
+      font-size:14px;
+      color: rgba(255,255,255,.86);
+    }
+    .error{
+      color: #ffd3d3;
+      font-weight:700;
+    }
     @media (max-width: 640px){
       .shell{ padding:22px; }
       .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
 <body>
-
   <div class="shell">
-
     <div class="title">
-      <div class="pill">Merch</div>
-      <h1>Intrigued Mutts Collection</h1>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div class="pill">Merch</div>
+        <h1>Intrigued Mutts Collection</h1>
+      </div>
+      <a class="btn secondary" href="./index.html#mancave">Back to Clubhouse</a>
     </div>
 
-    <p>
-      Thanks for watching! Our merch store is spinning up.
-      Grab early access to tees, hoodies, mugs, and prints
-      featuring the Intrigued Mutts crew.
-    </p>
+    <p>Live storefront demo: pulls products from Printful and creates Square checkout links when you click <b>Buy</b>.</p>
 
-    <div class="grid">
-      <div class="card">
-        <h3>Early Access List</h3>
-        <p>Join the drop list to get first dibs when items go live.</p>
+    <div class="toprow">
+      <div class="search" title="Filter products">
+        <span style="opacity:.75;">🔎</span>
+        <input id="q" placeholder="Search products (ex: hoodie, shirt, mug)..." />
       </div>
-
-      <div class="card">
-        <h3>Community Vote</h3>
-        <p>Help pick the next designs. Cast your vote and see previews.</p>
-      </div>
-
-      <div class="card">
-        <h3>Collector Perks</h3>
-        <p>NFT holders get discounts and limited-run colorways.</p>
-      </div>
+      <button class="btn" id="refreshBtn">Refresh products</button>
     </div>
 
-    <!-- MAIN BUTTON -->
-    <a class="cta" id="notifyBtn">Notify me when live</a>
+    <div class="bar">
+      <div class="status" id="status">Loading products…</div>
+      <div class="small">API: <span id="apiBaseLabel"></span></div>
+    </div>
 
-    <a class="cta"
-       style="margin-left:8px; background: rgba(255,255,255,.12);"
-       href="./index.html#mancave">
-       Back to Clubhouse
-    </a>
+    <div class="grid" id="grid"></div>
 
-    <footer>Questions? Ping the crew in Discord.</footer>
-
+    <div class="small">
+      Tip: If you see no items, it means Printful returned an empty list for your store (or your token store has no products).
+    </div>
   </div>
 
-  <!-- 🔥 BACKEND CONNECTION SCRIPT -->
-  <script>
-    const API_BASE = "https://mutts-api.redavi19.workers.dev";
+<script>
+  // ✅ SET THIS TO YOUR WORKER URL (NO trailing slash)
+  const API_BASE = "https://mutts-api.redavi19.workers.dev";
 
-    document.getElementById("notifyBtn").addEventListener("click", async () => {
-      const email = prompt("Enter your email for merch updates:");
+  // (Leave as-is)
+  document.getElementById("apiBaseLabel").textContent = API_BASE;
 
-      if (!email) return;
+  const grid = document.getElementById("grid");
+  const statusEl = document.getElementById("status");
+  const qEl = document.getElementById("q");
+  const refreshBtn = document.getElementById("refreshBtn");
 
-      try {
-        const res = await fetch(`${API_BASE}/api/waitlist`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
+  let allProducts = [];
 
-        if (res.ok) {
-          alert("✅ You're on the list!");
-        } else {
-          alert("❌ Server error.");
+  function moneyFromPrintful(p) {
+    // Printful doesn't always include a simple price on /store/products.
+    // So we show "From $X" only if we can find something.
+    // Many stores keep pricing in sync via variants; for now we keep it simple.
+    return null;
+  }
+
+  function pickImage(p) {
+    // Printful store product sometimes has:
+    // p.thumbnail_url OR p.files[0].preview_url OR p.sync_product?.thumbnail_url
+    return p.thumbnail_url
+      || (p.files && p.files[0] && (p.files[0].preview_url || p.files[0].thumbnail_url))
+      || (p.sync_product && p.sync_product.thumbnail_url)
+      || "";
+  }
+
+  function normalizeName(p) {
+    return (p.name || p.sync_product && p.sync_product.name || "Untitled").trim();
+  }
+
+  function setStatus(msg, isError=false) {
+    statusEl.textContent = msg;
+    statusEl.className = "status" + (isError ? " error" : "");
+  }
+
+  function render(list) {
+    grid.innerHTML = "";
+
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="card" style="min-height:auto;">
+          <div class="name">No products found</div>
+          <div class="meta">If your Printful store has products, hit “Refresh products”.</div>
+        </div>
+      `;
+      return;
+    }
+
+    for (const p of list) {
+      const name = normalizeName(p);
+      const img = pickImage(p);
+      const id = p.id;
+      const meta = [];
+      if (p.sync_product && p.sync_product.id) meta.push("sync #" + p.sync_product.id);
+      meta.push("product id: " + id);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="thumb">
+          ${img ? `<img src="${img}" alt="${name}">` : `<div style="opacity:.7;">No image</div>`}
+        </div>
+        <div class="name">${name}</div>
+        <div class="meta">${meta.join(" • ")}</div>
+        <div class="row">
+          <div class="price">Ready</div>
+          <button class="btn" data-id="${id}" data-name="${encodeURIComponent(name)}">Buy</button>
+        </div>
+      `;
+
+      card.querySelector("button").addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true;
+        btn.textContent = "Creating…";
+        setStatus("Creating Square checkout link…");
+
+        try {
+          // Amount is in cents (USD) for this demo.
+          // ✅ Change this later to match the real product price/variant
+          const amountCents = 2000;
+
+          const res = await fetch(API_BASE + "/api/checkout/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: decodeURIComponent(btn.dataset.name),
+              amount: amountCents
+            })
+          });
+
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error("Checkout create failed: " + res.status + " " + txt);
+          }
+
+          const data = await res.json();
+
+          // Your worker returns something like { payment_link: { url: "..." } }
+          const url = data?.payment_link?.url || data?.url || data?.paymentLink || "";
+          if (!url) throw new Error("No checkout URL in response.");
+
+          setStatus("Redirecting to Square checkout…");
+          window.location.href = url;
+
+        } catch (err) {
+          console.error(err);
+          setStatus("Error creating checkout link (check console).", true);
+          btn.disabled = false;
+          btn.textContent = "Buy";
+          alert("Checkout error. Open DevTools Console to see details.");
         }
-      } catch (err) {
-        alert("❌ Could not reach server.");
-      }
-    });
-  </script>
+      });
 
+      grid.appendChild(card);
+    }
+  }
+
+  function applyFilter() {
+    const q = (qEl.value || "").toLowerCase().trim();
+    if (!q) return render(allProducts);
+    render(allProducts.filter(p => normalizeName(p).toLowerCase().includes(q)));
+  }
+
+  async function loadProducts() {
+    setStatus("Loading products…");
+    try {
+      const res = await fetch(API_BASE + "/api/store/products", { method: "GET" });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error("Products failed: " + res.status + " " + txt);
+      }
+      const data = await res.json();
+
+      // Printful usually returns: { code: 200, result: [...], paging: ... }
+      allProducts = Array.isArray(data?.result) ? data.result : (Array.isArray(data) ? data : []);
+      setStatus("Loaded " + allProducts.length + " product(s). Click Buy to test checkout.");
+      applyFilter();
+    } catch (err) {
+      console.error(err);
+      setStatus("Failed to load products. (Open console)", true);
+      grid.innerHTML = `
+        <div class="card" style="min-height:auto;">
+          <div class="name">Could not load products</div>
+          <div class="meta">Make sure your API_BASE is correct and your worker endpoint works.</div>
+        </div>
+      `;
+    }
+  }
+
+  qEl.addEventListener("input", applyFilter);
+  refreshBtn.addEventListener("click", loadProducts);
+
+  // Go
+  loadProducts();
+</script>
 </body>
 </html>
