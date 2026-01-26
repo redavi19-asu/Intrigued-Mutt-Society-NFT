@@ -25,20 +25,19 @@
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
-    html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:var(--text); }
-    body{ display:flex; align-items:center; justify-content:center; padding:24px; }
-
-    /* Optional: drop in your own background image (black/white dogs etc) */
-    /* body{ background: url("./your-bg.png") center/cover fixed, var(--bg); } */
+    html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:#ffffff; overflow-x: hidden; }
+    body{ display:flex; align-items:flex-start; justify-content:center; min-height:100%; width:100%; padding:32px 24px 32px; background: linear-gradient(rgba(0,0,0,.68), rgba(0,0,0,.68)), url('merchbackground.png') center/cover no-repeat fixed; background-attachment: fixed; box-sizing: border-box; }
 
     .shell{
-      width:min(1100px, 100%);
+      width:100%;
+      max-width:1100px;
       padding:28px;
       border-radius:18px;
       border:1px solid var(--border);
       background: rgba(0,0,0,.35);
       box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
       backdrop-filter: blur(10px);
+      box-sizing: border-box;
     }
 
     .topbar{
@@ -164,6 +163,15 @@
       display:flex;
       flex-direction:column;
       min-height: 320px;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 34px rgba(0,0,0,.30);
+    }
+    .card:active{
+      transform: translateY(0) scale(1.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 28px rgba(0,0,0,.32);
     }
 
     /* ✅ THIS fixes the “shirt too big” problem */
@@ -221,15 +229,36 @@
     .buyBtn{
       padding:10px 14px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(120,180,255,.14);
-      color:#e8f1ff;
+      border:1px solid rgba(150,210,255,.65);
+      background: radial-gradient(circle at 20% 20%, rgba(170,220,255,.35), rgba(120,180,255,.18));
+      color:#f9fbff;
       font-weight:800;
       cursor:pointer;
-      transition: .12s ease;
+      text-shadow: 0 1px 8px rgba(0,0,0,.35);
+      box-shadow:
+        0 12px 26px rgba(0,0,0,.30),
+        0 0 0 1px rgba(150,210,255,.55),
+        0 0 18px rgba(150,210,255,.55),
+        0 0 42px rgba(120,180,255,.50);
+      transition: background .14s ease, transform .14s ease, box-shadow .18s ease;
     }
-    .buyBtn:hover{ background: rgba(120,180,255,.20); transform: translateY(-1px); }
-    .buyBtn:active{ transform: translateY(0); }
+    .buyBtn:hover{
+      background: radial-gradient(circle at 25% 25%, rgba(200,235,255,.55), rgba(120,180,255,.26));
+      transform: translateY(-1px);
+      box-shadow:
+        0 16px 32px rgba(0,0,0,.32),
+        0 0 0 1px rgba(180,230,255,.75),
+        0 0 26px rgba(180,230,255,.75),
+        0 0 52px rgba(120,190,255,.62);
+    }
+    .buyBtn:active{
+      transform: translateY(0);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,.30),
+        0 0 0 1px rgba(160,215,255,.60),
+        0 0 20px rgba(160,215,255,.60),
+        0 0 36px rgba(120,185,255,.55);
+    }
 
     .hint{
       margin-top:14px;
@@ -239,6 +268,30 @@
       background: rgba(255,255,255,.05);
       color: rgba(247,249,255,.75);
       font-size: 13px;
+    }
+
+    @media (max-width: 1024px){
+      body{ padding:16px; background: linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)), url('merchbackground.png') center/cover no-repeat fixed; }
+      .shell{ padding:20px; border-radius:14px; }
+      .title h1{ font-size: clamp(24px, 3vw, 36px); }
+      .pill{ font-size:12px; }
+      .sub{ font-size:14px; }
+
+      .topbar{ flex-direction:column; align-items:flex-start; gap:12px; }
+      .actions{ width:100%; justify-content:flex-start; flex-wrap:wrap; }
+      .actions .btn{ flex:1 1 auto; min-width:120px; justify-content:center; }
+
+      .row{ flex-direction:column; gap:10px; }
+      .search{ width:100%; }
+      .search input{ font-size:16px; }
+
+      .grid{ grid-template-columns: 1fr; gap:14px; }
+      .card{ min-height: unset; }
+      .imgWrap{ height: 200px; }
+      .name{ font-size:15px; }
+      .small{ font-size:11px; }
+
+      .meta{ flex-direction:column; align-items:flex-start; }
     }
 
     /* Modal */
@@ -251,6 +304,10 @@
       justify-content:center;
       padding: 18px;
       z-index: 9999;
+      pointer-events: none;
+    }
+    .modalBack[aria-hidden="false"]{
+      pointer-events: auto;
     }
     .modal{
       width: min(980px, 100%);
