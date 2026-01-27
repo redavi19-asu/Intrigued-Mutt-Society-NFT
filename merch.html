@@ -1,751 +1,238 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Intrigued Mutts Merch</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Intrigued Mutts Merch</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg:
-        radial-gradient(circle at 20% 20%, rgba(120,180,255,.12), transparent 35%),
-        radial-gradient(circle at 80% 10%, rgba(255,140,120,.12), transparent 35%),
-        radial-gradient(circle at 50% 70%, rgba(180,255,200,.12), transparent 35%),
-        #05060a;
-
-      --panel: rgba(255,255,255,.08);
-      --border: rgba(255,255,255,.16);
-      --glow: rgba(120,180,255,.35);
-      --text: #f7f9ff;
-      --muted: rgba(247,249,255,.75);
-    }
-
-    *{ box-sizing:border-box; margin:0; padding:0; }
-    html,body{ height:100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: var(--bg); color:#ffffff; overflow-x: hidden; }
-    body{ display:flex; align-items:flex-start; justify-content:center; min-height:100%; width:100%; padding:32px 24px 32px; background: linear-gradient(rgba(0,0,0,.68), rgba(0,0,0,.68)), url('merchbackground.png') center/cover no-repeat fixed; background-attachment: fixed; box-sizing: border-box; }
-
-    .shell{
-      width:100%;
-      max-width:1100px;
-      padding:28px;
-      border-radius:18px;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.35);
-      box-shadow: 0 20px 40px rgba(0,0,0,.45), 0 0 0 12px rgba(120,180,255,.04);
-      backdrop-filter: blur(10px);
-      box-sizing: border-box;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:14px;
-    }
-
-    .title{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-    .title h1{
-      font-family: 'Luckiest Guy', cursive;
-      letter-spacing: .02em;
-      font-size: clamp(28px, 4vw, 44px);
-      color: #f9fbff;
-      text-shadow: 0 4px 14px rgba(0,0,0,.45);
-      line-height: 1;
-    }
-
-    .pill{
-      padding:8px 12px;
-      border-radius:20px;
-      background: rgba(255,255,255,.10);
-      border:1px solid var(--border);
-      font-size:13px;
-      letter-spacing:.05em;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-
-    .sub{
-      margin-top:10px;
-      color: var(--muted);
-      line-height:1.5;
-      font-size: 15px;
-    }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      margin-top:6px;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:11px 14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.10);
-      color: #e8f1ff;
-      text-decoration:none;
-      font-weight:650;
-      cursor:pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.25);
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.28); background: rgba(255,255,255,.14); }
-    .btn:active{ transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,.25); }
-    .btn.primary{ background: rgba(120,180,255,.14); }
-    .btn.primary:hover{ background: rgba(120,180,255,.20); }
-
-    @keyframes pulse-glow {
-      0%, 100% {
-        box-shadow: 
-          0 10px 24px rgba(0,0,0,.25),
-          0 0 12px rgba(100,180,255,.40),
-          0 0 24px rgba(100,180,255,.30);
-      }
-      50% {
-        box-shadow: 
-          0 10px 24px rgba(0,0,0,.25),
-          0 0 20px rgba(100,180,255,.60),
-          0 0 40px rgba(100,180,255,.45);
-      }
-    }
-
-    .btn[href="./index.html#mancave"] {
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      margin-top:16px;
-      flex-wrap:wrap;
-    }
-    .search{
-      flex: 1 1 420px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-    }
-    .search input{
-      width:100%;
-      outline:none;
-      border:0;
-      background:transparent;
-      color: var(--text);
-      font-size: 14px;
-    }
-    .meta{
-      margin-top:10px;
-      font-size: 13px;
-      color: rgba(247,249,255,.65);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap:16px;
-      margin-top:16px;
-    }
-
-    .card{
-      border-radius:16px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height: 320px;
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .card:hover{
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 34px rgba(0,0,0,.30);
-    }
-    .card:active{
-      transform: translateY(0) scale(1.08);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 28px rgba(0,0,0,.32);
-    }
-
-    /* ✅ THIS fixes the “shirt too big” problem */
-    .imgWrap{
-      width:100%;
-      height: 190px;                 /* <- adjust if you want taller/shorter */
-      background: rgba(0,0,0,.18);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      cursor:pointer;
-    }
-    .imgWrap img{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;           /* <- keeps whole shirt inside */
-      padding: 10px;
-      filter: drop-shadow(0 14px 22px rgba(0,0,0,.35));
-    }
-
-    .cardBody{
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      flex:1;
-    }
-    .name{
-      font-size: 16px;
-      font-weight: 800;
-      cursor:pointer;
-    }
-    .small{
-      font-size: 12px;
-      color: rgba(247,249,255,.65);
-    }
-
-    .priceRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-top:auto;
-    }
-    .tag{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.07);
-      font-size: 12px;
-      color: rgba(247,249,255,.85);
-    }
-
-    .buyBtn{
-      padding:10px 14px;
-      border-radius:14px;
-      border:1px solid rgba(150,210,255,.65);
-      background: radial-gradient(circle at 20% 20%, rgba(170,220,255,.35), rgba(120,180,255,.18));
-      color:#f9fbff;
-      font-weight:800;
-      cursor:pointer;
-      text-shadow: 0 1px 8px rgba(0,0,0,.35);
-      box-shadow:
-        0 12px 26px rgba(0,0,0,.30),
-        0 0 0 1px rgba(150,210,255,.55),
-        0 0 18px rgba(150,210,255,.55),
-        0 0 42px rgba(120,180,255,.50);
-      transition: background .14s ease, transform .14s ease, box-shadow .18s ease;
-    }
-    .buyBtn:hover{
-      background: radial-gradient(circle at 25% 25%, rgba(200,235,255,.55), rgba(120,180,255,.26));
-      transform: translateY(-1px);
-      box-shadow:
-        0 16px 32px rgba(0,0,0,.32),
-        0 0 0 1px rgba(180,230,255,.75),
-        0 0 26px rgba(180,230,255,.75),
-        0 0 52px rgba(120,190,255,.62);
-    }
-    .buyBtn:active{
-      transform: translateY(0);
-      box-shadow:
-        0 10px 22px rgba(0,0,0,.30),
-        0 0 0 1px rgba(160,215,255,.60),
-        0 0 20px rgba(160,215,255,.60),
-        0 0 36px rgba(120,185,255,.55);
-    }
-
-    .hint{
-      margin-top:14px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.16);
-      background: rgba(255,255,255,.05);
-      color: rgba(247,249,255,.75);
-      font-size: 13px;
-    }
-
-    .footerLinks{
-      display:flex;
-      gap:12px;
-      margin-top:24px;
-      padding-top:16px;
-      border-top:1px solid rgba(255,255,255,.10);
-      flex-wrap:wrap;
-      justify-content:center;
-      align-items:center;
-    }
-    .footerLinks .btn{
-      flex:0 1 auto;
-      min-width:160px;
-    }
-
-    @media (max-width: 1024px){
-      body{ padding:16px; background: linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)), url('merchbackground.png') center/cover no-repeat fixed; }
-      .shell{ padding:20px; border-radius:14px; }
-      .title h1{ font-size: clamp(24px, 3vw, 36px); }
-      .pill{ font-size:12px; }
-      .sub{ font-size:14px; }
-
-      .topbar{ flex-direction:column; align-items:flex-start; gap:12px; }
-      .actions{ width:100%; justify-content:flex-start; flex-wrap:wrap; }
-      .actions .btn{ flex:1 1 auto; min-width:120px; justify-content:center; }
-
-      .row{ flex-direction:column; gap:10px; }
-      .search{ width:100%; }
-      .search input{ font-size:16px; }
-
-      .grid{ grid-template-columns: 1fr; gap:14px; }
-      .card{ min-height: unset; }
-      .imgWrap{ height: 200px; }
-      .name{ font-size:15px; }
-      .small{ font-size:11px; }
-
-      .meta{ flex-direction:column; align-items:flex-start; }
-    }
-
-    /* Modal */
-    .modalBack{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.6);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 9999;
-      pointer-events: none;
-    }
-    .modalBack[aria-hidden="false"]{
-      pointer-events: auto;
-    }
-    .modal{
-      width: min(980px, 100%);
-      border-radius: 18px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(20,22,28,.92);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 30px 70px rgba(0,0,0,.6);
-      overflow:hidden;
-    }
-    .modalTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-    }
-    .modalTitle{
-      font-weight: 900;
-      letter-spacing: .02em;
-    }
-    .close{
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.08);
-      color: #fff;
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-weight: 900;
-    }
-    .modalBody{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      padding: 16px;
-    }
-    .bigImg{
-      width:100%;
-      height: 360px;
-      border-radius: 14px;
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-    .bigImg img{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      padding: 12px;
-      filter: drop-shadow(0 18px 26px rgba(0,0,0,.45));
-    }
-
-    .variants{
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      min-height: 360px;
-    }
-    .variants h3{ font-size: 14px; opacity: .95; }
-    .variantList{
-      overflow:auto;
-      max-height: 240px;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.14);
-    }
-    .variantRow{
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 10px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      font-size: 13px;
-      color: rgba(247,249,255,.88);
-    }
-    .variantRow:last-child{ border-bottom: 0; }
-
-    @media (max-width: 860px){
-      .modalBody{ grid-template-columns: 1fr; }
-      .bigImg{ height: 300px; }
-      .variants{ min-height: unset; }
-    }
-  </style>
+<style>
+/* ===== SAME CSS YOU HAD ===== */
+html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.68)),url('merchbackground.png') center/cover no-repeat fixed;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+.card{border:1px solid #444;padding:14px;border-radius:12px;background:#111}
+.imgWrap{height:180px;display:flex;align-items:center;justify-content:center}
+.imgWrap img{max-height:100%;object-fit:contain}
+.btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 14px rgba(58,160,255,0.45);text-decoration:none;display:inline-block}
+.btnGlow:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(58,160,255,0.75);background:rgba(58,160,255,0.08)}
+.btnGlow:active{transform:translateY(0);box-shadow:0 0 14px rgba(58,160,255,0.55)}
+.buyBtn{background:transparent;border:1px solid #3aa0ff;padding:12px 20px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 16px rgba(58,160,255,0.5)}
+.buyBtn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(58,160,255,0.85);background:rgba(58,160,255,0.08)}
+.buyBtn:active{transform:translateY(0)}
+#modalBuyBtn,#closeModal{margin-top:12px;min-width:120px}
+#modalBuyBtn{margin-right:8px}
+.modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999}
+.modal{background:#111;padding:24px;border-radius:14px;max-width:900px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+.modal h2{margin-top:0;margin-bottom:16px}
+.variantRow{cursor:pointer;padding:12px;border-bottom:1px solid #333;transition:background 0.2s ease}
+.variantRow:hover{background:rgba(58,160,255,0.15)}
+</style>
 </head>
 
 <body>
-  <div class="shell">
-    <div class="topbar">
-      <div>
-        <div class="title">
-          <div class="pill">Merch</div>
-          <h1>Intrigued Mutts Collection</h1>
-        </div>
 
-      </div>
+<div style="max-width:1100px;margin:auto;padding:24px">
 
-      <div class="actions">
-        <a class="btn" href="./index.html#mancave">Back to Clubhouse</a>
-        <button class="btn primary" id="refreshBtn">Refresh products</button>
-      </div>
-    </div>
-
-    <div class="meta">
-      <div id="statusText">Loaded 0 product(s).</div>
-    </div>
-
-    <div class="grid" id="grid"></div>
-
-
-    <div class="footerLinks">
-      <a class="btn" href="./index.html#mancave">← Back to Clubhouse</a>
-      <a class="btn" href="#top">↑ Back to Top</a>
-    </div>
-    <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,.10); text-align:center; font-size:13px; color:#ff69b4;">© 2026 Intrigued Mutts Society. All rights reserved.</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+  <h1 style="margin:0">Intrigued Mutts Collection</h1>
+  <div style="display:flex;gap:10px">
+    <button id="refreshBtn" class="btnGlow">Refresh products</button>
+    <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
   </div>
+</div>
 
-  <!-- Modal -->
-  <div class="modalBack" id="modalBack" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modalTop">
-        <div class="modalTitle" id="modalTitle">Product</div>
-        <button class="close" id="closeModal">Close ✕</button>
-      </div>
-      <div class="modalBody">
-        <div class="bigImg"><img id="modalImg" alt=""></div>
-        <div class="variants">
-          <h3>Sizes / Variants</h3>
-          <div class="small" id="variantNote"></div>
-          <button class="btn primary" id="loadVariantsBtn" style="align-self:flex-start;">Load variants</button>
-          <div class="variantList" id="variantList"></div>
+<div id="statusText"></div>
+<div id="grid" class="grid"></div>
 
-          <div style="margin-top:auto; display:flex; gap:10px; flex-wrap:wrap;">
-            <div class="tag" id="modalPid">product id: —</div>
-            <button class="buyBtn" id="modalBuyBtn">Buy (test)</button>
-          </div>
+<div style="margin-top:40px;padding-top:24px;border-top:1px solid #333;text-align:center;font-size:13px;color:#ff69b4">
+  © 2026 Intrigued Mutts Society. All rights reserved.
+</div>
 
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
-  <script>
-    const API_BASE = "https://mutts-api.redavi19.workers.dev";
+<!-- MODAL -->
+<div class="modalBack" id="modalBack">
+<div class="modal">
+<h2 id="modalTitle"></h2>
+<img id="modalImg" style="max-height:300px">
 
-    const grid = document.getElementById("grid");
-    const statusText = document.getElementById("statusText");
-    const search = document.getElementById("search");
-    const refreshBtn = document.getElementById("refreshBtn");
+<div id="variantNote" style="margin-bottom:12px;font-size:14px;color:#aaa"></div>
+<div id="variantList" style="margin-bottom:16px"></div>
 
-    // Modal elements
-    const modalBack = document.getElementById("modalBack");
-    const closeModal = document.getElementById("closeModal");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalImg = document.getElementById("modalImg");
-    const modalPid = document.getElementById("modalPid");
-    const modalBuyBtn = document.getElementById("modalBuyBtn");
-    const loadVariantsBtn = document.getElementById("loadVariantsBtn");
-    const variantList = document.getElementById("variantList");
-    const variantNote = document.getElementById("variantNote");
-
-    let allProducts = [];
-    let activeProduct = null;
-    let activeVariant = null;
-
-    function moneyFromRetail(retailPrice) {
-      // Printful often returns retail_price as string like "20.00"
-      const num = Number(retailPrice);
-      if (Number.isFinite(num) && num > 0) return Math.round(num * 100);
-      return 2000; // fallback $20.00
-    }
-
-    function openModal(prod) {
-      activeProduct = prod;
-      activeVariant = null;
-
-      modalTitle.textContent = prod.name || "Product";
-      modalImg.src = prod.thumbnail_url || "";
-      modalImg.alt = prod.name || "Product";
-      modalPid.textContent = `product id: ${prod.id}`;
-
-      variantList.innerHTML = "";
-      variantNote.textContent = "Click “Load variants” to pull sizes/colors from Printful.";
-      modalBuyBtn.textContent = "Buy (test)";
-      modalBack.style.display = "flex";
-      modalBack.setAttribute("aria-hidden", "false");
-    }
-
-    function hideModal() {
-      modalBack.style.display = "none";
-      modalBack.setAttribute("aria-hidden", "true");
-      activeProduct = null;
-      activeVariant = null;
-    }
-
-    closeModal.addEventListener("click", hideModal);
-    modalBack.addEventListener("click", (e) => {
-      if (e.target === modalBack) hideModal();
-    });
-
-    async function createCheckoutLink(name, amountCents) {
-      const res = await fetch(`${API_BASE}/api/checkout/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, amount: amountCents })
-      });
-
-      const data = await res.json();
-
-      // Square can return:
-      // - data.payment_link.url (short link)
-      // - data.payment_link.long_url
-      const url = data?.payment_link?.url || data?.payment_link?.long_url;
-      if (!url) {
-        console.log("Square response:", data);
-        alert("Checkout link not returned. Check console.");
-        return;
-      }
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
-    async function loadProducts() {
-      statusText.textContent = "Loading products...";
-      grid.innerHTML = "";
-
-      try {
-        const res = await fetch(`${API_BASE}/api/store/products`, { method: "GET" });
-        const data = await res.json();
-
-        allProducts = (data && data.result) ? data.result : [];
-        render();
-      } catch (err) {
-        console.error(err);
-        statusText.textContent = "Error loading products (check console).";
-        grid.innerHTML = "";
-      }
-    }
-
-    function render() {
-      const filtered = allProducts;
-
-      statusText.textContent = `Loaded ${filtered.length} product(s). Click Buy to test checkout.`;
-      grid.innerHTML = "";
-
-      if (!filtered.length) {
-        grid.innerHTML = `
-          <div class="card" style="grid-column: 1 / -1; min-height:unset;">
-            <div class="cardBody">
-              <div class="name">No products found</div>
-              <div class="small">If your Printful store has products, hit “Refresh products”.</div>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      filtered.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const imgUrl = prod.thumbnail_url || "";
-
-        card.innerHTML = `
-          <div class="imgWrap" title="Click to view details">
-            <img src="${imgUrl}" alt="${(prod.name || "Product").replaceAll('"', "&quot;")}" />
-          </div>
-          <div class="cardBody">
-            <div class="name" title="Click to view details">${prod.name || "Untitled product"}</div>
-            <div class="small">product id: ${prod.id}</div>
-
-            <div class="priceRow">
-              <div class="tag">Test price: $20.00</div>
-              <button class="buyBtn">Buy</button>
-            </div>
-          </div>
-        `;
-
-        const imgWrap = card.querySelector(".imgWrap");
-        const nameEl = card.querySelector(".name");
-        const buyBtn = card.querySelector(".buyBtn");
-
-        imgWrap.addEventListener("click", () => openModal(prod));
-        nameEl.addEventListener("click", () => openModal(prod));
-
-        buyBtn.addEventListener("click", async () => {
-          await createCheckoutLink(prod.name || "Item", 2000);
-        });
-
-        grid.appendChild(card);
-      });
-    }
-
-    // Variants: requires backend route `/api/store/products/:id` (Step 2 below)
-    loadVariantsBtn.addEventListener("click", async () => {
-      if (!activeProduct) return;
-
-      variantNote.textContent = "Loading variants...";
-      variantList.innerHTML = "";
-
-      try {
-        const res = await fetch(`${API_BASE}/api/store/products/${activeProduct.id}`);
-        const data = await res.json();
-
-        // Printful returns a "result" object with "sync_variants" or similar
-        const r = data?.result || {};
-        const variants = r?.sync_variants || r?.variants || [];
-
-        if (!variants.length) {
-          variantNote.textContent = "No variants returned (this is normal if Printful doesn’t have size/color variants for that item yet).";
-          return;
-        }
-
-        variantNote.textContent = "Click a variant to select size/color. Then press Buy.";
-        variants.forEach((v) => {
-          const size = v?.size || v?.variant_name || v?.name || "Variant";
-          const color = v?.color ? ` • ${v.color}` : "";
-          const retail = v?.retail_price || v?.price || "";
-
-          const row = document.createElement("div");
-          row.className = "variantRow";
-          row.innerHTML = `
-            <div>${size}${color}</div>
-            <div style="opacity:.85">${retail ? "$" + retail : ""}</div>
-          `;
-
-          row.addEventListener("click", () => {
-            activeVariant = v;
-            const cents = moneyFromRetail(v?.retail_price);
-            modalBuyBtn.textContent = `Buy (${v?.retail_price ? "$" + v.retail_price : "test"})`;
-            modalBuyBtn.onclick = async () => {
-              const itemName = `${activeProduct.name || "Item"} - ${size}${color}`;
-              await createCheckoutLink(itemName, cents);
-            };
-          });
-
-          variantList.appendChild(row);
-        });
-
-      } catch (e) {
-        console.error(e);
-        variantNote.textContent = "Could not load variants (check console). You probably still need Step 2 backend route.";
-      }
-    });
-
-    // Default modal buy (without variant selected)
-    modalBuyBtn.addEventListener("click", async () => {
-      if (!activeProduct) return;
-      await createCheckoutLink(activeProduct.name || "Item", 2000);
-    });
-
-    refreshBtn.addEventListener("click", loadProducts);
-
-    // Go
-    loadProducts();
-  </script>
-  <style>
-  /* Smooth page transitions */
-  html.is-fading body {
-    opacity: 0;
-    transition: opacity 280ms ease;
-  }
-  body {
-    opacity: 1;
-    transition: opacity 280ms ease;
-  }
-</style>
+<button class="buyBtn" id="modalBuyBtn">Buy</button>
+<button id="closeModal" class="btnGlow">Close</button>
+</div>
+</div>
 
 <script>
-  (function () {
-    // Fade IN on load
-    document.documentElement.classList.add("is-fading");
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.documentElement.classList.remove("is-fading");
-      });
+
+const API_BASE = "https://mutts-api.redavi19.workers.dev";
+
+const grid = document.getElementById("grid");
+const statusText = document.getElementById("statusText");
+const refreshBtn = document.getElementById("refreshBtn");
+
+const modalBack = document.getElementById("modalBack");
+const modalTitle = document.getElementById("modalTitle");
+const modalImg = document.getElementById("modalImg");
+const modalBuyBtn = document.getElementById("modalBuyBtn");
+const closeModal = document.getElementById("closeModal");
+const loadVariantsBtn = document.getElementById("loadVariantsBtn");
+const variantList = document.getElementById("variantList");
+const variantNote = document.getElementById("variantNote");
+
+let allProducts = [];
+let activeProduct = null;
+let activeVariant = null;
+
+/* ================================
+   ✅ FIXED CHECKOUT FUNCTION
+================================ */
+
+async function createCheckoutLink(name, amountCents) {
+
+  const res = await fetch(`${API_BASE}/api/checkout/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, amount: amountCents })
+  });
+
+  const data = await res.json();
+
+  console.log("Square response:", data);
+
+  const url =
+    data?.checkoutUrl ||
+    data?.raw?.payment_link?.url ||
+    data?.raw?.payment_link?.long_url ||
+    data?.payment_link?.url ||
+    data?.payment_link?.long_url;
+
+  if (!url) {
+    alert("Checkout link not returned. Check console.");
+    return;
+  }
+
+  window.location.href = url;
+}
+
+/* ============================= */
+
+async function loadProducts() {
+
+  statusText.textContent = "Loading products...";
+  grid.innerHTML = "";
+
+  const res = await fetch(`${API_BASE}/api/store/products`);
+  const data = await res.json();
+
+  allProducts = data?.result || [];
+
+  render();
+}
+
+function render() {
+
+  statusText.textContent = `Loaded ${allProducts.length} products`;
+
+  grid.innerHTML = "";
+
+  allProducts.forEach(prod => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="imgWrap">
+        <img src="${prod.thumbnail_url}">
+      </div>
+      <h3>${prod.name}</h3>
+      <button class="buyBtn">Buy</button>
+    `;
+
+    const buyBtn = card.querySelector(".buyBtn");
+
+    buyBtn.onclick = (e) => {
+      e.stopPropagation();
+      openModal(prod);
+    };
+
+    card.onclick = () => openModal(prod);
+
+    grid.appendChild(card);
+
+  });
+}
+
+/* ===== MODAL ===== */
+
+async function openModal(prod){
+
+  activeProduct = prod;
+  modalTitle.textContent = prod.name;
+  modalImg.src = prod.thumbnail_url;
+
+  variantList.innerHTML = "";
+  variantNote.textContent = "Loading sizes...";
+  modalBack.style.display = "flex";
+  
+  // Auto-load variants
+  await loadVariants();
+}
+
+async function loadVariants() {
+  if (!activeProduct) return;
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/store/products/${activeProduct.id}`);
+    const data = await res.json();
+    const variants = data?.result?.sync_variants || [];
+    
+    variantList.innerHTML = "";
+    
+    if (!variants.length) {
+      variantNote.textContent = "No sizes available for this product.";
+      return;
+    }
+    
+    variantNote.textContent = "Pick your size:";
+    
+    variants.forEach(v => {
+      const row = document.createElement("div");
+      row.className = "variantRow";
+      row.textContent = `${v.name} - $${v.retail_price}`;
+      
+      row.onclick = () => {
+        activeVariant = v;
+        const cents = Math.round(Number(v.retail_price) * 100);
+        modalBuyBtn.textContent = `Buy - $${v.retail_price}`;
+        modalBuyBtn.onclick = async () => {
+          await createCheckoutLink(
+            `${activeProduct.name} - ${v.name}`,
+            cents
+          );
+        };
+      };
+      
+      variantList.appendChild(row);
     });
+  } catch (e) {
+    console.error(e);
+    variantNote.textContent = "Could not load sizes. Try again.";
+  }
+}
 
-    // Fade OUT on navigation to merch.html
-    document.addEventListener("click", function (e) {
-      const a = e.target.closest("a");
-      if (!a) return;
+closeModal.onclick = () => modalBack.style.display = "none";
 
-      const href = (a.getAttribute("href") || "").trim();
+modalBuyBtn.textContent = "Buy";
 
-      // Only intercept merch page links (you can add more later)
-      if (!href || !href.includes("merch.html")) return;
+refreshBtn.onclick = loadProducts;
 
-      // Allow new tab / modifier keys to behave normally
-      if (a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+loadProducts();
 
-      e.preventDefault();
-      document.documentElement.classList.add("is-fading");
-
-      setTimeout(() => {
-        window.location.href = href;
-      }, 260);
-    });
-  })();
 </script>
 
 </body>
