@@ -304,10 +304,10 @@
     body.is-mobile .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
     body.is-mobile .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
 
-    /* Fallback: media query also enables mobile bar if JS disabled */
-    @media (max-width: 1024px){
+    /* Fallback: media query also enables mobile bar if JS disabled (more aggressive for testing) */
+    @media (max-width: 1200px){
       .hotspot{ display:none; }
-      .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
+      .hotspotBar{ display:flex !important; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
       .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
     }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
@@ -1040,7 +1040,7 @@
 
     function applyHotspotBarMode(){
       try{
-        const isMobile = window.matchMedia("(max-width: 1024px)").matches;
+        const isMobile = window.matchMedia("(max-width: 1200px)").matches;
         document.body.classList.toggle("is-mobile", isMobile);
       }catch(e){ /* ignore */ }
     }
