@@ -191,7 +191,10 @@
       .landing img{ object-fit: fill; object-position: center; }
     }
     @media (orientation: landscape){
-      /* Ensure hotspot bar is always visible in landscape */
+      /* Hide desktop hotspots and ensure mobile bar is visible in landscape */
+      .hotspot:not(.hotspotBar .hotspot){
+        display: none !important;
+      }
       .hotspotBar{
         display: flex !important;
       }
