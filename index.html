@@ -191,8 +191,15 @@
       .landing img{ object-fit: fill; object-position: center; }
     }
     @media (orientation: landscape){
-      .landing img{ object-fit: fill; object-position: center; }
+      /* Ensure hotspot bar is always visible in landscape */
+      .hotspotBar{
+        display: flex !important;
+      }
+      .hotspotBar .hotspot{
+        display: flex !important;
+      }
     }
+
 
     video{
       position:absolute; inset:0;
@@ -471,6 +478,17 @@
       .spinner{
         width: 36px;
         height: 36px;
+      }
+
+      /* Ensure hotspot bar stays visible in landscape */
+      .hotspotBar{
+        display: flex !important;
+      }
+      .hotspotBar .hotspot{
+        display: flex;
+        width: 70px;
+        height: 70px;
+        font-size: 12px;
       }
     }
     
