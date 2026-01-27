@@ -190,17 +190,8 @@
     @media (orientation: portrait){
       .landing img{ object-fit: fill; object-position: center; }
     }
-    @media (orientation: landscape){
-      /* Hide desktop hotspots and ensure mobile bar is visible in landscape */
-      .hotspot:not(.hotspotBar .hotspot){
-        display: none !important;
-      }
-      .hotspotBar{
-        display: flex !important;
-      }
-      .hotspotBar .hotspot{
-        display: flex !important;
-      }
+    @media (orientation: landscape) and (max-width: 1200px){
+      /* Mobile landscape: media query already handles hiding desktop hotspots and showing bar via max-width rule */
     }
 
 
@@ -284,6 +275,7 @@
     .panel p{ margin:0 0 12px; color: rgba(255,255,255,.85); line-height:1.5; font-size:14px; }
     .panel .panel-actions{ display:flex; justify-content:flex-end; gap:10px; }
 
+    /* Desktop: show 3 hotspots at bottom, hide bar by default */
     .hotspot{
       position: absolute;
       width: 90px;
@@ -307,18 +299,44 @@
       box-shadow: 0 0 20px rgba(0,255,0,.3);
     }
 
-    /* Bottom hotspot bar hidden by default (desktop) */
-    .hotspotBar{ display:none; }
-    /* JS toggles body.is-mobile; ensure only bar hotspots show on mobile */
-    body.is-mobile .hotspot{ display:none !important; }
-    body.is-mobile .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
-    body.is-mobile .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
+    /* Desktop hotspots always visible by default */
+    #hotspotOpen,
+    #hotspotTable,
+    #hotspotDart{
+      display: flex;
+    }
 
-    /* Fallback: media query also enables mobile bar if JS disabled (more aggressive for testing) */
+    /* Mobile bar hidden by default */
+    .hotspotBar{ 
+      display: none; 
+    }
+
+    /* MOBILE: < 1200px - hide desktop hotspots, show bottom bar */
     @media (max-width: 1200px){
-      .hotspot{ display:none; }
-      .hotspotBar{ display:flex !important; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
-      .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
+      #hotspotOpen,
+      #hotspotTable,
+      #hotspotDart{
+        display: none !important;
+      }
+      .hotspotBar{
+        display: flex !important;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: max(12px, env(safe-area-inset-bottom, 0px));
+        z-index: 22;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        pointer-events: auto;
+      }
+      .hotspotBar .hotspot{
+        display: flex;
+        position: static;
+        pointer-events: auto;
+        transform: none;
+      }
     }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
     #hotspotDart{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
@@ -1038,7 +1056,6 @@
       setHint("Tap Enter to start.");
       applySound();
       applyFitMode();
-      applyHotspotBarMode();
       if (titleGraphic) {
         titleGraphic.classList.remove("drop-in");
         void titleGraphic.offsetWidth; // force reflow to restart animation
@@ -1055,18 +1072,10 @@
     });
 
     window.addEventListener("hashchange", () => handleHashNavigation(false));
-    window.addEventListener("resize", applyHotspotBarMode);
 
     enterBtn.addEventListener("click", async () => {
       await startDoorVideo();
     });
-
-    function applyHotspotBarMode(){
-      try{
-        const isMobile = window.matchMedia("(max-width: 1200px)").matches;
-        document.body.classList.toggle("is-mobile", isMobile);
-      }catch(e){ /* ignore */ }
-    }
   </script>
   <style>
   /* Smooth page transitions */
