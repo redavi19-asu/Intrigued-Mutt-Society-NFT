@@ -263,10 +263,6 @@
     .btn-group .btn{
       min-width:100px;
     }
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-    }
     .btn:hover,
     .btn:active{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
 
@@ -305,13 +301,13 @@
     .hotspotBar{ display:none; }
     /* JS toggles body.is-mobile; ensure only bar hotspots show on mobile */
     body.is-mobile .hotspot{ display:none !important; }
-    body.is-mobile .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: none; }
+    body.is-mobile .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
     body.is-mobile .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
 
     /* Fallback: media query also enables mobile bar if JS disabled */
     @media (max-width: 1024px){
       .hotspot{ display:none; }
-      .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: none; }
+      .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: auto; }
       .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
     }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
@@ -328,6 +324,12 @@
     }
     #hotspotTable::after{ background: rgba(255,140,0,.55); }
     #hotspotDart::after{ background: rgba(255,80,140,.55); }
+    /* Distinct styles for mobile bar hotspots */
+    #hotspotOpenBar{ box-shadow: 0 0 20px rgba(0,255,0,.3); border-color: rgba(180,255,180,.9); background: rgba(180,255,180,.25); }
+    #hotspotTableBar{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
+    #hotspotDartBar{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
+    #hotspotTableBar::after{ background: rgba(255,140,0,.55); }
+    #hotspotDartBar::after{ background: rgba(255,80,140,.55); }
     .hotspot:hover,
     .hotspot:active{
       transform: scale(1.5);
@@ -906,13 +908,13 @@
     const hotspotDartBar = document.getElementById("hotspotDartBar");
 
     hotspotOpenBar?.addEventListener("click", () => {
-      startAbout();
+      handleHotspotAction("about");
     });
     hotspotTableBar?.addEventListener("click", () => {
-      startMerch();
+      handleHotspotAction("merch");
     });
     hotspotDartBar?.addEventListener("click", () => {
-      startNfts();
+      handleHotspotAction("nfts");
     });
 
     function closeAbout(){
