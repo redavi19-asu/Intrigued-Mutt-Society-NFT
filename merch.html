@@ -453,13 +453,6 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="search">
-        <span style="opacity:.7">🔎</span>
-        <input id="search" placeholder="Search products (ex: hoodie, shirt, mug)..." />
-      </div>
-    </div>
-
     <div class="meta">
       <div id="statusText">Loaded 0 product(s).</div>
       <div>API: <span id="apiText" style="opacity:.85"></span></div>
@@ -476,7 +469,7 @@
       <a class="btn" href="./index.html#mancave">← Back to Clubhouse</a>
       <a class="btn" href="#top">↑ Back to Top</a>
     </div>
-    <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,.10); text-align:center; font-size:12px; color:rgba(247,249,255,.50);">© 2026 Intrigued Mutts Society. All rights reserved.</div>
+    <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,.10); text-align:center; font-size:13px; color:#ff69b4;">© 2026 Intrigued Mutts Society. All rights reserved.</div>
   </div>
 
   <!-- Modal -->
@@ -605,12 +598,7 @@
     }
 
     function render() {
-      const q = (search.value || "").trim().toLowerCase();
-
-      const filtered = allProducts.filter(p => {
-        const name = (p.name || "").toLowerCase();
-        return !q || name.includes(q);
-      });
+      const filtered = allProducts;
 
       statusText.textContent = `Loaded ${filtered.length} product(s). Click Buy to test checkout.`;
       grid.innerHTML = "";
@@ -722,7 +710,6 @@
     });
 
     refreshBtn.addEventListener("click", loadProducts);
-    search.addEventListener("input", render);
 
     // Go
     loadProducts();
