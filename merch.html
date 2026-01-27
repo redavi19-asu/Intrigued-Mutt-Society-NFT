@@ -442,9 +442,7 @@
           <div class="pill">Merch</div>
           <h1>Intrigued Mutts Collection</h1>
         </div>
-        <div class="sub">
-          Live storefront demo: pulls products from Printful and creates Square checkout links when you click <b>Buy</b>.
-        </div>
+
       </div>
 
       <div class="actions">
@@ -455,16 +453,11 @@
 
     <div class="meta">
       <div id="statusText">Loaded 0 product(s).</div>
-      <div>API: <span id="apiText" style="opacity:.85"></span></div>
     </div>
 
     <div class="grid" id="grid"></div>
 
-    <div class="hint">
-      Tip: If you see no items, it means Printful returned an empty list for your store (or your token doesn’t have access to store products).
-      <br><br>
-      Next upgrades: real pricing, variants (sizes/colors), and a “Checkout” modal that feels like your brand.
-    </div>
+
     <div class="footerLinks">
       <a class="btn" href="./index.html#mancave">← Back to Clubhouse</a>
       <a class="btn" href="#top">↑ Back to Top</a>
@@ -483,7 +476,7 @@
         <div class="bigImg"><img id="modalImg" alt=""></div>
         <div class="variants">
           <h3>Sizes / Variants</h3>
-          <div class="small" id="variantNote">Click “Load variants” to pull sizes/colors from Printful.</div>
+          <div class="small" id="variantNote"></div>
           <button class="btn primary" id="loadVariantsBtn" style="align-self:flex-start;">Load variants</button>
           <div class="variantList" id="variantList"></div>
 
@@ -491,18 +484,14 @@
             <div class="tag" id="modalPid">product id: —</div>
             <button class="buyBtn" id="modalBuyBtn">Buy (test)</button>
           </div>
-          <div class="small" style="margin-top:6px; opacity:.7;">
-            Sandbox note: Square will show a sandbox checkout/testing page until you switch to production keys/endpoints.
-          </div>
+
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ✅ Set this once. (Your screenshot shows this exact API host)
     const API_BASE = "https://mutts-api.redavi19.workers.dev";
-    document.getElementById("apiText").textContent = API_BASE;
 
     const grid = document.getElementById("grid");
     const statusText = document.getElementById("statusText");
