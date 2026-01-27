@@ -83,7 +83,7 @@ const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
 // IMPORTANT: Put YOUR real API key here (the Worker secret you created).
 // For sandbox/testing it’s okay to place it here.
 // Later we can hide it properly.
-const API_KEY = "PUT_YOUR_API_KEY_HERE";
+const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
 
 const grid = document.getElementById("grid");
 const statusText = document.getElementById("statusText");
@@ -129,7 +129,7 @@ async function startPayPalCheckout(displayName, retailPriceString) {
 
     if (!data.ok || !data.approveUrl) {
       console.error("❌ PayPal order failed:", data);
-      alert("PayPal order failed. Check console.");
+      alert("PayPal order failed:\n\n" + JSON.stringify(data, null, 2));
       return;
     }
 
