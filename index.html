@@ -336,6 +336,23 @@
         position: static;
         pointer-events: auto;
         transform: none;
+        /* Reduce glow on mobile */
+        box-shadow: 0 0 12px rgba(0,255,0,.2) !important;
+      }
+      .hotspotBar .hotspot::after{
+        /* Disable pulse animation on mobile */
+        animation: none !important;
+        opacity: 0 !important;
+      }
+      /* Simpler mobile styling */
+      #hotspotOpenBar{
+        box-shadow: 0 0 12px rgba(0,255,0,.2) !important;
+      }
+      #hotspotTableBar{
+        box-shadow: 0 0 12px rgba(255,140,0,.25) !important;
+      }
+      #hotspotDartBar{
+        box-shadow: 0 0 12px rgba(255,80,140,.25) !important;
       }
     }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
