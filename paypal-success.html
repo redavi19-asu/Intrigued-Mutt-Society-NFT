@@ -2,18 +2,21 @@
 <html>
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Completing payment…</title>
 </head>
-<body>
+<body style="font-family:system-ui;padding:20px;">
   <h1 id="title">Finalizing your payment…</h1>
   <pre id="out">Working…</pre>
+  <p><a href="./merch.html">Back to merch</a></p>
 
   <script>
     const WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
     const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
 
+    // PayPal returns ?token=ORDER_ID
     const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("token"); // PayPal returns ?token=ORDER_ID
+    const orderId = params.get("token");
 
     async function run() {
       if (!orderId) {
