@@ -13,7 +13,7 @@
 /* ===== SAME CSS YOU HAD ===== */
 html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.68)),url('merchbackground.png') center/cover no-repeat fixed;color:#fff}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
-.card{border:1px solid #444;padding:14px;border-radius:12px;background:#111}
+.card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.5);backdrop-filter:blur(10px)}
 .imgWrap{height:180px;display:flex;align-items:center;justify-content:center}
 .imgWrap img{max-height:100%;object-fit:contain}
 .btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 14px rgba(58,160,255,0.45);text-decoration:none;display:inline-block}
@@ -47,8 +47,11 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 <div id="statusText"></div>
 <div id="grid" class="grid"></div>
 
-<div style="margin-top:40px;padding-top:24px;border-top:1px solid #333;text-align:center;font-size:13px;color:#ff69b4">
-  © 2026 Intrigued Mutts Society. All rights reserved.
+<div style="margin-top:40px;padding-top:24px;border-top:1px solid #333;text-align:center">
+  <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
+  <div style="margin-top:16px;font-size:13px;color:#ff69b4">
+    © 2026 Intrigued Mutts Society. All rights reserved.
+  </div>
 </div>
 
 </div>
