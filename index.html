@@ -300,6 +300,28 @@
       -webkit-tap-highlight-color: transparent;
       box-shadow: 0 0 20px rgba(0,255,0,.3);
     }
+
+    /* Mobile/iPad: show a bottom bar with evenly spaced hotspots */
+    @media (max-width: 1024px){
+      .hotspot{ display:none; }
+      .hotspotBar{
+        position: fixed;
+        left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom, 0px));
+        z-index: 22;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        pointer-events: none;
+      }
+      .hotspotBar .hotspot{
+        display:flex;
+        position: static;
+        pointer-events:auto;
+        transform: none;
+      }
+    }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
     #hotspotDart{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
     .hotspot::after{
@@ -524,6 +546,12 @@
       <button class="hotspot" id="hotspotOpen" style="left: var(--hotspot-open-left); top: var(--hotspot-open-top);">About</button>
       <button class="hotspot" id="hotspotTable" style="left: var(--hotspot-table-left); top: var(--hotspot-table-top);">Merch</button>
       <button class="hotspot" id="hotspotDart" style="left: var(--hotspot-dart-left); top: var(--hotspot-dart-top);">NFTs</button>
+
+      <div class="hotspotBar">
+        <button class="hotspot" id="hotspotOpenBar">About</button>
+        <button class="hotspot" id="hotspotTableBar">Merch</button>
+        <button class="hotspot" id="hotspotDartBar">NFTs</button>
+      </div>
 
     </div>
 
@@ -839,6 +867,8 @@
     });
 
     merchVideo.addEventListener("ended", () => {
+      // Tag current history entry with #mancave so Back lands in clubhouse
+      try { location.hash = "#mancave"; } catch {}
       // Use replace so browser Back returns to clubhouse, not merch overlay
       window.location.replace("./merch.html");
     });
@@ -876,6 +906,21 @@
       nftsVideo.pause();
       nftsVideo.currentTime = 0;
       showLayer(layerMancave);
+    });
+
+    // Mobile bottom bar hotspots mirror actions
+    const hotspotOpenBar = document.getElementById("hotspotOpenBar");
+    const hotspotTableBar = document.getElementById("hotspotTableBar");
+    const hotspotDartBar = document.getElementById("hotspotDartBar");
+
+    hotspotOpenBar?.addEventListener("click", () => {
+      startAbout();
+    });
+    hotspotTableBar?.addEventListener("click", () => {
+      startMerch();
+    });
+    hotspotDartBar?.addEventListener("click", () => {
+      startNfts();
     });
 
     function closeAbout(){
