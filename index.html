@@ -303,27 +303,16 @@
 
     /* Bottom hotspot bar hidden by default (desktop) */
     .hotspotBar{ display:none; }
+    /* JS toggles body.is-mobile; ensure only bar hotspots show on mobile */
+    body.is-mobile .hotspot{ display:none !important; }
+    body.is-mobile .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: none; }
+    body.is-mobile .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
 
-    /* Mobile/iPad: show a bottom bar with evenly spaced hotspots */
+    /* Fallback: media query also enables mobile bar if JS disabled */
     @media (max-width: 1024px){
       .hotspot{ display:none; }
-      .hotspotBar{
-        position: fixed;
-        left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom, 0px));
-        z-index: 22;
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 12px;
-        pointer-events: none;
-      }
-      .hotspotBar .hotspot{
-        display:flex;
-        position: static;
-        pointer-events:auto;
-        transform: none;
-      }
+      .hotspotBar{ display:flex; position: fixed; left:0; right:0; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index:22; justify-content: space-evenly; align-items: center; gap:12px; padding:8px 12px; pointer-events: none; }
+      .hotspotBar .hotspot{ display:flex; position: static; pointer-events:auto; transform:none; }
     }
     #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
     #hotspotDart{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
@@ -1024,6 +1013,7 @@
       setHint("Tap Enter to start.");
       applySound();
       applyFitMode();
+      applyHotspotBarMode();
       if (titleGraphic) {
         titleGraphic.classList.remove("drop-in");
         void titleGraphic.offsetWidth; // force reflow to restart animation
@@ -1040,10 +1030,18 @@
     });
 
     window.addEventListener("hashchange", () => handleHashNavigation(false));
+    window.addEventListener("resize", applyHotspotBarMode);
 
     enterBtn.addEventListener("click", async () => {
       await startDoorVideo();
     });
+
+    function applyHotspotBarMode(){
+      try{
+        const isMobile = window.matchMedia("(max-width: 1024px)").matches;
+        document.body.classList.toggle("is-mobile", isMobile);
+      }catch(e){ /* ignore */ }
+    }
   </script>
   <style>
   /* Smooth page transitions */
