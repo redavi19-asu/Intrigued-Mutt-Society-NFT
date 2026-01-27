@@ -104,11 +104,11 @@ let activeVariant = null;
 // ===============================
 // PAYPAL CHECKOUT (replaces Square)
 // ===============================
-async function startPayPalCheckout(displayName, retailPriceString, imageUrl) {
+async function startPayPalCheckout(displayName, retailPriceString, meta = {}) {
   try {
     const amount = Number(retailPriceString).toFixed(2);
 
-    console.log("💳 PayPal checkout:", displayName, amount, imageUrl);
+    console.log("💳 PayPal checkout:", displayName, amount, meta);
 
     const res = await fetch(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
@@ -117,10 +117,16 @@ async function startPayPalCheckout(displayName, retailPriceString, imageUrl) {
         "X-API-KEY": API_KEY,
       },
       body: JSON.stringify({
-        amount,
+        amount: amount,
         currency: "USD",
+
+        // OLD: kept for logs / fallback splitting
         name: displayName,
-        image: imageUrl,
+
+        // NEW: explicit fields for KV storage
+        productName: meta.productName || null,
+        variantName: meta.variantName || null,
+        imageUrl: meta.imageUrl || null,
       }),
     });
 
@@ -231,7 +237,11 @@ async function loadVariants() {
             await startPayPalCheckout(
               `${activeProduct.name} - ${activeVariant.name}`,
               activeVariant.retail_price,
-              activeProduct.thumbnail_url
+              {
+                productName: activeProduct.name,
+                variantName: activeVariant.name,
+                imageUrl: activeProduct.thumbnail_url
+              }
             );
           } finally {
             modalBuyBtn.disabled = false;
