@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Completing payment…</title>
+</head>
+<body>
+  <h1 id="title">Finalizing your payment…</h1>
+  <pre id="out">Working…</pre>
+
+  <script>
+    const WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
+    const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
+
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("token"); // PayPal returns ?token=ORDER_ID
+
+    async function run() {
+      if (!orderId) {
+        document.getElementById("title").textContent = "Missing order token";
+        document.getElementById("out").textContent = "No ?token= found in the URL.";
+        return;
+      }
+
+      const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": API_KEY
+        },
+        body: JSON.stringify({ orderId })
+      });
+
+      const data = await res.json();
+      document.getElementById("out").textContent = JSON.stringify(data, null, 2);
+
+      if (data.ok) {
+        document.getElementById("title").textContent = "Payment completed ✅";
+      } else {
+        document.getElementById("title").textContent = "Payment failed ❌";
+      }
+    }
+
+    run();
+  </script>
+</body>
+</html>

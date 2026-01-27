@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 
 <style>
-/* ===== SAME CSS YOU HAD ===== */
 html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.68)),url('merchbackground.png') center/cover no-repeat fixed;color:#fff}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
 .card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.5);backdrop-filter:blur(10px)}
@@ -71,8 +70,20 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 </div>
 
 <script>
+// ===============================
+// 1) Store API (for listing products/variants)
+// ===============================
+const STORE_API_BASE = "https://mutts-api.redavi19.workers.dev";
 
-const API_BASE = "https://mutts-api.redavi19.workers.dev";
+// ===============================
+// 2) PayPal Worker (for payment)
+// ===============================
+const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
+
+// IMPORTANT: Put YOUR real API key here (the Worker secret you created).
+// For sandbox/testing it’s okay to place it here.
+// Later we can hide it properly.
+const API_KEY = "PUT_YOUR_API_KEY_HERE";
 
 const grid = document.getElementById("grid");
 const statusText = document.getElementById("statusText");
@@ -83,7 +94,6 @@ const modalTitle = document.getElementById("modalTitle");
 const modalImg = document.getElementById("modalImg");
 const modalBuyBtn = document.getElementById("modalBuyBtn");
 const closeModal = document.getElementById("closeModal");
-const loadVariantsBtn = document.getElementById("loadVariantsBtn");
 const variantList = document.getElementById("variantList");
 const variantNote = document.getElementById("variantNote");
 
@@ -91,69 +101,65 @@ let allProducts = [];
 let activeProduct = null;
 let activeVariant = null;
 
-/* ================================
-   ✅ FIXED CHECKOUT FUNCTION
-================================ */
-
-async function createCheckoutLink(name, amountCents) {
+// ===============================
+// PAYPAL CHECKOUT (replaces Square)
+// ===============================
+async function startPayPalCheckout(displayName, retailPriceString) {
   try {
-    console.log("🛒 Buying:", name, amountCents);
+    // retailPriceString is like "29.99"
+    const amount = Number(retailPriceString).toFixed(2);
 
-    const res = await fetch(`${API_BASE}/api/checkout/create`, {
+    console.log("💳 PayPal checkout:", displayName, amount);
+
+    const res = await fetch(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": API_KEY,
+      },
       body: JSON.stringify({
-        name,
-        amount: amountCents,
-        quantity: 1,
+        amount: amount,
+        currency: "USD",
+        // name is not used by PayPal order API here, but we keep it for logs/future upgrades
+        name: displayName,
       }),
     });
 
     const data = await res.json();
-    console.log("💳 Checkout response:", data);
 
-    const url =
-      data?.checkoutUrl ||
-      data?.raw?.payment_link?.url ||
-      data?.raw?.payment_link?.long_url ||
-      data?.payment_link?.url ||
-      data?.payment_link?.long_url;
-
-    if (!url) {
-      alert("No checkout URL returned — check console");
+    if (!data.ok || !data.approveUrl) {
+      console.error("❌ PayPal order failed:", data);
+      alert("PayPal order failed. Check console.");
       return;
     }
 
-    window.location.href = url;
+    // Send buyer to PayPal approval page
+    window.location.href = data.approveUrl;
   } catch (err) {
-    console.error("❌ Buy failed:", err);
-    alert("Buy failed — see console.");
+    console.error("❌ PayPal checkout error:", err);
+    alert("PayPal checkout failed — see console.");
   }
 }
 
-/* ============================= */
-
+// ===============================
+// PRODUCTS
+// ===============================
 async function loadProducts() {
-
   statusText.textContent = "Loading products...";
   grid.innerHTML = "";
 
-  const res = await fetch(`${API_BASE}/api/store/products`);
+  const res = await fetch(`${STORE_API_BASE}/api/store/products`);
   const data = await res.json();
 
   allProducts = data?.result || [];
-
   render();
 }
 
 function render() {
-
   statusText.textContent = `Loaded ${allProducts.length} products`;
-
   grid.innerHTML = "";
 
   allProducts.forEach(prod => {
-
     const card = document.createElement("div");
     card.className = "card";
 
@@ -166,23 +172,20 @@ function render() {
     `;
 
     const buyBtn = card.querySelector(".buyBtn");
-
     buyBtn.onclick = (e) => {
       e.stopPropagation();
       openModal(prod);
     };
 
     card.onclick = () => openModal(prod);
-
     grid.appendChild(card);
-
   });
 }
 
-/* ===== MODAL ===== */
-
+// ===============================
+// MODAL + VARIANTS
+// ===============================
 async function openModal(prod){
-
   activeProduct = prod;
   modalTitle.textContent = prod.name;
   modalImg.src = prod.thumbnail_url;
@@ -190,52 +193,56 @@ async function openModal(prod){
   variantList.innerHTML = "";
   variantNote.textContent = "Loading sizes...";
   modalBack.style.display = "flex";
-  
-  // Auto-load variants
+
   await loadVariants();
 }
 
 async function loadVariants() {
   if (!activeProduct) return;
-  
+
   try {
-    const res = await fetch(`${API_BASE}/api/store/products/${activeProduct.id}`);
+    const res = await fetch(`${STORE_API_BASE}/api/store/products/${activeProduct.id}`);
     const data = await res.json();
     const variants = data?.result?.sync_variants || [];
-    
+
     variantList.innerHTML = "";
-    
+
     if (!variants.length) {
       variantNote.textContent = "No sizes available for this product.";
       return;
     }
-    
+
     variantNote.textContent = "Pick your size:";
-    
+
     variants.forEach(v => {
       const row = document.createElement("div");
       row.className = "variantRow";
       row.textContent = `${v.name} - $${v.retail_price}`;
-      
+
       row.onclick = () => {
         activeVariant = v;
-        const cents = Math.round(Number(v.retail_price) * 100);
+
         modalBuyBtn.textContent = `Buy - $${v.retail_price}`;
         modalBuyBtn.onclick = async () => {
+          if (!activeVariant) return;
+
           modalBuyBtn.disabled = true;
           try {
-            await createCheckoutLink(
-              `${activeProduct.name} - ${v.name}`,
-              cents
+            // This is the key replacement:
+            // Square -> PayPal
+            await startPayPalCheckout(
+              `${activeProduct.name} - ${activeVariant.name}`,
+              activeVariant.retail_price
             );
           } finally {
             modalBuyBtn.disabled = false;
           }
         };
       };
-      
+
       variantList.appendChild(row);
     });
+
   } catch (e) {
     console.error(e);
     variantNote.textContent = "Could not load sizes. Try again.";
@@ -243,13 +250,10 @@ async function loadVariants() {
 }
 
 closeModal.onclick = () => modalBack.style.display = "none";
-
-modalBuyBtn.textContent = "Buy";
-
 refreshBtn.onclick = loadProducts;
 
+modalBuyBtn.textContent = "Buy";
 loadProducts();
-
 </script>
 
 </body>
