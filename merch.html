@@ -93,6 +93,16 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 }
 .checkoutBtn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(58,160,255,.85);background:rgba(58,160,255,0.08)}
 .checkoutBtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ===== LIGHTBOX ===== */
+.lightboxBack{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;
+  justify-content:center;align-items:center;cursor:zoom-out;
+}
+.lightboxBack img{
+  max-width:95vw;max-height:95vh;object-fit:contain;
+  box-shadow:0 20px 80px rgba(0,0,0,0.9);
+}
 </style>
 </head>
 
@@ -124,7 +134,15 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 <div class="modalBack" id="modalBack">
 <div class="modal">
 <h2 id="modalTitle"></h2>
-<img id="modalImg" style="max-height:300px">
+<div style="display:flex;justify-content:center;align-items:center;margin:16px 0">
+  <img id="modalImg" style="max-height:300px;cursor:pointer;transition:transform 0.2s ease" 
+       title="Click to view full size in new window"
+       onmouseover="this.style.transform='scale(1.05)'"
+       onmouseout="this.style.transform='scale(1)'">
+</div>
+<div style="text-align:center;font-size:12px;color:#3aa0ff;margin-top:8px;margin-bottom:12px">
+  ✨ Click to enlarge
+</div>
 
 <div id="variantNote" style="margin-bottom:12px;font-size:14px;color:#aaa"></div>
 <div id="variantList" style="margin-bottom:16px"></div>
@@ -132,6 +150,11 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 <button class="buyBtn" id="modalBuyBtn">Buy</button>
 <button id="closeModal" class="btnGlow">Close</button>
 </div>
+</div>
+
+<!-- LIGHTBOX FOR ENLARGED IMAGE -->
+<div class="lightboxBack" id="lightboxBack">
+  <img id="lightboxImg" src="" alt="">
 </div>
 
 <!-- CART DRAWER -->
@@ -193,6 +216,10 @@ const closeCartBtn = document.getElementById("closeCartBtn");
 const cartItemsEl = document.getElementById("cartItems");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
 const checkoutBtn = document.getElementById("checkoutBtn");
+
+// Lightbox elements
+const lightboxBack = document.getElementById("lightboxBack");
+const lightboxImg = document.getElementById("lightboxImg");
 
 // We'll inject a Cart button into your header bar (no HTML changes needed)
 const headerRight = document.querySelector("div[style*='display:flex'][style*='gap:10px']");
@@ -459,6 +486,12 @@ async function openModal(prod){
   modalTitle.textContent = prod.name;
   modalImg.src = prod.thumbnail_url;
 
+  // Make image clickable to open lightbox
+  modalImg.onclick = () => {
+    lightboxImg.src = prod.thumbnail_url;
+    lightboxBack.style.display = "flex";
+  };
+
   variantList.innerHTML = "";
   variantNote.textContent = "Loading sizes...";
   modalBack.style.display = "flex";
@@ -542,12 +575,22 @@ async function loadVariants() {
 closeModal.onclick = () => modalBack.style.display = "none";
 refreshBtn.onclick = loadProducts;
 
+modalBack.onclick = (e) => {
+  // clicking outside modal closes it
+  if (e.target === modalBack) modalBack.style.display = "none";
+};
+
 cartBack.onclick = (e) => {
   // clicking outside drawer closes
   if (e.target === cartBack) closeCart();
 };
 closeCartBtn.onclick = closeCart;
 checkoutBtn.onclick = checkoutCartWithPayPal;
+
+// Lightbox: click anywhere to close
+lightboxBack.onclick = () => {
+  lightboxBack.style.display = "none";
+};
 
 // Boot
 ensureCartButton();
