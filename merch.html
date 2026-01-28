@@ -667,16 +667,32 @@ async function loadVariants() {
         modalBuyBtn.textContent = `Add to Cart - $${price}`;
 
         modalBuyBtn.onclick = () => {
+          // IMPORTANT:
+          // v.id is usually the SYNC variant id
+          // v.variant_id is the PRINTFUL catalog variant id (the one Printful /orders needs)
+          const printfulVariantId = v.variant_id || v.printful_variant_id || v.variantId;
+
+          if (!printfulVariantId) {
+            alert("This size is missing a Printful variant_id. Can't checkout.");
+            return;
+          }
+
           const item = {
+            // keep lineId unique for cart behavior (sync id is fine here)
             lineId: makeLineId(activeProduct.id, v.id),
+
             productId: activeProduct.id,
-            variantId: v.id,
+
+            // THIS is what your Worker passes to Printful /orders
+            variantId: Number(printfulVariantId),
+
             productName: activeProduct.name,
             variantName: v.name,
             imageUrl: activeProduct.thumbnail_url,
             unitPrice: Number(price),
             qty: 1,
           };
+
           addToCart(item);
         };
       };
