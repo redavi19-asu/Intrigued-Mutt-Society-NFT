@@ -671,15 +671,13 @@ async function loadVariants() {
 
         modalBuyBtn.onclick = () => {
           const item = {
-            lineId: makeLineId(activeProduct.id, v.id), // unique per product+size
+            lineId: makeLineId(activeProduct.id, v.id),
 
             productId: activeProduct.id,
 
-            // IMPORTANT: for Printful synced products, use sync variant id (this is v.id)
-            syncVariantId: String(v.id),
-
-            // optional (not needed for synced orders, but ok to keep for debugging)
-            catalogVariantId: v.variant_id ? Number(v.variant_id) : null,
+            // ✅ SAVE BOTH:
+            syncVariantId: Number(v.id),              // Printful sync variant id (what /orders should use)
+            catalogVariantId: Number(v.variant_id),   // Printful catalog variant id (backup / reference)
 
             productName: activeProduct.name,
             variantName: v.name,
