@@ -461,13 +461,15 @@ async function checkoutCartWithPayPal() {
         currency: "USD",
         items: cart.map(it => ({
           productId: it.productId,
-          syncVariantId: it.syncVariantId,
-          catalogVariantId: it.catalogVariantId,
           productName: it.productName,
           variantName: it.variantName,
           imageUrl: it.imageUrl,
           unitPrice: String(Number(it.unitPrice).toFixed(2)),
           qty: Number(it.qty),
+
+          // ✅ ADD THESE 2:
+          syncVariantId: it.syncVariantId,
+          catalogVariantId: it.catalogVariantId,
         })),
       }),
     }, 15000); // 15 second timeout
