@@ -461,7 +461,8 @@ async function checkoutCartWithPayPal() {
         currency: "USD",
         items: cart.map(it => ({
           productId: it.productId,
-          variantId: it.variantId,
+          syncVariantId: it.syncVariantId,
+          catalogVariantId: it.catalogVariantId,
           productName: it.productName,
           variantName: it.variantName,
           imageUrl: it.imageUrl,
@@ -667,24 +668,16 @@ async function loadVariants() {
         modalBuyBtn.textContent = `Add to Cart - $${price}`;
 
         modalBuyBtn.onclick = () => {
-          // IMPORTANT:
-          // v.id is usually the SYNC variant id
-          // v.variant_id is the PRINTFUL catalog variant id (the one Printful /orders needs)
-          const printfulVariantId = v.variant_id || v.printful_variant_id || v.variantId;
-
-          if (!printfulVariantId) {
-            alert("This size is missing a Printful variant_id. Can't checkout.");
-            return;
-          }
-
           const item = {
-            // keep lineId unique for cart behavior (sync id is fine here)
-            lineId: makeLineId(activeProduct.id, v.id),
+            lineId: makeLineId(activeProduct.id, v.id), // unique per product+size
 
             productId: activeProduct.id,
 
-            // THIS is what your Worker passes to Printful /orders
-            variantId: Number(printfulVariantId),
+            // IMPORTANT: for Printful synced products, use sync variant id (this is v.id)
+            syncVariantId: String(v.id),
+
+            // optional (not needed for synced orders, but ok to keep for debugging)
+            catalogVariantId: v.variant_id ? Number(v.variant_id) : null,
 
             productName: activeProduct.name,
             variantName: v.name,
