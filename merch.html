@@ -7,14 +7,15 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
 <style>
 html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.68)),url('merchbackground.png') center/cover no-repeat fixed;color:#fff}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
 .card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.5);backdrop-filter:blur(10px)}
-.imgWrap{height:180px;display:flex;align-items:center;justify-content:center}
-.imgWrap img{max-height:100%;object-fit:contain}
+.imgWrap{height:180px;display:flex;align-items:center;justify-content:center;background:#222}
+.imgWrap img{max-height:100%;object-fit:contain;opacity:0;transition:opacity 0.3s ease}
+.imgWrap img.loaded{opacity:1}
 .btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 14px rgba(58,160,255,0.45);text-decoration:none;display:inline-block}
 .btnGlow:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(58,160,255,0.75);background:rgba(58,160,255,0.08)}
 .btnGlow:active{transform:translateY(0);box-shadow:0 0 14px rgba(58,160,255,0.55)}
@@ -102,6 +103,20 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .lightboxBack img{
   max-width:95vw;max-height:95vh;object-fit:contain;
   box-shadow:0 20px 80px rgba(0,0,0,0.9);
+}
+
+/* Loading spinner */
+.spinner{
+  border:3px solid rgba(58,160,255,0.2);
+  border-top:3px solid #3aa0ff;
+  border-radius:50%;
+  width:40px;height:40px;
+  animation:spin 1s linear infinite;
+  margin:20px auto;
+}
+@keyframes spin{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
 }
 </style>
 </head>
@@ -197,7 +212,44 @@ const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
 // For sandbox/testing it’s okay to place it here.
 // Later we can hide it properly.
 const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
+// Timeout helper
+function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+    )
+  ]);
+}
 
+// Mock data for development/fallback
+const MOCK_PRODUCTS = [
+  {
+    id: "mock-1",
+    name: "Intrigued Mutts T-Shirt",
+    thumbnail_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23333' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='14'%3ET-Shirt%3C/text%3E%3C/svg%3E"
+  },
+  {
+    id: "mock-2",
+    name: "Intrigued Mutts Hoodie",
+    thumbnail_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23333' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='14'%3EHoodie%3C/text%3E%3C/svg%3E"
+  }
+];
+
+const MOCK_VARIANTS = {
+  "mock-1": [
+    { id: "v1-s", name: "Small", retail_price: "25.00" },
+    { id: "v1-m", name: "Medium", retail_price: "25.00" },
+    { id: "v1-l", name: "Large", retail_price: "25.00" }
+  ],
+  "mock-2": [
+    { id: "v2-s", name: "Small", retail_price: "45.00" },
+    { id: "v2-m", name: "Medium", retail_price: "45.00" },
+    { id: "v2-l", name: "Large", retail_price: "45.00" }
+  ]
+};
+
+const USE_MOCK_DATA = false; // Set to true for offline testing
 const grid = document.getElementById("grid");
 const statusText = document.getElementById("statusText");
 const refreshBtn = document.getElementById("refreshBtn");
@@ -230,6 +282,7 @@ let cartBtn;
 // ===============================
 let allProducts = [];
 let activeProduct = null;
+const variantCache = {}; // Cache variants by product ID
 
 // ===============================
 // CART (localStorage)
@@ -356,7 +409,7 @@ function renderCart() {
     row.className = "cartItem";
 
     row.innerHTML = `
-      <img src="${it.imageUrl || ""}" alt="">
+      <img src="${it.imageUrl || ""}" alt="" loading="lazy">
       <div>
         <div class="cartName">${it.productName || "Item"}</div>
         <div class="cartMeta">${it.variantName || ""}</div>
@@ -398,7 +451,7 @@ async function checkoutCartWithPayPal() {
 
   try {
     // Worker will compute totals server-side
-    const res = await fetch(`${PAYPAL_WORKER_BASE}/paypal/order`, {
+    const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -416,13 +469,17 @@ async function checkoutCartWithPayPal() {
           qty: Number(it.qty),
         })),
       }),
-    });
+    }, 15000); // 15 second timeout
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status} ${res.statusText}`);
+    }
 
     const data = await res.json();
 
     if (!data.ok || !data.approveUrl) {
       console.error("❌ PayPal order failed:", data);
-      alert("PayPal order failed:\n\n" + JSON.stringify(data, null, 2));
+      alert("PayPal order failed. The payment service may be unavailable. Please try again later.");
       return;
     }
 
@@ -430,7 +487,13 @@ async function checkoutCartWithPayPal() {
     window.location.href = data.approveUrl;
   } catch (err) {
     console.error("❌ checkout error:", err);
-    alert("Checkout failed — see console.");
+    if (err.message === 'Request timeout') {
+      alert("Checkout timed out. The payment service is not responding. Please try again later or contact support.");
+    } else if (err.message.includes('Failed to fetch')) {
+      alert("Cannot connect to payment service. Please check your internet connection and try again.");
+    } else {
+      alert("Checkout failed: " + err.message);
+    }
   } finally {
     checkoutBtn.disabled = false;
     checkoutBtn.textContent = "Checkout (PayPal)";
@@ -441,14 +504,45 @@ async function checkoutCartWithPayPal() {
 // PRODUCTS
 // ===============================
 async function loadProducts() {
-  statusText.textContent = "Loading products...";
+  statusText.innerHTML = '<div class="spinner"></div> Loading products...';
+  statusText.style.color = "#3aa0ff";
   grid.innerHTML = "";
 
-  const res = await fetch(`${STORE_API_BASE}/api/store/products`);
-  const data = await res.json();
-
-  allProducts = data?.result || [];
-  renderProducts();
+  try {
+    if (USE_MOCK_DATA) {
+      // Use mock data for testing
+      await new Promise(resolve => setTimeout(resolve, 500));
+      allProducts = MOCK_PRODUCTS;
+      renderProducts();
+      return;
+    }
+    
+    const res = await fetchWithTimeout(`${STORE_API_BASE}/api/store/products`, {}, 10000);
+    
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    allProducts = data?.result || [];
+    renderProducts();
+  } catch (err) {
+    console.error("❌ Load products error:", err);
+    statusText.style.color = "#ff4d6d";
+    
+    if (err.message === 'Request timeout') {
+      statusText.innerHTML = `⚠️ <strong>Loading timed out.</strong><br>
+        The product service at <code style="font-size:11px">${STORE_API_BASE}</code> is not responding.<br>
+        <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
+    } else if (err.message.includes('Failed to fetch')) {
+      statusText.innerHTML = `⚠️ <strong>Cannot connect to product service.</strong><br>
+        Please check your internet connection or the API may be down.<br>
+        <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
+    } else {
+      statusText.innerHTML = `⚠️ <strong>Failed to load products:</strong> ${err.message}<br>
+        <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
+    }
+  }
 }
 
 function renderProducts() {
@@ -461,7 +555,7 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="imgWrap">
-        <img src="${prod.thumbnail_url}">
+        <img src="${prod.thumbnail_url}" loading="lazy" onload="this.classList.add('loaded')">
       </div>
       <h3>${prod.name}</h3>
       <button class="buyBtn">View sizes</button>
@@ -485,6 +579,7 @@ async function openModal(prod){
   activeProduct = prod;
   modalTitle.textContent = prod.name;
   modalImg.src = prod.thumbnail_url;
+  modalImg.loading = "lazy";
 
   // Make image clickable to open lightbox
   modalImg.onclick = () => {
@@ -503,9 +598,32 @@ async function loadVariants() {
   if (!activeProduct) return;
 
   try {
-    const res = await fetch(`${STORE_API_BASE}/api/store/products/${activeProduct.id}`);
-    const data = await res.json();
-    const variants = data?.result?.sync_variants || [];
+    let variants;
+    
+    // Check cache first
+    if (variantCache[activeProduct.id]) {
+      variants = variantCache[activeProduct.id];
+    } else {
+      if (USE_MOCK_DATA) {
+        // Use mock variants
+        await new Promise(resolve => setTimeout(resolve, 300));
+        variants = MOCK_VARIANTS[activeProduct.id] || [];
+      } else {
+        const res = await fetchWithTimeout(
+          `${STORE_API_BASE}/api/store/products/${activeProduct.id}`,
+          {},
+          8000
+        );
+        
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        variants = data?.result?.sync_variants || [];
+      }
+      variantCache[activeProduct.id] = variants; // Cache for future use
+    }
 
     variantList.innerHTML = "";
 
@@ -568,7 +686,13 @@ async function loadVariants() {
 
   } catch (e) {
     console.error(e);
-    variantNote.textContent = "Could not load sizes. Try again.";
+    if (e.message === 'Request timeout') {
+      variantNote.textContent = "⚠️ Loading sizes timed out. The service is not responding. Please close and try again.";
+    } else if (e.message.includes('Failed to fetch')) {
+      variantNote.textContent = "⚠️ Cannot connect to service. Check your internet connection.";
+    } else {
+      variantNote.textContent = "⚠️ Could not load sizes: " + e.message;
+    }
   }
 }
 

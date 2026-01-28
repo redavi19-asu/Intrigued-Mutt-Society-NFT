@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Connection Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #111;
+      color: #0f0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .test {
+      border: 1px solid #333;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .warning { color: #ff0; }
+    button {
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0f0; color: #000; }
+    pre {
+      background: #000;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 API Connection Test</h1>
+  
+  <button onclick="testAll()">Run All Tests</button>
+  <button onclick="clearResults()">Clear Results</button>
+  
+  <div id="results"></div>
+
+  <script>
+    const STORE_API_BASE = "https://mutts-api.redavi19.workers.dev";
+    const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
+    const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
+
+    const results = document.getElementById('results');
+
+    function log(msg, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `test ${type}`;
+      div.innerHTML = msg;
+      results.appendChild(div);
+      console.log(msg);
+    }
+
+    function clearResults() {
+      results.innerHTML = '';
+    }
+
+    async function testWithTimeout(name, url, options = {}, timeout = 5000) {
+      log(`<strong>Testing:</strong> ${name}<br><code>${url}</code>`, 'warning');
+      
+      const start = Date.now();
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        const duration = Date.now() - start;
+        
+        const statusClass = response.ok ? 'success' : 'error';
+        log(`✓ Response: ${response.status} ${response.statusText} (${duration}ms)`, statusClass);
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          log(`<pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre>`, 'info');
+        }
+        
+        return true;
+      } catch (err) {
+        const duration = Date.now() - start;
+        
+        if (err.name === 'AbortError') {
+          log(`✗ TIMEOUT after ${timeout}ms`, 'error');
+        } else {
+          log(`✗ ERROR (${duration}ms): ${err.message}`, 'error');
+        }
+        
+        return false;
+      }
+    }
+
+    async function testAll() {
+      clearResults();
+      log('<h2>Starting API Tests...</h2>', 'info');
+      
+      // Test 1: Store API - List Products
+      await testWithTimeout(
+        'Store API - List Products',
+        `${STORE_API_BASE}/api/store/products`,
+        {},
+        10000
+      );
+      
+      // Test 2: Store API - Health Check (if exists)
+      await testWithTimeout(
+        'Store API - Health/Root',
+        STORE_API_BASE,
+        {},
+        5000
+      );
+      
+      // Test 3: PayPal Worker - Health Check
+      await testWithTimeout(
+        'PayPal Worker - Health/Root',
+        PAYPAL_WORKER_BASE,
+        {},
+        5000
+      );
+      
+      log('<h2>Tests Complete</h2>', 'success');
+      log(`<strong>Summary:</strong> Check above for any timeouts or errors.<br>
+           If APIs are timing out, they may be:<br>
+           • Down or not deployed<br>
+           • Blocking requests from this origin<br>
+           • Having DNS issues<br>
+           • Rate limiting requests`, 'warning');
+    }
+
+    // Auto-run on load
+    window.onload = () => {
+      setTimeout(testAll, 500);
+    };
+  </script>
+</body>
+</html>
