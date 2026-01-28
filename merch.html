@@ -28,6 +28,71 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .modal h2{margin-top:0;margin-bottom:16px}
 .variantRow{cursor:pointer;padding:12px;border-bottom:1px solid #333;transition:background 0.2s ease}
 .variantRow:hover{background:rgba(58,160,255,0.15)}
+
+/* ===== CART DRAWER ===== */
+.cartBtn {
+  background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;
+  color:#fff;font-weight:800;cursor:pointer;transition:all .2s ease;
+  box-shadow:0 0 14px rgba(58,160,255,.45);
+}
+.cartBtn:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(58,160,255,.75);background:rgba(58,160,255,.08)}
+.cartBadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  margin-left:8px;font-size:12px;font-weight:900;
+  background:rgba(58,160,255,.25);border:1px solid rgba(58,160,255,.65);
+  box-shadow:0 0 12px rgba(58,160,255,.35);
+}
+
+.cartBack{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:10000;
+}
+.cartDrawer{
+  position:absolute;right:0;top:0;height:100%;width:min(460px, 92vw);
+  background:rgba(17,17,17,.92);backdrop-filter: blur(12px);
+  border-left:1px solid #333;
+  box-shadow:-20px 0 60px rgba(0,0,0,.8);
+  padding:18px;
+  display:flex;flex-direction:column;
+}
+.cartHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cartHeader h2{margin:0}
+.cartItems{flex:1;overflow:auto;padding-right:4px}
+.cartItem{
+  display:grid;grid-template-columns:64px 1fr auto;gap:10px;
+  padding:10px;border:1px solid #333;border-radius:12px;
+  background:rgba(0,0,0,.25);
+  margin-bottom:10px;
+}
+.cartItem img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid #333}
+.cartName{font-weight:900}
+.cartMeta{font-size:12px;color:#aaa;margin-top:4px}
+.cartQtyRow{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qtyBtn{
+  width:32px;height:32px;border-radius:10px;border:1px solid #3aa0ff;background:transparent;color:#fff;
+  font-weight:900;cursor:pointer;box-shadow:0 0 12px rgba(58,160,255,.25);
+}
+.qtyBtn:hover{background:rgba(58,160,255,.08)}
+.qtyNum{min-width:24px;text-align:center;font-weight:900}
+.removeBtn{
+  border:1px solid #ff4d6d;background:transparent;color:#fff;border-radius:10px;
+  padding:8px 10px;cursor:pointer;font-weight:900;
+  box-shadow:0 0 12px rgba(255,77,109,.25);
+}
+.removeBtn:hover{background:rgba(255,77,109,.08)}
+.cartFooter{
+  border-top:1px solid #333;padding-top:12px;margin-top:12px;
+}
+.cartTotals{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.smallNote{font-size:12px;color:#aaa;line-height:1.35}
+.checkoutBtn{
+  width:100%;padding:12px 14px;border-radius:12px;border:1px solid #3aa0ff;background:transparent;color:#fff;
+  font-weight:900;cursor:pointer;
+  box-shadow:0 0 16px rgba(58,160,255,.5);
+}
+.checkoutBtn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(58,160,255,.85);background:rgba(58,160,255,0.08)}
+.checkoutBtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 </style>
 </head>
 
@@ -69,6 +134,31 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 </div>
 </div>
 
+<!-- CART DRAWER -->
+<div class="cartBack" id="cartBack">
+  <div class="cartDrawer">
+    <div class="cartHeader">
+      <h2>Cart</h2>
+      <button class="btnGlow" id="closeCartBtn">Close</button>
+    </div>
+
+    <div class="cartItems" id="cartItems"></div>
+
+    <div class="cartFooter">
+      <div class="cartTotals">
+        <div style="font-weight:900">Subtotal</div>
+        <div style="font-weight:900" id="cartSubtotal">$0.00</div>
+      </div>
+
+      <button class="checkoutBtn" id="checkoutBtn">Checkout (PayPal)</button>
+
+      <div class="smallNote" style="margin-top:10px">
+        You'll approve the total in PayPal. After payment, we save the order details (name, size, image, qty) in KV.
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===============================
 // 1) Store API (for listing products/variants)
@@ -97,19 +187,190 @@ const closeModal = document.getElementById("closeModal");
 const variantList = document.getElementById("variantList");
 const variantNote = document.getElementById("variantNote");
 
+// Cart drawer DOM (added)
+const cartBack = document.getElementById("cartBack");
+const closeCartBtn = document.getElementById("closeCartBtn");
+const cartItemsEl = document.getElementById("cartItems");
+const cartSubtotalEl = document.getElementById("cartSubtotal");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+// We'll inject a Cart button into your header bar (no HTML changes needed)
+const headerRight = document.querySelector("div[style*='display:flex'][style*='gap:10px']");
+let cartBtn;
+
+// ===============================
+// State
+// ===============================
 let allProducts = [];
 let activeProduct = null;
-let activeVariant = null;
 
 // ===============================
-// PAYPAL CHECKOUT (replaces Square)
+// CART (localStorage)
 // ===============================
-async function startPayPalCheckout(displayName, retailPriceString, meta = {}) {
+const CART_KEY = "mutts_cart_v1";
+
+function getCart() {
   try {
-    const amount = Number(retailPriceString).toFixed(2);
+    return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
 
-    console.log("💳 PayPal checkout:", displayName, amount, meta);
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateCartBadge();
+}
 
+function cartCount(cart = getCart()) {
+  return cart.reduce((sum, it) => sum + (Number(it.qty) || 0), 0);
+}
+
+function money(n) {
+  const v = Number(n || 0);
+  return "$" + v.toFixed(2);
+}
+
+function calcSubtotal(cart = getCart()) {
+  return cart.reduce((sum, it) => {
+    const unit = Number(it.unitPrice || 0);
+    const qty = Number(it.qty || 0);
+    return sum + unit * qty;
+  }, 0);
+}
+
+function makeLineId(productId, variantId) {
+  return `${productId}::${variantId}`;
+}
+
+function addToCart(item) {
+  const cart = getCart();
+  const id = item.lineId;
+
+  const existing = cart.find(x => x.lineId === id);
+  if (existing) {
+    existing.qty += item.qty;
+  } else {
+    cart.push(item);
+  }
+  saveCart(cart);
+  renderCart();
+  openCart();
+}
+
+function changeQty(lineId, delta) {
+  const cart = getCart();
+  const it = cart.find(x => x.lineId === lineId);
+  if (!it) return;
+  it.qty = Math.max(1, (Number(it.qty) || 1) + delta);
+  saveCart(cart);
+  renderCart();
+}
+
+function removeFromCart(lineId) {
+  let cart = getCart();
+  cart = cart.filter(x => x.lineId !== lineId);
+  saveCart(cart);
+  renderCart();
+}
+
+function clearCart() {
+  saveCart([]);
+  renderCart();
+}
+
+function ensureCartButton() {
+  if (!headerRight) return;
+
+  if (cartBtn) return;
+
+  cartBtn = document.createElement("button");
+  cartBtn.className = "cartBtn";
+  cartBtn.id = "cartBtn";
+  cartBtn.innerHTML = `Cart <span class="cartBadge" id="cartBadge">0</span>`;
+  cartBtn.onclick = openCart;
+
+  headerRight.insertBefore(cartBtn, headerRight.firstChild);
+  updateCartBadge();
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById("cartBadge");
+  if (!badge) return;
+  badge.textContent = String(cartCount());
+}
+
+function openCart() {
+  renderCart();
+  cartBack.style.display = "block";
+}
+
+function closeCart() {
+  cartBack.style.display = "none";
+}
+
+function renderCart() {
+  const cart = getCart();
+  cartItemsEl.innerHTML = "";
+
+  if (!cart.length) {
+    cartItemsEl.innerHTML = `
+      <div style="padding:14px;border:1px dashed #444;border-radius:12px;color:#aaa">
+        Your cart is empty. Add a size from any product.
+      </div>
+    `;
+    cartSubtotalEl.textContent = "$0.00";
+    checkoutBtn.disabled = true;
+    return;
+  }
+
+  cart.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "cartItem";
+
+    row.innerHTML = `
+      <img src="${it.imageUrl || ""}" alt="">
+      <div>
+        <div class="cartName">${it.productName || "Item"}</div>
+        <div class="cartMeta">${it.variantName || ""}</div>
+        <div class="cartMeta">Unit: ${money(it.unitPrice)}</div>
+
+        <div class="cartQtyRow">
+          <button class="qtyBtn" data-act="dec">−</button>
+          <div class="qtyNum">${it.qty}</div>
+          <button class="qtyBtn" data-act="inc">+</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+        <div style="font-weight:900">${money(Number(it.unitPrice) * Number(it.qty))}</div>
+        <button class="removeBtn" data-act="remove">Remove</button>
+      </div>
+    `;
+
+    row.querySelector("[data-act='dec']").onclick = () => changeQty(it.lineId, -1);
+    row.querySelector("[data-act='inc']").onclick = () => changeQty(it.lineId, +1);
+    row.querySelector("[data-act='remove']").onclick = () => removeFromCart(it.lineId);
+
+    cartItemsEl.appendChild(row);
+  });
+
+  const subtotal = calcSubtotal(cart);
+  cartSubtotalEl.textContent = money(subtotal);
+  checkoutBtn.disabled = false;
+}
+
+// ===============================
+// PAYPAL CHECKOUT FOR WHOLE CART
+// ===============================
+async function checkoutCartWithPayPal() {
+  const cart = getCart();
+  if (!cart.length) return;
+
+  checkoutBtn.disabled = true;
+  checkoutBtn.textContent = "Creating PayPal order...";
+
+  try {
+    // Worker will compute totals server-side
     const res = await fetch(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
       headers: {
@@ -117,16 +378,16 @@ async function startPayPalCheckout(displayName, retailPriceString, meta = {}) {
         "X-API-KEY": API_KEY,
       },
       body: JSON.stringify({
-        amount: amount,
         currency: "USD",
-
-        // OLD: kept for logs / fallback splitting
-        name: displayName,
-
-        // NEW: explicit fields for KV storage
-        productName: meta.productName || null,
-        variantName: meta.variantName || null,
-        imageUrl: meta.imageUrl || null,
+        items: cart.map(it => ({
+          productId: it.productId,
+          variantId: it.variantId,
+          productName: it.productName,
+          variantName: it.variantName,
+          imageUrl: it.imageUrl,
+          unitPrice: String(Number(it.unitPrice).toFixed(2)),
+          qty: Number(it.qty),
+        })),
       }),
     });
 
@@ -138,10 +399,14 @@ async function startPayPalCheckout(displayName, retailPriceString, meta = {}) {
       return;
     }
 
+    // Send buyer to PayPal approval page
     window.location.href = data.approveUrl;
   } catch (err) {
-    console.error("❌ PayPal checkout error:", err);
-    alert("PayPal checkout failed — see console.");
+    console.error("❌ checkout error:", err);
+    alert("Checkout failed — see console.");
+  } finally {
+    checkoutBtn.disabled = false;
+    checkoutBtn.textContent = "Checkout (PayPal)";
   }
 }
 
@@ -156,10 +421,10 @@ async function loadProducts() {
   const data = await res.json();
 
   allProducts = data?.result || [];
-  render();
+  renderProducts();
 }
 
-function render() {
+function renderProducts() {
   statusText.textContent = `Loaded ${allProducts.length} products`;
   grid.innerHTML = "";
 
@@ -172,16 +437,16 @@ function render() {
         <img src="${prod.thumbnail_url}">
       </div>
       <h3>${prod.name}</h3>
-      <button class="buyBtn">Buy</button>
+      <button class="buyBtn">View sizes</button>
     `;
 
-    const buyBtn = card.querySelector(".buyBtn");
-    buyBtn.onclick = (e) => {
+    card.querySelector(".buyBtn").onclick = (e) => {
       e.stopPropagation();
       openModal(prod);
     };
 
     card.onclick = () => openModal(prod);
+
     grid.appendChild(card);
   });
 }
@@ -218,34 +483,50 @@ async function loadVariants() {
 
     variantNote.textContent = "Pick your size:";
 
+    // We change the modal button behavior: instead of direct buy, it becomes "Add to Cart"
+    modalBuyBtn.textContent = "Add to Cart";
+    modalBuyBtn.disabled = true;
+
+    let selected = null;
+
     variants.forEach(v => {
       const row = document.createElement("div");
       row.className = "variantRow";
-      row.textContent = `${v.name} - $${v.retail_price}`;
+
+      const price = Number(v.retail_price || 0).toFixed(2);
+
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div>
+            <div style="font-weight:900">${v.name}</div>
+            <div style="font-size:13px;color:#aaa">$${price}</div>
+          </div>
+          <div style="font-size:12px;color:#aaa">Tap to select</div>
+        </div>
+      `;
 
       row.onclick = () => {
-        activeVariant = v;
+        selected = v;
 
-        modalBuyBtn.textContent = `Buy - $${v.retail_price}`;
-        modalBuyBtn.onclick = async () => {
-          if (!activeVariant) return;
+        // highlight selected
+        [...variantList.children].forEach(el => el.style.outline = "none");
+        row.style.outline = "2px solid rgba(58,160,255,.7)";
 
-          modalBuyBtn.disabled = true;
-          try {
-            // This is the key replacement:
-            // Square -> PayPal
-            await startPayPalCheckout(
-              `${activeProduct.name} - ${activeVariant.name}`,
-              activeVariant.retail_price,
-              {
-                productName: activeProduct.name,
-                variantName: activeVariant.name,
-                imageUrl: activeProduct.thumbnail_url
-              }
-            );
-          } finally {
-            modalBuyBtn.disabled = false;
-          }
+        modalBuyBtn.disabled = false;
+        modalBuyBtn.textContent = `Add to Cart - $${price}`;
+
+        modalBuyBtn.onclick = () => {
+          const item = {
+            lineId: makeLineId(activeProduct.id, v.id),
+            productId: activeProduct.id,
+            variantId: v.id,
+            productName: activeProduct.name,
+            variantName: v.name,
+            imageUrl: activeProduct.thumbnail_url,
+            unitPrice: Number(price),
+            qty: 1,
+          };
+          addToCart(item);
         };
       };
 
@@ -261,7 +542,16 @@ async function loadVariants() {
 closeModal.onclick = () => modalBack.style.display = "none";
 refreshBtn.onclick = loadProducts;
 
-modalBuyBtn.textContent = "Buy";
+cartBack.onclick = (e) => {
+  // clicking outside drawer closes
+  if (e.target === cartBack) closeCart();
+};
+closeCartBtn.onclick = closeCart;
+checkoutBtn.onclick = checkoutCartWithPayPal;
+
+// Boot
+ensureCartButton();
+renderCart();
 loadProducts();
 </script>
 

@@ -35,7 +35,7 @@
       border:1px solid #3aa0ff;
       box-shadow:0 0 16px rgba(58,160,255,.35);
       background:rgba(58,160,255,0.08);
-      font-weight:700;
+      font-weight:800;
       margin:8px 0 0;
     }
     .label{color:#9aa3b2;font-size:12px;margin-top:14px}
@@ -46,7 +46,7 @@
       padding:12px 18px;
       border-radius:12px;
       color:#fff;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
       transition:all .2s ease;
       box-shadow:0 0 16px rgba(58,160,255,0.45);
@@ -68,6 +68,27 @@
       margin-right:8px;
     }
     @keyframes rot { to { transform:rotate(360deg);} }
+
+    /* Cart receipt list */
+    .items{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+    .item{
+      display:grid;grid-template-columns:72px 1fr auto;
+      gap:12px;align-items:center;
+      border:1px solid #2a2a2a;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      padding:10px;
+    }
+    .item img{width:72px;height:72px;border-radius:12px;object-fit:cover;border:1px solid #333}
+    .iname{font-weight:900}
+    .imeta{font-size:12px;color:#aaa;margin-top:4px}
+    .iprice{font-weight:900;text-align:right}
+    .totalsBox{
+      margin-top:12px;border-top:1px solid #2a2a2a;padding-top:12px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    details{margin-top:14px}
+    summary{cursor:pointer;color:#b7c7ff;font-weight:800}
+    .rawBox{max-height:240px;overflow:auto;border:1px solid #2a2a2a;padding:10px;border-radius:12px;background:rgba(0,0,0,.25)}
   </style>
 </head>
 
@@ -87,7 +108,7 @@
           <div class="label">Payment Status</div>
           <div id="payStatus" class="value">—</div>
 
-          <div class="label">Amount</div>
+          <div class="label">Paid Total</div>
           <div id="amount" class="value">—</div>
         </div>
 
@@ -97,14 +118,27 @@
 
           <div class="label">Ship To</div>
           <div id="shipTo" class="value">—</div>
-
-          <div class="label">Item</div>
-          <div id="itemName" class="value">—</div>
         </div>
       </div>
 
-      <div class="label">Raw (for debugging)</div>
-      <div id="raw" class="value mono" style="max-height:220px; overflow:auto; border:1px solid #2a2a2a; padding:10px; border-radius:12px; background:rgba(0,0,0,.25)"></div>
+      <div class="label">Items</div>
+      <div id="items" class="items"></div>
+
+      <div class="totalsBox">
+        <div>
+          <div class="label" style="margin-top:0">Subtotal</div>
+          <div id="subTotal" class="value" style="margin-top:2px">—</div>
+        </div>
+        <div>
+          <div class="label" style="margin-top:0">Total</div>
+          <div id="grandTotal" class="value" style="margin-top:2px;font-weight:900">—</div>
+        </div>
+      </div>
+
+      <details>
+        <summary>Debug details (optional)</summary>
+        <div class="rawBox mono" id="raw"></div>
+      </details>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
         <a class="btn" href="./merch.html">← Back to Merch</a>
@@ -118,14 +152,11 @@
   </div>
 
 <script>
-  // MUST match your merch.html settings
   const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
-  const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9"; // (works for now; later we'll hide it)
+  const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
 
-  // Optional: pass item name through return URL like ?item=...
   const qs = new URLSearchParams(location.search);
-  const token = qs.get("token"); // PayPal order ID comes back as "token"
-  const item = qs.get("item");
+  const token = qs.get("token"); // PayPal orderId
 
   const el = (id) => document.getElementById(id);
 
@@ -140,16 +171,10 @@
     if (ok === false) box.classList.add("err");
   }
 
-  function safe(obj, path, fallback="—"){
-    try {
-      return path.split(".").reduce((a,k)=>a?.[k], obj) ?? fallback;
-    } catch { return fallback; }
-  }
-
-  function formatShip(capture){
-    const ship = capture?.purchase_units?.[0]?.shipping;
+  function formatShip(record){
+    const ship = record?.shipping;
     if (!ship) return "—";
-    const name = ship?.name?.full_name || "";
+    const name = ship?.name || "";
     const a = ship?.address || {};
     const line1 = a.address_line_1 || "";
     const city = a.admin_area_2 || "";
@@ -159,18 +184,40 @@
     return `${name}\n${line1}\n${city}, ${st} ${zip}\n${country}`.trim();
   }
 
-  function formatAmount(capture){
-    const cap = capture?.purchase_units?.[0]?.payments?.captures?.[0];
-    const currency = cap?.amount?.currency_code;
-    const value = cap?.amount?.value;
-    if (!currency || !value) return "—";
-    return `${currency} ${value}`;
+  function money(n){
+    const v = Number(n || 0);
+    return "$" + v.toFixed(2);
+  }
+
+  function renderItems(record){
+    const items = record?.items || [];
+    const box = el("items");
+    box.innerHTML = "";
+
+    if (!items.length){
+      box.innerHTML = `<div style="padding:12px;border:1px dashed #444;border-radius:12px;color:#aaa">No item details found (cart not saved).</div>`;
+      return;
+    }
+
+    items.forEach(it => {
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `
+        <img src="${it.imageUrl || ""}" alt="">
+        <div>
+          <div class="iname">${it.productName || "Item"}</div>
+          <div class="imeta">${it.variantName || ""}</div>
+          <div class="imeta">Unit: ${money(it.unitPrice)} • Qty: ${it.qty}</div>
+        </div>
+        <div class="iprice">${money(it.lineTotal)}</div>
+      `;
+      box.appendChild(row);
+    });
   }
 
   async function captureNow(orderId){
     setStatus("Finalizing your payment...", null);
     el("orderId").textContent = orderId || "—";
-    if (item) el("itemName").textContent = decodeURIComponent(item);
 
     if (!orderId){
       setStatus("Missing PayPal token in the URL.", false);
@@ -196,18 +243,28 @@
       return;
     }
 
-    const capture = data.capture;
+    // NEW: we render from data.record (the KV receipt)
+    const record = data.record || null;
 
     setStatus("Payment completed ✅", true);
-    el("payStatus").textContent = capture?.status || "COMPLETED";
-    el("buyerEmail").textContent = safe(capture, "payer.email_address", safe(capture, "payment_source.paypal.email_address", "—"));
-    el("shipTo").textContent = formatShip(capture);
-    el("amount").textContent = formatAmount(capture);
+    el("payStatus").textContent = record?.status || "COMPLETED";
+    el("buyerEmail").textContent = record?.payer?.email || "—";
+    el("shipTo").textContent = formatShip(record);
 
-    // If you didn't pass item in URL, try best guess (not always present in PayPal data)
-    if (!item) el("itemName").textContent = safe(capture, "purchase_units.0.description", "—");
+    const paid = record?.totals?.paidTotal || record?.totals?.total;
+    const cur = record?.currency || "USD";
+    el("amount").textContent = paid ? `${cur} ${paid}` : "—";
 
+    el("subTotal").textContent = record?.totals?.subtotal ? `${cur} ${record.totals.subtotal}` : "—";
+    el("grandTotal").textContent = record?.totals?.total ? `${cur} ${record.totals.total}` : "—";
+
+    renderItems(record);
+
+    // Debug (optional)
     el("raw").textContent = JSON.stringify(data, null, 2);
+
+    // OPTIONAL: clear cart after success
+    try { localStorage.removeItem("mutts_cart_v1"); } catch {}
   }
 
   captureNow(token);
