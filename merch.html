@@ -173,7 +173,7 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
        onmouseover="this.style.transform='scale(1.05)'"
        onmouseout="this.style.transform='scale(1)'">
 </div>
-<div style="text-align:center;font-size:12px;color:#3aa0ff;margin-top:8px;margin-bottom:12px">
+<div id="enlargeLabel" style="text-align:center;font-size:12px;color:#3aa0ff;margin-top:8px;margin-bottom:12px">
   ✨ Click to enlarge
 </div>
 
@@ -219,12 +219,13 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 // ===============================
 // 1) Store API (for listing products/variants)
 // ===============================
-const STORE_API_BASE = "https://mutts-api.redavi19.workers.dev";
+const WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev".replace(/\/$/, "");
+const STORE_API_BASE = WORKER_BASE;
 
 // ===============================
 // 2) PayPal Worker (for payment)
 // ===============================
-const PAYPAL_WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
+const PAYPAL_WORKER_BASE = WORKER_BASE;
 
 // IMPORTANT: Put YOUR real API key here (the Worker secret you created).
 // For sandbox/testing it’s okay to place it here.
@@ -374,6 +375,18 @@ function changeQty(lineId, delta) {
   renderCart();
 }
 
+function openProductFromCart(cartItem) {
+  const prod = allProducts.find(p => String(p.id) === String(cartItem.productId));
+  const fallbackProd = prod || {
+    id: cartItem.productId,
+    name: cartItem.productName || "Item",
+    thumbnail_url: cartItem.imageUrl,
+  };
+
+  closeCart();
+  openModal(fallbackProd);
+}
+
 function removeFromCart(lineId) {
   let cart = getCart();
   cart = cart.filter(x => x.lineId !== lineId);
@@ -436,9 +449,9 @@ function renderCart() {
     row.className = "cartItem";
 
     row.innerHTML = `
-      <img src="${it.imageUrl || ""}" alt="" loading="lazy">
+      <img src="${it.imageUrl || ""}" alt="" loading="lazy" data-act="openItem" style="cursor:pointer">
       <div>
-        <div class="cartName">${it.productName || "Item"}</div>
+        <div class="cartName" data-act="openItem" style="cursor:pointer;text-decoration:underline;">${it.productName || "Item"}</div>
         <div class="cartMeta">${it.variantName || ""}</div>
         <div class="cartMeta">Unit: ${money(it.unitPrice)}</div>
 
@@ -457,6 +470,9 @@ function renderCart() {
     row.querySelector("[data-act='dec']").onclick = () => changeQty(it.lineId, -1);
     row.querySelector("[data-act='inc']").onclick = () => changeQty(it.lineId, +1);
     row.querySelector("[data-act='remove']").onclick = () => removeFromCart(it.lineId);
+    row.querySelectorAll("[data-act='openItem']").forEach(el => {
+      el.onclick = () => openProductFromCart(it);
+    });
 
     cartItemsEl.appendChild(row);
   });
@@ -575,6 +591,30 @@ async function loadProducts() {
   }
 }
 
+function getProductImages(prod) {
+  // Try common fields the Store API might return
+  const candidates =
+    prod?.images ||
+    prod?.mockups ||
+    prod?.mockup_urls ||
+    prod?.files ||
+    prod?.sync_product?.files ||
+    [];
+
+  // Convert array of strings or array of objects -> array of urls
+  const urls = Array.isArray(candidates)
+    ? candidates
+        .map(x => (typeof x === "string" ? x : (x?.url || x?.thumbnail_url || x?.preview_url)))
+        .filter(Boolean)
+    : [];
+
+  // Fallback to thumbnail_url
+  if (!urls.length && prod?.thumbnail_url) urls.push(prod.thumbnail_url);
+
+  // Remove duplicates
+  return [...new Set(urls)];
+}
+
 function renderProducts() {
   statusText.textContent = `Loaded ${allProducts.length} products`;
   grid.innerHTML = "";
@@ -583,9 +623,12 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "card";
 
+    // Use thumbnail for grid (fast), gallery handled in modal
+    const thumb = prod.thumbnail_url || getProductImages(prod)[0] || "";
+
     card.innerHTML = `
       <div class="imgWrap">
-        <img src="${prod.thumbnail_url}" loading="lazy" onload="this.classList.add('loaded')">
+        <img src="${thumb}" loading="lazy" onload="this.classList.add('loaded')">
       </div>
       <h3>${prod.name}</h3>
       <button class="buyBtn">View sizes</button>
@@ -607,15 +650,82 @@ function renderProducts() {
 // ===============================
 async function openModal(prod){
   activeProduct = prod;
-  modalTitle.textContent = prod.name;
-  modalImg.src = prod.thumbnail_url;
+
+  // If the product list endpoint doesn’t include the full mockups,
+  // this detail endpoint usually does.
+  try {
+    if (!USE_MOCK_DATA) {
+      const res = await fetchWithTimeout(
+        `${STORE_API_BASE}/api/store/products/${prod.id}`,
+        {},
+        8000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        // Merge detail result onto activeProduct
+        activeProduct = { ...prod, ...(data?.result || {}) };
+      }
+    }
+  } catch (e) {
+    console.log("Product detail fetch failed, using list data only.");
+  }
+
+  modalTitle.textContent = activeProduct.name;
+
+  // Build image list from whatever the API returns
+  const images = getProductImages(activeProduct);
+  activeProduct._images = images;
+
+  // Main image
+  modalImg.src = images[0] || activeProduct.thumbnail_url || "";
   modalImg.loading = "lazy";
 
-  // Make image clickable to open lightbox
+  // Click main image -> lightbox
   modalImg.onclick = () => {
-    lightboxImg.src = prod.thumbnail_url;
+    lightboxImg.src = modalImg.src;
     lightboxBack.style.display = "flex";
   };
+
+  // Build thumbnail strip under the image (simple + clean)
+  const oldStrip = document.getElementById("mockupStrip");
+  if (oldStrip) oldStrip.remove();
+
+  const strip = document.createElement("div");
+  strip.id = "mockupStrip";
+  strip.style.display = "flex";
+  strip.style.gap = "8px";
+  strip.style.justifyContent = "center";
+  strip.style.flexWrap = "wrap";
+  strip.style.margin = "10px 0 6px";
+
+  images.forEach((url, idx) => {
+    const t = document.createElement("img");
+    t.src = url;
+    t.loading = "lazy";
+    t.style.width = "64px";
+    t.style.height = "64px";
+    t.style.objectFit = "cover";
+    t.style.borderRadius = "10px";
+    t.style.border = idx === 0 ? "2px solid rgba(58,160,255,.85)" : "1px solid #333";
+    t.style.cursor = "pointer";
+    t.onclick = () => {
+      modalImg.src = url;
+      [...strip.querySelectorAll("img")].forEach(im => im.style.border = "1px solid #333");
+      t.style.border = "2px solid rgba(58,160,255,.85)";
+    };
+    strip.appendChild(t);
+  });
+
+  // Place label under the main image, then thumbnails beneath the label
+  const enlargeLabel = document.getElementById("enlargeLabel");
+  const imgContainer = modalImg.parentElement;
+  if (enlargeLabel && imgContainer) {
+    imgContainer.insertAdjacentElement("afterend", enlargeLabel);
+    enlargeLabel.insertAdjacentElement("afterend", strip);
+  } else {
+    // Fallback: append strip after image container if label missing
+    imgContainer.insertAdjacentElement("afterend", strip);
+  }
 
   variantList.innerHTML = "";
   variantNote.textContent = "Loading sizes...";
@@ -708,7 +818,7 @@ async function loadVariants() {
 
             productName: activeProduct.name,
             variantName: v.name,
-            imageUrl: activeProduct.thumbnail_url,
+            imageUrl: modalImg.src,
             unitPrice: Number(price),
             qty: 1,
           };
