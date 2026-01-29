@@ -483,6 +483,59 @@ function renderCart() {
 }
 
 // ===============================
+// SHIPPING (Option A)
+// ===============================
+
+// Minimal: store a shipping object in localStorage.
+// You can replace this later with a nice form UI.
+const SHIPPING_KEY = "mutts_shipping_v1";
+
+function getShipping() {
+  try { return JSON.parse(localStorage.getItem(SHIPPING_KEY) || "null"); }
+  catch { return null; }
+}
+
+function saveShipping(shipping) {
+  localStorage.setItem(SHIPPING_KEY, JSON.stringify(shipping));
+}
+
+// Quick prompt-based capture (fastest way to move today)
+async function ensureShipping() {
+  let shipping = getShipping();
+  if (shipping && shipping.address) return shipping;
+
+  const name = prompt("Shipping name (first + last):", "") || "";
+  const address1 = prompt("Street address:", "") || "";
+  const address2 = prompt("Apt / unit (optional):", "") || "";
+  const city = prompt("City:", "") || "";
+  const state = prompt("State code (ex: MD, DC, VA):", "") || "";
+  const zip = prompt("ZIP:", "") || "";
+  const country = (prompt("Country code (default US):", "US") || "US").toUpperCase();
+
+  // basic validation
+  if (!name || !address1 || !city || !state || !zip) {
+    alert("Shipping is required (name, address, city, state, zip). Try again.");
+    return null;
+  }
+
+  shipping = {
+    name,
+    address: {
+      // Use the Worker's supported keys:
+      address1,
+      address2,
+      city,
+      state_code: state.toUpperCase(),
+      zip,
+      country_code: country,
+    },
+  };
+
+  saveShipping(shipping);
+  return shipping;
+}
+
+// ===============================
 // PAYPAL CHECKOUT FOR WHOLE CART
 // ===============================
 async function checkoutCartWithPayPal() {
@@ -493,6 +546,9 @@ async function checkoutCartWithPayPal() {
   checkoutBtn.textContent = "Creating PayPal order...";
 
   try {
+    const shipping = await ensureShipping();
+    if (!shipping) return;
+
     // Worker will compute totals server-side
     const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
@@ -502,6 +558,7 @@ async function checkoutCartWithPayPal() {
       },
       body: JSON.stringify({
         currency: "USD",
+        shipping,
         items: cart.map(it => ({
           productId: it.productId,
           productName: it.productName,
