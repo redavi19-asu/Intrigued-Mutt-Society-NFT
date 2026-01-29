@@ -281,10 +281,10 @@
       width: 90px;
       height: 90px;
       border-radius: 50%;
-      background: rgba(255,255,255,.2);
-      border: 3px solid rgba(255,255,255,.5);
+      background: rgba(255,255,255,.18);
+      border: 3px solid rgba(255,255,255,.45);
       cursor: pointer;
-      transition: transform .15s ease, background .15s ease;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
       z-index: 20;
       display: flex;
       align-items: center;
@@ -296,7 +296,7 @@
       text-shadow: 0 0 4px rgba(255,255,255,.9), 0 2px 4px rgba(0,0,0,.8);
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 0 20px rgba(0,255,0,.3);
+      box-shadow: 0 0 14px rgba(0,255,0,.22);
     }
 
     /* Desktop hotspots always visible by default */
@@ -355,41 +355,41 @@
         box-shadow: 0 0 12px rgba(255,80,140,.25) !important;
       }
     }
-    #hotspotTable{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
-    #hotspotDart{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
+    #hotspotTable{ box-shadow: 0 0 14px rgba(255,140,0,.32); border-color: rgba(255,200,120,.8); background: rgba(255,200,120,.26); }
+    #hotspotDart{ box-shadow: 0 0 14px rgba(255,80,140,.32); border-color: rgba(255,140,200,.8); background: rgba(255,140,200,.26); }
     .hotspot::after{
       content: '';
       position: absolute;
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: rgba(0,255,0,.6);
+      background: rgba(0,255,0,.38);
       animation: hotspotPulse 1.5s ease-in-out infinite;
       pointer-events: none;
     }
-    #hotspotTable::after{ background: rgba(255,140,0,.55); }
-    #hotspotDart::after{ background: rgba(255,80,140,.55); }
+    #hotspotTable::after{ background: rgba(255,140,0,.36); }
+    #hotspotDart::after{ background: rgba(255,80,140,.36); }
     /* Distinct styles for mobile bar hotspots */
-    #hotspotOpenBar{ box-shadow: 0 0 20px rgba(0,255,0,.3); border-color: rgba(180,255,180,.9); background: rgba(180,255,180,.25); }
-    #hotspotTableBar{ box-shadow: 0 0 20px rgba(255,140,0,.45); border-color: rgba(255,200,120,.9); background: rgba(255,200,120,.3); }
-    #hotspotDartBar{ box-shadow: 0 0 20px rgba(255,80,140,.45); border-color: rgba(255,140,200,.9); background: rgba(255,140,200,.3); }
-    #hotspotTableBar::after{ background: rgba(255,140,0,.55); }
-    #hotspotDartBar::after{ background: rgba(255,80,140,.55); }
+    #hotspotOpenBar{ box-shadow: 0 0 14px rgba(0,255,0,.22); border-color: rgba(180,255,180,.82); background: rgba(180,255,180,.22); }
+    #hotspotTableBar{ box-shadow: 0 0 14px rgba(255,140,0,.32); border-color: rgba(255,200,120,.82); background: rgba(255,200,120,.22); }
+    #hotspotDartBar{ box-shadow: 0 0 14px rgba(255,80,140,.32); border-color: rgba(255,140,200,.82); background: rgba(255,140,200,.22); }
+    #hotspotTableBar::after{ background: rgba(255,140,0,.36); }
+    #hotspotDartBar::after{ background: rgba(255,80,140,.36); }
     .hotspot:hover,
     .hotspot:active{
-      transform: scale(1.5);
-      background: rgba(255,255,255,.3);
-      box-shadow: 0 0 30px rgba(0,255,0,.5);
+      transform: scale(1.28);
+      background: rgba(255,255,255,.26);
+      box-shadow: 0 0 20px rgba(0,255,0,.32);
     }
     #hotspotTable:hover,
-    #hotspotTable:active{ box-shadow: 0 0 30px rgba(255,140,0,.7); background: rgba(255,210,150,.5); }
+    #hotspotTable:active{ box-shadow: 0 0 20px rgba(255,140,0,.46); background: rgba(255,210,150,.36); }
     #hotspotDart:hover,
-    #hotspotDart:active{ box-shadow: 0 0 30px rgba(255,80,140,.7); background: rgba(255,170,210,.5); }
+    #hotspotDart:active{ box-shadow: 0 0 20px rgba(255,80,140,.46); background: rgba(255,170,210,.36); }
 
     @keyframes hotspotPulse{
-      0%{ transform: scale(1); opacity: 1; }
-      50%{ transform: scale(2); opacity: 0.3; }
-      100%{ transform: scale(1); opacity: 1; }
+      0%{ transform: scale(1); opacity: 0.9; }
+      50%{ transform: scale(1.5); opacity: 0.28; }
+      100%{ transform: scale(1); opacity: 0.9; }
     }
 
     .loader{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; z-index:40; background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.08), rgba(0,0,0,.85)); color:var(--ui); text-align:center; transition: opacity .3s ease, visibility .3s ease; }

@@ -11,16 +11,19 @@
 
 <style>
 html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.68)),url('merchbackground.png') center/cover no-repeat fixed;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
-.card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.5);backdrop-filter:blur(10px)}
+.pageShell{max-width:1100px;margin:auto;padding:24px}
+.topBar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.topActions{display:flex;gap:10px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+.card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.35);backdrop-filter:blur(10px)}
 .imgWrap{height:180px;display:flex;align-items:center;justify-content:center;background:#222}
 .imgWrap img{max-height:100%;object-fit:contain;opacity:0;transition:opacity 0.3s ease}
 .imgWrap img.loaded{opacity:1}
-.btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 14px rgba(58,160,255,0.45);text-decoration:none;display:inline-block}
-.btnGlow:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(58,160,255,0.75);background:rgba(58,160,255,0.08)}
-.btnGlow:active{transform:translateY(0);box-shadow:0 0 14px rgba(58,160,255,0.55)}
-.buyBtn{background:transparent;border:1px solid #3aa0ff;padding:12px 20px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 16px rgba(58,160,255,0.5)}
-.buyBtn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(58,160,255,0.85);background:rgba(58,160,255,0.08)}
+.btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 10px rgba(58,160,255,0.28);text-decoration:none;display:inline-block}
+.btnGlow:hover{transform:translateY(-2px);box-shadow:0 0 14px rgba(58,160,255,0.45);background:rgba(58,160,255,0.06)}
+.btnGlow:active{transform:translateY(0);box-shadow:0 0 10px rgba(58,160,255,0.35)}
+.buyBtn{background:transparent;border:1px solid #3aa0ff;padding:12px 20px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 12px rgba(58,160,255,0.32)}
+.buyBtn:hover{transform:translateY(-2px);box-shadow:0 0 16px rgba(58,160,255,0.5);background:rgba(58,160,255,0.06)}
 .buyBtn:active{transform:translateY(0)}
 #modalBuyBtn,#closeModal{margin-top:12px;min-width:120px}
 #modalBuyBtn{margin-right:8px}
@@ -34,9 +37,9 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .cartBtn {
   background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;
   color:#fff;font-weight:800;cursor:pointer;transition:all .2s ease;
-  box-shadow:0 0 14px rgba(58,160,255,.45);
+  box-shadow:0 0 10px rgba(58,160,255,.28);
 }
-.cartBtn:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(58,160,255,.75);background:rgba(58,160,255,.08)}
+.cartBtn:hover{transform:translateY(-2px);box-shadow:0 0 14px rgba(58,160,255,.45);background:rgba(58,160,255,.06)}
 .cartBadge{
   display:inline-flex;align-items:center;justify-content:center;
   min-width:22px;height:22px;padding:0 6px;border-radius:999px;
@@ -72,16 +75,16 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .cartQtyRow{display:flex;align-items:center;gap:8px;margin-top:8px}
 .qtyBtn{
   width:32px;height:32px;border-radius:10px;border:1px solid #3aa0ff;background:transparent;color:#fff;
-  font-weight:900;cursor:pointer;box-shadow:0 0 12px rgba(58,160,255,.25);
+  font-weight:900;cursor:pointer;box-shadow:0 0 10px rgba(58,160,255,.18);
 }
-.qtyBtn:hover{background:rgba(58,160,255,.08)}
+.qtyBtn:hover{background:rgba(58,160,255,.06)}
 .qtyNum{min-width:24px;text-align:center;font-weight:900}
 .removeBtn{
   border:1px solid #ff4d6d;background:transparent;color:#fff;border-radius:10px;
   padding:8px 10px;cursor:pointer;font-weight:900;
-  box-shadow:0 0 12px rgba(255,77,109,.25);
+  box-shadow:0 0 10px rgba(255,77,109,.2);
 }
-.removeBtn:hover{background:rgba(255,77,109,.08)}
+.removeBtn:hover{background:rgba(255,77,109,.06)}
 .cartFooter{
   border-top:1px solid #333;padding-top:12px;margin-top:12px;
 }
@@ -90,9 +93,9 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .checkoutBtn{
   width:100%;padding:12px 14px;border-radius:12px;border:1px solid #3aa0ff;background:transparent;color:#fff;
   font-weight:900;cursor:pointer;
-  box-shadow:0 0 16px rgba(58,160,255,.5);
+  box-shadow:0 0 12px rgba(58,160,255,.32);
 }
-.checkoutBtn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(58,160,255,.85);background:rgba(58,160,255,0.08)}
+.checkoutBtn:hover{transform:translateY(-2px);box-shadow:0 0 16px rgba(58,160,255,.5);background:rgba(58,160,255,0.06)}
 .checkoutBtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
 /* ===== LIGHTBOX ===== */
@@ -118,16 +121,28 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   0%{transform:rotate(0deg)}
   100%{transform:rotate(360deg)}
 }
+
+/* Responsive tweaks for mobile */
+@media (max-width: 720px){
+  .pageShell{padding:16px}
+  .topBar{flex-direction:column;align-items:flex-start}
+  .topActions{width:100%}
+  .topActions .btnGlow,.topActions .cartBtn{width:100%;text-align:center}
+  h1{font-size:28px}
+  .card{padding:12px}
+  .imgWrap{height:160px}
+  .cartDrawer{width:100%;max-width:100%;border-left:none}
+}
 </style>
 </head>
 
 <body>
 
-<div style="max-width:1100px;margin:auto;padding:24px">
+<div class="pageShell">
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<div class="topBar">
   <h1 style="margin:0">Intrigued Mutts Collection</h1>
-  <div style="display:flex;gap:10px">
+  <div class="topActions">
     <button id="refreshBtn" class="btnGlow">Refresh products</button>
     <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
   </div>
@@ -276,6 +291,13 @@ const lightboxImg = document.getElementById("lightboxImg");
 // We'll inject a Cart button into your header bar (no HTML changes needed)
 const headerRight = document.querySelector("div[style*='display:flex'][style*='gap:10px']");
 let cartBtn;
+
+// Ensure browser back navigates to clubhouse landing
+function redirectToClubhouse(){
+  window.location.href = "./index.html#mancave";
+}
+history.pushState({ page: "merch" }, "", window.location.href);
+window.addEventListener("popstate", () => redirectToClubhouse());
 
 // ===============================
 // State
