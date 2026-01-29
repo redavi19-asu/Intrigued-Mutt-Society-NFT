@@ -442,10 +442,36 @@ const STORE_API_BASE = WORKER_BASE;
 // ===============================
 const PAYPAL_WORKER_BASE = WORKER_BASE;
 
-// IMPORTANT: Put YOUR real API key here (the Worker secret you created).
-// For sandbox/testing it is okay to place it here.
-// Later we can hide it properly.
-const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
+// Token-based auth (no hardcoded secrets)
+
+// ===============================
+// CART TOKEN MANAGEMENT
+// ===============================
+const CART_TOKEN_KEY = "mutts_cart_token_v1";
+
+async function getCartToken() {
+  const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/cart/start`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({})
+  }, 10000);
+
+  const data = await res.json();
+  if (!data.ok || !data.cartToken) throw new Error(data.error || "Failed to start cart session");
+
+  localStorage.setItem(CART_TOKEN_KEY, data.cartToken);
+  return data.cartToken;
+}
+
+async function authHeaders() {
+  let token = localStorage.getItem(CART_TOKEN_KEY);
+  if (!token) token = await getCartToken();
+
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+  };
+}
 
 // Timeout helper
 function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
@@ -828,12 +854,10 @@ async function estimateCartTotals() {
 
   try {
     // call Worker for Printful estimate
-    const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/estimate`, {
+    const url = `${PAYPAL_WORKER_BASE}/paypal/estimate`;
+    const options = {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": API_KEY,
-      },
+      headers: await authHeaders(),
       body: JSON.stringify({
         currency: "USD",
         shipping,
@@ -848,9 +872,16 @@ async function estimateCartTotals() {
           catalogVariantId: it.catalogVariantId,
         })),
       }),
-    }, 12000);
+    };
+    let res = await fetchWithTimeout(url, options, 12000);
+    let data = await res.json();
 
-    const data = await res.json();
+    // Auto-refresh token if expired
+    if (res.status === 401) {
+      await getCartToken();
+      res = await fetchWithTimeout(url, { ...options, headers: await authHeaders() }, 12000);
+      data = await res.json();
+    }
     if (!data.ok) throw new Error(data.error || "Estimate failed");
 
     cartShipEl.textContent = money(data.totals.shipping);
@@ -877,12 +908,10 @@ async function checkoutCartWithPayPal() {
   checkoutBtn.textContent = "Creating PayPal order...";
 
   try {
-    const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/order`, {
+    const url = `${PAYPAL_WORKER_BASE}/paypal/order`;
+    const options = {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": API_KEY,
-      },
+      headers: await authHeaders(),
       body: JSON.stringify({
         currency: "USD",
         shipping,
@@ -899,11 +928,18 @@ async function checkoutCartWithPayPal() {
           catalogVariantId: it.catalogVariantId,
         })),
       }),
-    }, 15000);
+    };
+    let res = await fetchWithTimeout(url, options, 15000);
+
+    // Auto-refresh token if expired
+    if (res.status === 401) {
+      await getCartToken();
+      res = await fetchWithTimeout(url, { ...options, headers: await authHeaders() }, 15000);
+    }
 
     if (!res.ok) throw new Error(`Server error: ${res.status} ${res.statusText}`);
 
-    const data = await res.json();
+    let data = await res.json();
     if (!data.ok || !data.approveUrl) {
       console.error("❌ PayPal order failed:", data);
       alert("PayPal order failed. Please try again.");
