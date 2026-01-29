@@ -16,13 +16,15 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .topActions{display:flex;gap:10px;flex-wrap:wrap}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
 .card{border:1px solid #444;padding:14px;border-radius:12px;background:rgba(17,17,17,0.35);backdrop-filter:blur(10px)}
-.imgWrap{height:180px;display:flex;align-items:center;justify-content:center;background:#222}
+.imgWrap{height:180px;display:flex;align-items:center;justify-content:center;background:#222;border-radius:12px;overflow:hidden;border:1px solid #333}
 .imgWrap img{max-height:100%;object-fit:contain;opacity:0;transition:opacity 0.3s ease}
 .imgWrap img.loaded{opacity:1}
-.btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 10px rgba(58,160,255,0.28);text-decoration:none;display:inline-block}
+
+.btnGlow{background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;color:#fff;font-weight:800;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 10px rgba(58,160,255,0.28);text-decoration:none;display:inline-block}
 .btnGlow:hover{transform:translateY(-2px);box-shadow:0 0 14px rgba(58,160,255,0.45);background:rgba(58,160,255,0.06)}
 .btnGlow:active{transform:translateY(0);box-shadow:0 0 10px rgba(58,160,255,0.35)}
-.buyBtn{background:transparent;border:1px solid #3aa0ff;padding:12px 20px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 12px rgba(58,160,255,0.32)}
+
+.buyBtn{background:transparent;border:1px solid #3aa0ff;padding:12px 20px;border-radius:10px;color:#fff;font-weight:900;cursor:pointer;transition:all 0.2s ease;box-shadow:0 0 12px rgba(58,160,255,0.32)}
 .buyBtn:hover{transform:translateY(-2px);box-shadow:0 0 16px rgba(58,160,255,0.5);background:rgba(58,160,255,0.06)}
 .buyBtn:active{transform:translateY(0)}
 #modalBuyBtn,#closeModal{margin-top:12px;min-width:120px}
@@ -30,13 +32,13 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999;padding:12px}
 .modal{background:#111;padding:24px;border-radius:14px;max-width:900px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
 .modal h2{margin-top:0;margin-bottom:16px}
-.variantRow{cursor:pointer;padding:12px;border-bottom:1px solid #333;transition:background 0.2s ease}
+.variantRow{cursor:pointer;padding:12px;border-bottom:1px solid #333;transition:background 0.2s ease;border-radius:10px}
 .variantRow:hover{background:rgba(58,160,255,0.15)}
 
 /* ===== CART DRAWER ===== */
 .cartBtn {
   background:transparent;border:1px solid #3aa0ff;padding:10px 16px;border-radius:10px;
-  color:#fff;font-weight:800;cursor:pointer;transition:all .2s ease;
+  color:#fff;font-weight:900;cursor:pointer;transition:all .2s ease;
   box-shadow:0 0 10px rgba(58,160,255,.28);
 }
 .cartBtn:hover{transform:translateY(-2px);box-shadow:0 0 14px rgba(58,160,255,.45);background:rgba(58,160,255,.06)}
@@ -53,7 +55,7 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   z-index:10000;
 }
 .cartDrawer{
-  position:absolute;right:0;top:0;height:100%;width:min(400px, 92vw);
+  position:absolute;right:0;top:0;height:100%;width:min(420px, 92vw);
   background:rgba(17,17,17,.92);backdrop-filter: blur(12px);
   border-left:1px solid #333;
   box-shadow:-20px 0 60px rgba(0,0,0,.8);
@@ -108,6 +110,60 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   box-shadow:0 20px 80px rgba(0,0,0,0.9);
 }
 
+/* ===== SHIPPING MODAL ===== */
+.shipBack{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);
+  justify-content:center;align-items:center;z-index:20000;padding:12px;
+}
+.shipModal{
+  width:min(640px, 96vw);
+  background:rgba(17,17,17,.95);
+  backdrop-filter: blur(12px);
+  border:1px solid #333;
+  border-radius:16px;
+  box-shadow:0 20px 70px rgba(0,0,0,.85);
+  padding:18px;
+}
+.shipTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.shipTop h2{margin:0}
+.shipGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.shipGrid .full{grid-column:1 / -1}
+.field label{display:block;font-size:12px;color:#aaa;margin:0 0 6px 2px}
+.field input, .field select{
+  width:100%;
+  background:rgba(0,0,0,.25);
+  border:1px solid #333;
+  border-radius:12px;
+  padding:12px 12px;
+  color:#fff;
+  outline:none;
+}
+.field input:focus, .field select:focus{
+  border-color:rgba(58,160,255,.8);
+  box-shadow:0 0 0 3px rgba(58,160,255,.15);
+}
+.shipActions{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px;
+}
+.shipHint{font-size:12px;color:#aaa;line-height:1.35;margin-top:8px}
+.pill{
+  display:inline-block;
+  border:1px solid rgba(58,160,255,.55);
+  background:rgba(58,160,255,.12);
+  color:#cfe9ff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.inlineRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.divider{height:1px;background:#2a2a2a;margin:10px 0}
+
 /* Loading spinner */
 .spinner{
   border:3px solid rgba(58,160,255,0.2);
@@ -131,11 +187,16 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   h1{font-size:28px}
   .card{padding:12px}
   .imgWrap{height:160px}
-  .cartDrawer{width:min(380px, calc(100vw - 18px));max-width:100%;border-left:none;padding:14px;right:0;left:auto;box-shadow:-10px 0 40px rgba(0,0,0,.75)}
+  .cartDrawer{width:min(390px, calc(100vw - 18px));max-width:100%;border-left:none;padding:14px;right:0;left:auto;box-shadow:-10px 0 40px rgba(0,0,0,.75)}
   .modal{max-width:520px;width:100%;max-height:86vh;padding:18px}
   #modalImg{max-height:200px;width:auto;max-width:100%}
   #modalBuyBtn,#closeModal{width:100%;margin-right:0}
+  .shipGrid{grid-template-columns:1fr}
 }
+
+/* tiny footer link */
+a { color: inherit; }
+code { color: #cfe9ff; }
 </style>
 </head>
 
@@ -143,46 +204,49 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 
 <div class="pageShell">
 
-<div class="topBar">
-  <h1 style="margin:0">Intrigued Mutts Collection</h1>
-  <div class="topActions">
-    <button id="refreshBtn" class="btnGlow">Refresh products</button>
+  <div class="topBar">
+    <h1 style="margin:0">Intrigued Mutts Collection</h1>
+    <div class="topActions">
+      <button id="refreshBtn" class="btnGlow">Refresh products</button>
+      <button id="shippingBtn" class="btnGlow">Shipping</button>
+      <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
+    </div>
+  </div>
+
+  <div id="statusText"></div>
+  <div id="grid" class="grid"></div>
+
+  <div style="margin-top:40px;padding-top:24px;border-top:1px solid #333;text-align:center">
     <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
+    <div style="margin-top:16px;font-size:13px;color:#ff69b4">
+      © 2026 Intrigued Mutts Society. All rights reserved.
+    </div>
   </div>
-</div>
-
-<div id="statusText"></div>
-<div id="grid" class="grid"></div>
-
-<div style="margin-top:40px;padding-top:24px;border-top:1px solid #333;text-align:center">
-  <a href="./index.html#mancave" class="btnGlow">← Back to Clubhouse</a>
-  <div style="margin-top:16px;font-size:13px;color:#ff69b4">
-    © 2026 Intrigued Mutts Society. All rights reserved.
-  </div>
-</div>
 
 </div>
 
-<!-- MODAL -->
+<!-- PRODUCT MODAL -->
 <div class="modalBack" id="modalBack">
-<div class="modal">
-<h2 id="modalTitle"></h2>
-<div style="display:flex;justify-content:center;align-items:center;margin:16px 0">
-  <img id="modalImg" style="max-height:300px;cursor:pointer;transition:transform 0.2s ease" 
-       title="Click to view full size in new window"
-       onmouseover="this.style.transform='scale(1.05)'"
-       onmouseout="this.style.transform='scale(1)'">
-</div>
-<div id="enlargeLabel" style="text-align:center;font-size:12px;color:#3aa0ff;margin-top:8px;margin-bottom:12px">
-  ✨ Click to enlarge
-</div>
+  <div class="modal">
+    <h2 id="modalTitle"></h2>
 
-<div id="variantNote" style="margin-bottom:12px;font-size:14px;color:#aaa"></div>
-<div id="variantList" style="margin-bottom:16px"></div>
+    <div style="display:flex;justify-content:center;align-items:center;margin:16px 0">
+      <img id="modalImg" style="max-height:300px;cursor:pointer;transition:transform 0.2s ease" 
+          title="Click to view full size"
+          onmouseover="this.style.transform='scale(1.05)'"
+          onmouseout="this.style.transform='scale(1)'">
+    </div>
 
-<button class="buyBtn" id="modalBuyBtn">Buy</button>
-<button id="closeModal" class="btnGlow">Close</button>
-</div>
+    <div id="enlargeLabel" style="text-align:center;font-size:12px;color:#3aa0ff;margin-top:8px;margin-bottom:12px">
+      ✨ Click to enlarge
+    </div>
+
+    <div id="variantNote" style="margin-bottom:12px;font-size:14px;color:#aaa"></div>
+    <div id="variantList" style="margin-bottom:16px"></div>
+
+    <button class="buyBtn" id="modalBuyBtn">Add to Cart</button>
+    <button id="closeModal" class="btnGlow">Close</button>
+  </div>
 </div>
 
 <!-- LIGHTBOX FOR ENLARGED IMAGE -->
@@ -198,6 +262,11 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
       <button class="btnGlow" id="closeCartBtn">Close</button>
     </div>
 
+    <div class="inlineRow" style="margin:6px 0 10px">
+      <span class="pill" id="shipStatusPill">Shipping: Not set</span>
+      <button class="btnGlow" id="editShippingFromCartBtn" style="padding:8px 12px">Edit</button>
+    </div>
+
     <div class="cartItems" id="cartItems"></div>
 
     <div class="cartFooter">
@@ -209,8 +278,79 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
       <button class="checkoutBtn" id="checkoutBtn">Checkout (PayPal)</button>
 
       <div class="smallNote" style="margin-top:10px">
-        You'll approve the total in PayPal. After payment, we save the order details (name, size, image, qty) in KV.
+        Shipping + tax are calculated before PayPal using Printful estimate-costs. You'll approve the total in PayPal.
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHIPPING MODAL -->
+<div class="shipBack" id="shipBack">
+  <div class="shipModal">
+    <div class="shipTop">
+      <h2>Shipping details</h2>
+      <button class="btnGlow" id="shipCloseBtn">Close</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="inlineRow">
+      <span class="pill" id="shipModePill">Saved: No</span>
+      <span style="font-size:12px;color:#aaa">We store this on your device only (localStorage).</span>
+    </div>
+
+    <div class="shipGrid" style="margin-top:12px">
+      <div class="field full">
+        <label for="shipName">Full name</label>
+        <input id="shipName" autocomplete="name" placeholder="First Last">
+      </div>
+
+      <div class="field full">
+        <label for="shipAddress1">Street address</label>
+        <input id="shipAddress1" autocomplete="address-line1" placeholder="123 Main St">
+      </div>
+
+      <div class="field full">
+        <label for="shipAddress2">Apt / Unit (optional)</label>
+        <input id="shipAddress2" autocomplete="address-line2" placeholder="Apt 4B">
+      </div>
+
+      <div class="field">
+        <label for="shipCity">City</label>
+        <input id="shipCity" autocomplete="address-level2" placeholder="Rockville">
+      </div>
+
+      <div class="field">
+        <label for="shipState">State</label>
+        <input id="shipState" maxlength="2" autocomplete="address-level1" placeholder="MD">
+      </div>
+
+      <div class="field">
+        <label for="shipZip">ZIP</label>
+        <input id="shipZip" inputmode="numeric" autocomplete="postal-code" placeholder="20852">
+      </div>
+
+      <div class="field">
+        <label for="shipCountry">Country</label>
+        <select id="shipCountry" autocomplete="country">
+          <option value="US">US</option>
+          <option value="CA">CA</option>
+          <option value="GB">GB</option>
+          <option value="AU">AU</option>
+          <option value="FR">FR</option>
+          <option value="DE">DE</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="shipHint">
+      This info is required so Printful can estimate shipping + tax accurately before PayPal.
+    </div>
+
+    <div class="shipActions">
+      <button class="btnGlow" id="shipClearBtn" style="border-color:#ff4d6d;box-shadow:0 0 10px rgba(255,77,109,.2)">Clear</button>
+      <button class="btnGlow" id="shipSaveBtn">Save shipping</button>
+      <button class="buyBtn" id="shipSaveAndCheckoutBtn">Save + Continue to PayPal</button>
     </div>
   </div>
 </div>
@@ -228,50 +368,25 @@ const STORE_API_BASE = WORKER_BASE;
 const PAYPAL_WORKER_BASE = WORKER_BASE;
 
 // IMPORTANT: Put YOUR real API key here (the Worker secret you created).
-// For sandbox/testing it’s okay to place it here.
+// For sandbox/testing it is okay to place it here.
 // Later we can hide it properly.
 const API_KEY = "mutts_api_7f3a91c2b8e4d0aa55c9";
+
 // Timeout helper
 function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
   return Promise.race([
     fetch(url, options),
-    new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), timeoutMs)
     )
   ]);
 }
 
-// Mock data for development/fallback
-const MOCK_PRODUCTS = [
-  {
-    id: "mock-1",
-    name: "Intrigued Mutts T-Shirt",
-    thumbnail_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23333' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='14'%3ET-Shirt%3C/text%3E%3C/svg%3E"
-  },
-  {
-    id: "mock-2",
-    name: "Intrigued Mutts Hoodie",
-    thumbnail_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23333' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='14'%3EHoodie%3C/text%3E%3C/svg%3E"
-  }
-];
-
-const MOCK_VARIANTS = {
-  "mock-1": [
-    { id: "v1-s", name: "Small", retail_price: "25.00" },
-    { id: "v1-m", name: "Medium", retail_price: "25.00" },
-    { id: "v1-l", name: "Large", retail_price: "25.00" }
-  ],
-  "mock-2": [
-    { id: "v2-s", name: "Small", retail_price: "45.00" },
-    { id: "v2-m", name: "Medium", retail_price: "45.00" },
-    { id: "v2-l", name: "Large", retail_price: "45.00" }
-  ]
-};
-
-const USE_MOCK_DATA = false; // Set to true for offline testing
+const USE_MOCK_DATA = false; // Set true for offline testing
 const grid = document.getElementById("grid");
 const statusText = document.getElementById("statusText");
 const refreshBtn = document.getElementById("refreshBtn");
+const shippingBtn = document.getElementById("shippingBtn");
 
 const modalBack = document.getElementById("modalBack");
 const modalTitle = document.getElementById("modalTitle");
@@ -281,21 +396,37 @@ const closeModal = document.getElementById("closeModal");
 const variantList = document.getElementById("variantList");
 const variantNote = document.getElementById("variantNote");
 
-// Cart drawer DOM (added)
+// Cart drawer DOM
 const cartBack = document.getElementById("cartBack");
 const closeCartBtn = document.getElementById("closeCartBtn");
 const cartItemsEl = document.getElementById("cartItems");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
 const checkoutBtn = document.getElementById("checkoutBtn");
+const editShippingFromCartBtn = document.getElementById("editShippingFromCartBtn");
+const shipStatusPill = document.getElementById("shipStatusPill");
 
 // Lightbox elements
 const lightboxBack = document.getElementById("lightboxBack");
 const lightboxImg = document.getElementById("lightboxImg");
 
-// We'll inject a Cart button into the header actions container
-const headerRight = document.querySelector(".topActions") 
-  || document.querySelector("div[style*='display:flex'][style*='gap:10px']") 
-  || document.querySelector(".topBar");
+// Shipping modal elements
+const shipBack = document.getElementById("shipBack");
+const shipCloseBtn = document.getElementById("shipCloseBtn");
+const shipClearBtn = document.getElementById("shipClearBtn");
+const shipSaveBtn = document.getElementById("shipSaveBtn");
+const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn");
+const shipModePill = document.getElementById("shipModePill");
+
+const shipName = document.getElementById("shipName");
+const shipAddress1 = document.getElementById("shipAddress1");
+const shipAddress2 = document.getElementById("shipAddress2");
+const shipCity = document.getElementById("shipCity");
+const shipState = document.getElementById("shipState");
+const shipZip = document.getElementById("shipZip");
+const shipCountry = document.getElementById("shipCountry");
+
+// We will inject a Cart button into the header actions container
+const headerRight = document.querySelector(".topActions") || document.querySelector(".topBar");
 let cartBtn;
 
 // Ensure browser back navigates to clubhouse landing
@@ -318,16 +449,14 @@ const variantCache = {}; // Cache variants by product ID
 const CART_KEY = "mutts_cart_v1";
 
 function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
+  catch { return []; }
 }
 
 function saveCart(cart) {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
   updateCartBadge();
+  updateShippingPills();
 }
 
 function cartCount(cart = getCart()) {
@@ -356,11 +485,9 @@ function addToCart(item) {
   const id = item.lineId;
 
   const existing = cart.find(x => x.lineId === id);
-  if (existing) {
-    existing.qty += item.qty;
-  } else {
-    cart.push(item);
-  }
+  if (existing) existing.qty += item.qty;
+  else cart.push(item);
+
   saveCart(cart);
   renderCart();
   openCart();
@@ -394,14 +521,8 @@ function removeFromCart(lineId) {
   renderCart();
 }
 
-function clearCart() {
-  saveCart([]);
-  renderCart();
-}
-
 function ensureCartButton() {
   if (!headerRight) return;
-
   if (cartBtn) return;
 
   cartBtn = document.createElement("button");
@@ -451,7 +572,9 @@ function renderCart() {
     row.innerHTML = `
       <img src="${it.imageUrl || ""}" alt="" loading="lazy" data-act="openItem" style="cursor:pointer">
       <div>
-        <div class="cartName" data-act="openItem" style="cursor:pointer;text-decoration:underline;">${it.productName || "Item"}</div>
+        <div class="cartName" data-act="openItem" style="cursor:pointer;text-decoration:underline;">
+          ${it.productName || "Item"}
+        </div>
         <div class="cartMeta">${it.variantName || ""}</div>
         <div class="cartMeta">Unit: ${money(it.unitPrice)}</div>
 
@@ -483,11 +606,8 @@ function renderCart() {
 }
 
 // ===============================
-// SHIPPING (Option A)
+// SHIPPING (Option A) - Pretty modal (no prompts)
 // ===============================
-
-// Minimal: store a shipping object in localStorage.
-// You can replace this later with a nice form UI.
 const SHIPPING_KEY = "mutts_shipping_v1";
 
 function getShipping() {
@@ -497,42 +617,114 @@ function getShipping() {
 
 function saveShipping(shipping) {
   localStorage.setItem(SHIPPING_KEY, JSON.stringify(shipping));
+  updateShippingPills();
 }
 
-// Quick prompt-based capture (fastest way to move today)
-async function ensureShipping() {
-  let shipping = getShipping();
-  if (shipping && shipping.address) return shipping;
+function clearShipping() {
+  localStorage.removeItem(SHIPPING_KEY);
+  updateShippingPills();
+}
 
-  const name = prompt("Shipping name (first + last):", "") || "";
-  const address1 = prompt("Street address:", "") || "";
-  const address2 = prompt("Apt / unit (optional):", "") || "";
-  const city = prompt("City:", "") || "";
-  const state = prompt("State code (ex: MD, DC, VA):", "") || "";
-  const zip = prompt("ZIP:", "") || "";
-  const country = (prompt("Country code (default US):", "US") || "US").toUpperCase();
+function normalizeShippingForWorker(formObj) {
+  return {
+    name: String(formObj.name || "").trim(),
+    address: {
+      address1: String(formObj.address1 || "").trim(),
+      address2: String(formObj.address2 || "").trim(),
+      city: String(formObj.city || "").trim(),
+      state_code: String(formObj.state_code || "").trim().toUpperCase(),
+      zip: String(formObj.zip || "").trim(),
+      country_code: String(formObj.country_code || "US").trim().toUpperCase(),
+    },
+  };
+}
 
-  // basic validation
-  if (!name || !address1 || !city || !state || !zip) {
-    alert("Shipping is required (name, address, city, state, zip). Try again.");
+function shippingLooksValid(shipping) {
+  if (!shipping || !shipping.address) return false;
+  const a = shipping.address;
+  return Boolean(
+    (shipping.name || "").trim() &&
+    (a.address1 || "").trim() &&
+    (a.city || "").trim() &&
+    (a.state_code || "").trim() &&
+    (a.zip || "").trim() &&
+    (a.country_code || "").trim()
+  );
+}
+
+function fillShippingFormFromSaved() {
+  const s = getShipping();
+  if (!s || !s.address) {
+    shipName.value = "";
+    shipAddress1.value = "";
+    shipAddress2.value = "";
+    shipCity.value = "";
+    shipState.value = "";
+    shipZip.value = "";
+    shipCountry.value = "US";
+    shipModePill.textContent = "Saved: No";
+    return;
+  }
+
+  shipName.value = s.name || "";
+  shipAddress1.value = s.address.address1 || s.address.address_line_1 || "";
+  shipAddress2.value = s.address.address2 || s.address.address_line_2 || "";
+  shipCity.value = s.address.city || s.address.admin_area_2 || "";
+  shipState.value = s.address.state_code || s.address.admin_area_1 || "";
+  shipZip.value = s.address.zip || s.address.postal_code || "";
+  shipCountry.value = (s.address.country_code || "US").toUpperCase();
+
+  shipModePill.textContent = "Saved: Yes";
+}
+
+function openShippingModal() {
+  fillShippingFormFromSaved();
+  shipBack.style.display = "flex";
+}
+
+function closeShippingModal() {
+  shipBack.style.display = "none";
+}
+
+function readShippingForm() {
+  return normalizeShippingForWorker({
+    name: shipName.value,
+    address1: shipAddress1.value,
+    address2: shipAddress2.value,
+    city: shipCity.value,
+    state_code: shipState.value,
+    zip: shipZip.value,
+    country_code: shipCountry.value,
+  });
+}
+
+function validateAndSaveShipping(showAlerts = true) {
+  const shipping = readShippingForm();
+
+  if (!shippingLooksValid(shipping)) {
+    if (showAlerts) alert("Please fill: name, address, city, state, zip, country.");
     return null;
   }
 
-  shipping = {
-    name,
-    address: {
-      // Use the Worker's supported keys:
-      address1,
-      address2,
-      city,
-      state_code: state.toUpperCase(),
-      zip,
-      country_code: country,
-    },
-  };
-
+  // Normalize to the Worker's expected custom-shape keys
   saveShipping(shipping);
+  shipModePill.textContent = "Saved: Yes";
   return shipping;
+}
+
+function updateShippingPills() {
+  const s = getShipping();
+  const ok = shippingLooksValid(s);
+  if (shipStatusPill) shipStatusPill.textContent = ok ? "Shipping: Saved" : "Shipping: Not set";
+  if (shippingBtn) shippingBtn.textContent = ok ? "Shipping (Saved)" : "Shipping";
+}
+
+// ensures we either have saved shipping or we open the modal
+async function ensureShippingOrOpenModal() {
+  const shipping = getShipping();
+  if (shippingLooksValid(shipping)) return shipping;
+  openShippingModal();
+  return null;
 }
 
 // ===============================
@@ -542,14 +734,14 @@ async function checkoutCartWithPayPal() {
   const cart = getCart();
   if (!cart.length) return;
 
+  // Ensure shipping exists; if not, open modal and stop
+  const shipping = await ensureShippingOrOpenModal();
+  if (!shipping) return;
+
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Creating PayPal order...";
 
   try {
-    const shipping = await ensureShipping();
-    if (!shipping) return;
-
-    // Worker will compute totals server-side
     const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/order`, {
       method: "POST",
       headers: {
@@ -567,33 +759,30 @@ async function checkoutCartWithPayPal() {
           unitPrice: String(Number(it.unitPrice).toFixed(2)),
           qty: Number(it.qty),
 
-          // ✅ ADD THESE 2:
+          // required by your Worker for Printful estimate + fulfillment
           syncVariantId: it.syncVariantId,
           catalogVariantId: it.catalogVariantId,
         })),
       }),
-    }, 15000); // 15 second timeout
+    }, 15000);
 
-    if (!res.ok) {
-      throw new Error(`Server error: ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`Server error: ${res.status} ${res.statusText}`);
 
     const data = await res.json();
-
     if (!data.ok || !data.approveUrl) {
       console.error("❌ PayPal order failed:", data);
-      alert("PayPal order failed. The payment service may be unavailable. Please try again later.");
+      alert("PayPal order failed. Please try again.");
       return;
     }
 
-    // Send buyer to PayPal approval page
+    // straight to PayPal
     window.location.href = data.approveUrl;
   } catch (err) {
     console.error("❌ checkout error:", err);
-    if (err.message === 'Request timeout') {
-      alert("Checkout timed out. The payment service is not responding. Please try again later or contact support.");
-    } else if (err.message.includes('Failed to fetch')) {
-      alert("Cannot connect to payment service. Please check your internet connection and try again.");
+    if (err.message === "Request timeout") {
+      alert("Checkout timed out. Try again.");
+    } else if (String(err.message || "").includes("Failed to fetch")) {
+      alert("Cannot connect to payment service. Check your internet and try again.");
     } else {
       alert("Checkout failed: " + err.message);
     }
@@ -612,32 +801,21 @@ async function loadProducts() {
   grid.innerHTML = "";
 
   try {
-    if (USE_MOCK_DATA) {
-      // Use mock data for testing
-      await new Promise(resolve => setTimeout(resolve, 500));
-      allProducts = MOCK_PRODUCTS;
-      renderProducts();
-      return;
-    }
-    
     const res = await fetchWithTimeout(`${STORE_API_BASE}/api/store/products`, {}, 10000);
-    
-    if (!res.ok) {
-      throw new Error(`Server error: ${res.status}`);
-    }
-    
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
     const data = await res.json();
     allProducts = data?.result || [];
     renderProducts();
   } catch (err) {
     console.error("❌ Load products error:", err);
     statusText.style.color = "#ff4d6d";
-    
-    if (err.message === 'Request timeout') {
+
+    if (err.message === "Request timeout") {
       statusText.innerHTML = `⚠️ <strong>Loading timed out.</strong><br>
         The product service at <code style="font-size:11px">${STORE_API_BASE}</code> is not responding.<br>
         <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
-    } else if (err.message.includes('Failed to fetch')) {
+    } else if (String(err.message || "").includes("Failed to fetch")) {
       statusText.innerHTML = `⚠️ <strong>Cannot connect to product service.</strong><br>
         Please check your internet connection or the API may be down.<br>
         <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
@@ -649,52 +827,40 @@ async function loadProducts() {
 }
 
 function getProductImages(prod) {
-
   const urls = new Set();
 
-  // product-level thumbnail
-  if (prod?.thumbnail_url) {
-    urls.add(prod.thumbnail_url);
-  }
+  if (prod?.thumbnail_url) urls.add(prod.thumbnail_url);
+  if (prod?.sync_product?.thumbnail_url) urls.add(prod.sync_product.thumbnail_url);
 
-  if (prod?.sync_product?.thumbnail_url) {
-    urls.add(prod.sync_product.thumbnail_url);
-  }
-
-  // 🔥 Pull ONLY preview images from variant files
   if (Array.isArray(prod?.sync_variants)) {
     prod.sync_variants.forEach(v => {
       if (Array.isArray(v.files)) {
         v.files.forEach(f => {
-
-          // Prefer preview, fall back to thumb
           const url = f.preview_url || f.thumbnail_url;
-
           if (url) urls.add(url);
         });
       }
     });
   }
-
   return [...urls];
 }
 
 function renderProducts() {
   statusText.textContent = `Loaded ${allProducts.length} products`;
+  statusText.style.color = "#cfe9ff";
   grid.innerHTML = "";
 
   allProducts.forEach(prod => {
     const card = document.createElement("div");
     card.className = "card";
 
-    // Use thumbnail for grid (fast), gallery handled in modal
     const thumb = prod.thumbnail_url || getProductImages(prod)[0] || "";
 
     card.innerHTML = `
       <div class="imgWrap">
         <img src="${thumb}" loading="lazy" onload="this.classList.add('loaded')">
       </div>
-      <h3>${prod.name}</h3>
+      <h3 style="margin:12px 0 10px">${prod.name}</h3>
       <button class="buyBtn">View sizes</button>
     `;
 
@@ -704,7 +870,6 @@ function renderProducts() {
     };
 
     card.onclick = () => openModal(prod);
-
     grid.appendChild(card);
   });
 }
@@ -715,20 +880,12 @@ function renderProducts() {
 async function openModal(prod){
   activeProduct = prod;
 
-  // If the product list endpoint doesn’t include the full mockups,
-  // this detail endpoint usually does.
+  // detail endpoint (more complete)
   try {
-    if (!USE_MOCK_DATA) {
-      const res = await fetchWithTimeout(
-        `${STORE_API_BASE}/api/store/products/${prod.id}`,
-        {},
-        8000
-      );
-      if (res.ok) {
-        const data = await res.json();
-        // Merge detail result onto activeProduct
-        activeProduct = { ...prod, ...(data?.result || {}) };
-      }
+    const res = await fetchWithTimeout(`${STORE_API_BASE}/api/store/products/${prod.id}`, {}, 8000);
+    if (res.ok) {
+      const data = await res.json();
+      activeProduct = { ...prod, ...(data?.result || {}) };
     }
   } catch (e) {
     console.log("Product detail fetch failed, using list data only.");
@@ -736,21 +893,18 @@ async function openModal(prod){
 
   modalTitle.textContent = activeProduct.name;
 
-  // Build image list from whatever the API returns
   const images = getProductImages(activeProduct);
   activeProduct._images = images;
 
-  // Main image
   modalImg.src = images[0] || activeProduct.thumbnail_url || "";
   modalImg.loading = "lazy";
 
-  // Click main image -> lightbox
   modalImg.onclick = () => {
     lightboxImg.src = modalImg.src;
     lightboxBack.style.display = "flex";
   };
 
-  // Build thumbnail strip under the image (simple + clean)
+  // thumbnails strip
   const oldStrip = document.getElementById("mockupStrip");
   if (oldStrip) oldStrip.remove();
 
@@ -780,14 +934,12 @@ async function openModal(prod){
     strip.appendChild(t);
   });
 
-  // Place label under the main image, then thumbnails beneath the label
   const enlargeLabel = document.getElementById("enlargeLabel");
   const imgContainer = modalImg.parentElement;
   if (enlargeLabel && imgContainer) {
     imgContainer.insertAdjacentElement("afterend", enlargeLabel);
     enlargeLabel.insertAdjacentElement("afterend", strip);
   } else {
-    // Fallback: append strip after image container if label missing
     imgContainer.insertAdjacentElement("afterend", strip);
   }
 
@@ -803,30 +955,15 @@ async function loadVariants() {
 
   try {
     let variants;
-    
-    // Check cache first
+
     if (variantCache[activeProduct.id]) {
       variants = variantCache[activeProduct.id];
     } else {
-      if (USE_MOCK_DATA) {
-        // Use mock variants
-        await new Promise(resolve => setTimeout(resolve, 300));
-        variants = MOCK_VARIANTS[activeProduct.id] || [];
-      } else {
-        const res = await fetchWithTimeout(
-          `${STORE_API_BASE}/api/store/products/${activeProduct.id}`,
-          {},
-          8000
-        );
-        
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
-        
-        const data = await res.json();
-        variants = data?.result?.sync_variants || [];
-      }
-      variantCache[activeProduct.id] = variants; // Cache for future use
+      const res = await fetchWithTimeout(`${STORE_API_BASE}/api/store/products/${activeProduct.id}`, {}, 8000);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const data = await res.json();
+      variants = data?.result?.sync_variants || [];
+      variantCache[activeProduct.id] = variants;
     }
 
     variantList.innerHTML = "";
@@ -837,12 +974,8 @@ async function loadVariants() {
     }
 
     variantNote.textContent = "Pick your size:";
-
-    // We change the modal button behavior: instead of direct buy, it becomes "Add to Cart"
     modalBuyBtn.textContent = "Add to Cart";
     modalBuyBtn.disabled = true;
-
-    let selected = null;
 
     variants.forEach(v => {
       const row = document.createElement("div");
@@ -861,9 +994,6 @@ async function loadVariants() {
       `;
 
       row.onclick = () => {
-        selected = v;
-
-        // highlight selected
         [...variantList.children].forEach(el => el.style.outline = "none");
         row.style.outline = "2px solid rgba(58,160,255,.7)";
 
@@ -873,12 +1003,11 @@ async function loadVariants() {
         modalBuyBtn.onclick = () => {
           const item = {
             lineId: makeLineId(activeProduct.id, v.id),
-
             productId: activeProduct.id,
 
-            // ✅ SAVE BOTH:
-            syncVariantId: Number(v.id),              // Printful sync variant id (what /orders should use)
-            catalogVariantId: Number(v.variant_id),   // Printful catalog variant id (backup / reference)
+            // SAVE BOTH:
+            syncVariantId: Number(v.id),              // Printful sync variant id
+            catalogVariantId: Number(v.variant_id),   // Printful catalog variant id
 
             productName: activeProduct.name,
             variantName: v.name,
@@ -886,7 +1015,6 @@ async function loadVariants() {
             unitPrice: Number(price),
             qty: 1,
           };
-
           addToCart(item);
         };
       };
@@ -896,9 +1024,9 @@ async function loadVariants() {
 
   } catch (e) {
     console.error(e);
-    if (e.message === 'Request timeout') {
-      variantNote.textContent = "⚠️ Loading sizes timed out. The service is not responding. Please close and try again.";
-    } else if (e.message.includes('Failed to fetch')) {
+    if (e.message === "Request timeout") {
+      variantNote.textContent = "⚠️ Loading sizes timed out. Please close and try again.";
+    } else if (String(e.message || "").includes("Failed to fetch")) {
       variantNote.textContent = "⚠️ Cannot connect to service. Check your internet connection.";
     } else {
       variantNote.textContent = "⚠️ Could not load sizes: " + e.message;
@@ -906,29 +1034,55 @@ async function loadVariants() {
   }
 }
 
+// ===============================
+// UI EVENTS
+// ===============================
 closeModal.onclick = () => modalBack.style.display = "none";
 refreshBtn.onclick = loadProducts;
 
-modalBack.onclick = (e) => {
-  // clicking outside modal closes it
-  if (e.target === modalBack) modalBack.style.display = "none";
-};
+modalBack.onclick = (e) => { if (e.target === modalBack) modalBack.style.display = "none"; };
 
-cartBack.onclick = (e) => {
-  // clicking outside drawer closes
-  if (e.target === cartBack) closeCart();
-};
+cartBack.onclick = (e) => { if (e.target === cartBack) closeCart(); };
 closeCartBtn.onclick = closeCart;
 checkoutBtn.onclick = checkoutCartWithPayPal;
 
-// Lightbox: click anywhere to close
-lightboxBack.onclick = () => {
-  lightboxBack.style.display = "none";
+shippingBtn.onclick = () => openShippingModal();
+editShippingFromCartBtn.onclick = () => openShippingModal();
+
+lightboxBack.onclick = () => { lightboxBack.style.display = "none"; };
+
+// Shipping modal close on background click
+shipBack.onclick = (e) => { if (e.target === shipBack) closeShippingModal(); };
+shipCloseBtn.onclick = closeShippingModal;
+
+shipClearBtn.onclick = () => {
+  if (confirm("Clear saved shipping info on this device?")) {
+    clearShipping();
+    fillShippingFormFromSaved();
+  }
 };
 
+shipSaveBtn.onclick = () => {
+  const saved = validateAndSaveShipping(true);
+  if (saved) {
+    alert("Shipping saved.");
+    closeShippingModal();
+  }
+};
+
+shipSaveAndCheckoutBtn.onclick = async () => {
+  const saved = validateAndSaveShipping(true);
+  if (!saved) return;
+  closeShippingModal();
+  await checkoutCartWithPayPal();
+};
+
+// ===============================
 // Boot
+// ===============================
 ensureCartButton();
 renderCart();
+updateShippingPills();
 loadProducts();
 </script>
 
