@@ -291,8 +291,10 @@ const checkoutBtn = document.getElementById("checkoutBtn");
 const lightboxBack = document.getElementById("lightboxBack");
 const lightboxImg = document.getElementById("lightboxImg");
 
-// We'll inject a Cart button into your header bar (no HTML changes needed)
-const headerRight = document.querySelector("div[style*='display:flex'][style*='gap:10px']");
+// We'll inject a Cart button into the header actions container
+const headerRight = document.querySelector(".topActions") 
+  || document.querySelector("div[style*='display:flex'][style*='gap:10px']") 
+  || document.querySelector(".topBar");
 let cartBtn;
 
 // Ensure browser back navigates to clubhouse landing
