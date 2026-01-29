@@ -143,6 +143,34 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   color:#fff;
   outline:none;
 }
+.shipGrid{align-items:start}
+.field{position:relative}
+.field input,
+.field select{
+  width:100%;
+  min-height:48px;
+  line-height:1.2;
+  padding:12px 12px;
+  display:block;
+  box-sizing:border-box;
+}
+.field select{
+  -webkit-appearance:none;
+  appearance:none;
+  padding-right:40px;
+  background-image:linear-gradient(45deg, transparent 50%, #cfe9ff 50%),
+                    linear-gradient(135deg, #cfe9ff 50%, transparent 50%);
+  background-position:calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+}
+*{box-sizing:border-box}
+@supports (-webkit-touch-callout: none) {
+  .field input,
+  .field select{
+    font-size:16px;
+  }
+}
 .field input:focus, .field select:focus{
   border-color:rgba(58,160,255,.8);
   box-shadow:0 0 0 3px rgba(58,160,255,.15);
@@ -373,7 +401,7 @@ code { color: #cfe9ff; }
     <div class="shipActions">
       <button class="btnGlow" id="shipClearBtn" style="border-color:#ff4d6d;box-shadow:0 0 10px rgba(255,77,109,.2)">Clear</button>
       <button class="btnGlow" id="shipSaveBtn">Save shipping</button>
-      <button class="buyBtn" id="shipSaveAndCheckoutBtn">Save + Continue to PayPal</button>
+      <button class="buyBtn" id="shipSaveAndCheckoutBtn">Save + Continue with Cart</button>
     </div>
   </div>
 </div>
@@ -1158,11 +1186,12 @@ shipSaveBtn.onclick = () => {
   }
 };
 
-shipSaveAndCheckoutBtn.onclick = async () => {
+shipSaveAndCheckoutBtn.onclick = () => {
   const saved = validateAndSaveShipping(true);
   if (!saved) return;
+
   closeShippingModal();
-  await checkoutCartWithPayPal();
+  openCart(); // go back to cart, NOT PayPal
 };
 
 // ===============================
