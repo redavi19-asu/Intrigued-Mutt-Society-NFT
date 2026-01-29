@@ -381,6 +381,16 @@ code { color: #cfe9ff; }
       </div>
 
       <div class="field full">
+        <label for="shipPhone">Phone number</label>
+        <input
+          id="shipPhone"
+          type="tel"
+          autocomplete="tel"
+          placeholder="(555) 555-5555"
+        />
+      </div>
+
+      <div class="field full">
         <label for="shipAddress1">Street address</label>
         <input id="shipAddress1" autocomplete="address-line1" placeholder="123 Main St">
       </div>
@@ -523,6 +533,7 @@ const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn")
 const shipModePill = document.getElementById("shipModePill");
 
 const shipName = document.getElementById("shipName");
+const shipPhone = document.getElementById("shipPhone");
 const shipAddress1 = document.getElementById("shipAddress1");
 const shipAddress2 = document.getElementById("shipAddress2");
 const shipCity = document.getElementById("shipCity");
@@ -737,6 +748,7 @@ function clearShipping() {
 function normalizeShippingForWorker(formObj) {
   return {
     name: String(formObj.name || "").trim(),
+    phone: String(formObj.phone || "").trim(),
     address: {
       address1: String(formObj.address1 || "").trim(),
       address2: String(formObj.address2 || "").trim(),
@@ -798,6 +810,7 @@ function closeShippingModal() {
 function readShippingForm() {
   return normalizeShippingForWorker({
     name: shipName.value,
+    phone: shipPhone.value,
     address1: shipAddress1.value,
     address2: shipAddress2.value,
     city: shipCity.value,
