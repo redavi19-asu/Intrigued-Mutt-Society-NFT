@@ -595,23 +595,25 @@ function getProductImages(prod) {
 
   const urls = new Set();
 
-  // product-level thumb
+  // product-level thumbnail
   if (prod?.thumbnail_url) {
     urls.add(prod.thumbnail_url);
   }
 
-  // sync product thumb
   if (prod?.sync_product?.thumbnail_url) {
     urls.add(prod.sync_product.thumbnail_url);
   }
 
-  // 🔥 Pull from variant files (THIS is where your new mockups live)
+  // 🔥 Pull ONLY preview images from variant files
   if (Array.isArray(prod?.sync_variants)) {
     prod.sync_variants.forEach(v => {
       if (Array.isArray(v.files)) {
         v.files.forEach(f => {
-          if (f.preview_url) urls.add(f.preview_url);
-          if (f.thumbnail_url) urls.add(f.thumbnail_url);
+
+          // Prefer preview, fall back to thumb
+          const url = f.preview_url || f.thumbnail_url;
+
+          if (url) urls.add(url);
         });
       }
     });
