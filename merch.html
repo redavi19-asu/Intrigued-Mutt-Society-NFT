@@ -27,8 +27,8 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
 .buyBtn:active{transform:translateY(0)}
 #modalBuyBtn,#closeModal{margin-top:12px;min-width:120px}
 #modalBuyBtn{margin-right:8px}
-.modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999}
-.modal{background:#111;padding:24px;border-radius:14px;max-width:900px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+.modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999;padding:12px}
+.modal{background:#111;padding:24px;border-radius:14px;max-width:900px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
 .modal h2{margin-top:0;margin-bottom:16px}
 .variantRow{cursor:pointer;padding:12px;border-bottom:1px solid #333;transition:background 0.2s ease}
 .variantRow:hover{background:rgba(58,160,255,0.15)}
@@ -132,6 +132,9 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   .card{padding:12px}
   .imgWrap{height:160px}
   .cartDrawer{width:100%;max-width:100%;border-left:none}
+  .modal{max-width:520px;width:100%;max-height:86vh;padding:18px}
+  #modalImg{max-height:200px;width:auto;max-width:100%}
+  #modalBuyBtn,#closeModal{width:100%;margin-right:0}
 }
 </style>
 </head>
