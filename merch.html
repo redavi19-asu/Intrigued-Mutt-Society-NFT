@@ -275,6 +275,29 @@ code { color: #cfe9ff; }
         <div style="font-weight:900" id="cartSubtotal">$0.00</div>
       </div>
 
+      <div class="cartTotals" style="opacity:.9">
+        <div>Shipping (est.)</div>
+        <div id="cartShip">$—</div>
+      </div>
+
+      <div class="cartTotals" style="opacity:.9">
+        <div>Tax (est.)</div>
+        <div id="cartTax">$—</div>
+      </div>
+
+      <div class="cartTotals" style="margin-top:8px;border-top:1px solid #333;padding-top:10px">
+        <div style="font-weight:900">Estimated Total</div>
+        <div style="font-weight:900" id="cartTotal">$—</div>
+      </div>
+
+      <div class="smallNote" style="margin-top:8px">
+        Final total is confirmed in PayPal.
+      </div>
+
+      <div class="smallNote" id="paypalTotalNote" style="margin-top:6px;display:none">
+        PayPal total: $0.00
+      </div>
+
       <button class="checkoutBtn" id="checkoutBtn">Checkout (PayPal)</button>
 
       <div class="smallNote" style="margin-top:10px">
@@ -401,6 +424,10 @@ const cartBack = document.getElementById("cartBack");
 const closeCartBtn = document.getElementById("closeCartBtn");
 const cartItemsEl = document.getElementById("cartItems");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
+const cartShipEl = document.getElementById("cartShip");
+const cartTaxEl = document.getElementById("cartTax");
+const cartTotalEl = document.getElementById("cartTotal");
+const paypalTotalNote = document.getElementById("paypalTotalNote");
 const checkoutBtn = document.getElementById("checkoutBtn");
 const editShippingFromCartBtn = document.getElementById("editShippingFromCartBtn");
 const shipStatusPill = document.getElementById("shipStatusPill");
@@ -544,6 +571,7 @@ function updateCartBadge() {
 function openCart() {
   renderCart();
   cartBack.style.display = "block";
+  estimateCartTotals();
 }
 
 function closeCart() {
@@ -603,6 +631,8 @@ function renderCart() {
   const subtotal = calcSubtotal(cart);
   cartSubtotalEl.textContent = money(subtotal);
   checkoutBtn.disabled = false;
+
+  estimateCartTotals();
 }
 
 // ===============================
@@ -618,6 +648,7 @@ function getShipping() {
 function saveShipping(shipping) {
   localStorage.setItem(SHIPPING_KEY, JSON.stringify(shipping));
   updateShippingPills();
+  estimateCartTotals();
 }
 
 function clearShipping() {
@@ -727,6 +758,58 @@ async function ensureShippingOrOpenModal() {
   return null;
 }
 
+// Estimate shipping/tax/total via Worker to preview costs before PayPal
+async function estimateCartTotals() {
+  const cart = getCart();
+  cartShipEl.textContent = "$—";
+  cartTaxEl.textContent = "$—";
+  cartTotalEl.textContent = "$—";
+
+  if (!cart.length) return;
+
+  const shipping = getShipping();
+  if (!shipping || !shipping.address) {
+    cartShipEl.textContent = "Add shipping";
+    cartTaxEl.textContent = "Add shipping";
+    return;
+  }
+
+  try {
+    // call Worker for Printful estimate
+    const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/paypal/estimate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": API_KEY,
+      },
+      body: JSON.stringify({
+        currency: "USD",
+        shipping,
+        items: cart.map(it => ({
+          syncVariantId: it.syncVariantId,
+          qty: Number(it.qty || 1),
+          unitPrice: String(Number(it.unitPrice || 0).toFixed(2)),
+          productName: it.productName,
+          variantName: it.variantName,
+          imageUrl: it.imageUrl,
+          productId: it.productId,
+          catalogVariantId: it.catalogVariantId,
+        })),
+      }),
+    }, 12000);
+
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "Estimate failed");
+
+    cartShipEl.textContent = money(data.totals.shipping);
+    cartTaxEl.textContent = money(data.totals.tax);
+    cartTotalEl.textContent = money(data.totals.total);
+
+  } catch (e) {
+    console.log("estimateCartTotals error:", e);
+  }
+}
+
 // ===============================
 // PAYPAL CHECKOUT FOR WHOLE CART
 // ===============================
@@ -773,6 +856,11 @@ async function checkoutCartWithPayPal() {
       console.error("❌ PayPal order failed:", data);
       alert("PayPal order failed. Please try again.");
       return;
+    }
+
+    if (paypalTotalNote && data.totals && data.totals.total != null) {
+      paypalTotalNote.textContent = `PayPal total: ${money(Number(data.totals.total))}`;
+      paypalTotalNote.style.display = "block";
     }
 
     // straight to PayPal

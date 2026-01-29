@@ -1,75 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Payment Canceled • Intrigued Mutts</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-
-  <style>
-    html,body{
-      margin:0;
-      font-family:system-ui;
-      background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.78)),url('merchbackground.png') center/cover no-repeat fixed;
-      color:#fff;
-    }
-    .wrap{max-width:900px;margin:0 auto;padding:26px}
-    .brand{font-family:"Luckiest Guy", system-ui; font-size:34px; letter-spacing:1px; margin:0 0 6px}
-    .card{
-      border:1px solid #ff4d6d;
-      background:rgba(17,17,17,0.55);
-      backdrop-filter: blur(10px);
-      border-radius:16px;
-      padding:18px;
-      box-shadow:0 20px 60px rgba(0,0,0,0.65);
-    }
-    .pill{
-      display:inline-block;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid #ff4d6d;
-      box-shadow:0 0 16px rgba(255,77,109,.25);
-      background:rgba(255,77,109,0.08);
-      font-weight:800;
-      margin:8px 0 0;
-    }
-    .btn{
-      background:transparent;
-      border:1px solid #3aa0ff;
-      padding:12px 18px;
-      border-radius:12px;
-      color:#fff;
-      font-weight:800;
-      cursor:pointer;
-      transition:all .2s ease;
-      box-shadow:0 0 16px rgba(58,160,255,0.45);
-      text-decoration:none;
-      display:inline-block;
-    }
-    .btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(58,160,255,0.8);background:rgba(58,160,255,0.08)}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Payment Canceled • Intrigued Mutts Society</title>
+<style>
+html,body{margin:0;color:#fff;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.75)),url('merchbackground.png') center/cover no-repeat fixed}
+.shell{max-width:900px;margin:0 auto;padding:28px 18px}
+.card{border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:18px;background:rgba(17,17,17,.55);backdrop-filter:blur(12px);box-shadow:0 30px 90px rgba(0,0,0,0.75)}
+.btn{display:inline-block;margin-top:12px;border:1px solid rgba(58,160,255,.9);padding:12px 16px;border-radius:12px;color:#fff;text-decoration:none;font-weight:900}
+</style>
 </head>
-
 <body>
-  <div class="wrap">
-    <h1 class="brand">Intrigued Mutts Society</h1>
+  <div class="shell">
     <div class="card">
-      <div class="pill">Payment canceled ❌</div>
-      <p style="margin-top:12px;color:#cbd3ff">
-        No worries — nothing was charged. You can go back and try again.
-      </p>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
-        <a class="btn" href="./merch.html">← Back to Merch</a>
-        <a class="btn" href="./index.html#mancave">← Back to Clubhouse</a>
-      </div>
-
-      <div style="margin-top:16px;font-size:12px;color:#ff69b4">
-        © 2026 Intrigued Mutts Society. All rights reserved.
-      </div>
+      <h1 style="margin:0 0 8px">Payment canceled</h1>
+      <div style="opacity:.8">No worries — your cart is still saved.</div>
+      <a class="btn" href="./merch.html">← Back to Merch</a>
+      <a class="btn" href="./index.html#mancave" style="margin-left:10px;border-color:rgba(255,255,255,.25)">← Back to Clubhouse</a>
     </div>
   </div>
 </body>
