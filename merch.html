@@ -53,7 +53,7 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   z-index:10000;
 }
 .cartDrawer{
-  position:absolute;right:0;top:0;height:100%;width:min(420px, 94vw);
+  position:absolute;right:0;top:0;height:100%;width:min(400px, 92vw);
   background:rgba(17,17,17,.92);backdrop-filter: blur(12px);
   border-left:1px solid #333;
   box-shadow:-20px 0 60px rgba(0,0,0,.8);
@@ -131,7 +131,7 @@ html,body{margin:0;font-family:system-ui;background:linear-gradient(rgba(0,0,0,.
   h1{font-size:28px}
   .card{padding:12px}
   .imgWrap{height:160px}
-  .cartDrawer{width:100%;max-width:100%;border-left:none;padding:14px}
+  .cartDrawer{width:min(380px, calc(100vw - 18px));max-width:100%;border-left:none;padding:14px;right:0;left:auto;box-shadow:-10px 0 40px rgba(0,0,0,.75)}
   .modal{max-width:520px;width:100%;max-height:86vh;padding:18px}
   #modalImg{max-height:200px;width:auto;max-width:100%}
   #modalBuyBtn,#closeModal{width:100%;margin-right:0}
