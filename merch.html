@@ -592,27 +592,43 @@ async function loadProducts() {
 }
 
 function getProductImages(prod) {
-  // Try common fields the Store API might return
-  const candidates =
-    prod?.images ||
-    prod?.mockups ||
-    prod?.mockup_urls ||
-    prod?.files ||
-    prod?.sync_product?.files ||
-    [];
+  const urls = new Set();
 
-  // Convert array of strings or array of objects -> array of urls
-  const urls = Array.isArray(candidates)
-    ? candidates
-        .map(x => (typeof x === "string" ? x : (x?.url || x?.thumbnail_url || x?.preview_url)))
-        .filter(Boolean)
-    : [];
+  // Product-level thumbnail
+  if (prod?.thumbnail_url) urls.add(prod.thumbnail_url);
+  if (prod?.sync_product?.thumbnail_url) urls.add(prod.sync_product.thumbnail_url);
 
-  // Fallback to thumbnail_url
-  if (!urls.length && prod?.thumbnail_url) urls.push(prod.thumbnail_url);
+  // Product-level file containers (sometimes present)
+  const productCandidates = []
+    .concat(prod?.images || [])
+    .concat(prod?.mockups || [])
+    .concat(prod?.mockup_urls || [])
+    .concat(prod?.files || [])
+    .concat(prod?.sync_product?.files || []);
 
-  // Remove duplicates
-  return [...new Set(urls)];
+  productCandidates.forEach(x => {
+    if (typeof x === "string") urls.add(x);
+    else if (x?.preview_url) urls.add(x.preview_url);
+    else if (x?.thumbnail_url) urls.add(x.thumbnail_url);
+    else if (x?.url) urls.add(x.url);
+  });
+
+  // ✅ NEW: grab variant-level mockups / previews
+  const variants = prod?.sync_variants || [];
+  variants.forEach(v => {
+    (v?.files || []).forEach(f => {
+      // Use preview_url first (best), fallback thumbnail_url
+      if (f?.preview_url) urls.add(f.preview_url);
+      else if (f?.thumbnail_url) urls.add(f.thumbnail_url);
+      else if (f?.url) urls.add(f.url);
+    });
+
+    // Also include the product catalog image if you want:
+    if (v?.product?.image) urls.add(v.product.image);
+  });
+
+  // Return as array
+  return [...urls].filter(Boolean);
 }
 
 function renderProducts() {
