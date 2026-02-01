@@ -278,15 +278,18 @@ code { color: #cfe9ff; }
   <!-- SUPPORT + REFUNDS -->
   <div style="
     margin-top:48px;
-    padding-top:24px;
-    border-top:1px solid #333;
+    padding:20px;
+    border-top:2px solid #ff69b4;
+    border-left:4px solid #722f37;
     max-width:900px;
     margin-left:auto;
     margin-right:auto;
     text-align:left;
+    background:rgba(114, 47, 55, 0.15);
+    border-radius:12px;
   ">
 
-    <h3 style="margin-bottom:10px">Customer Support</h3>
+    <h3 style="margin-bottom:10px;color:#ff69b4">Customer Support</h3>
 
     <p style="font-size:14px;line-height:1.5;color:#ccc">
       For order questions, shipping issues, or refund requests, please contact:
@@ -302,9 +305,9 @@ code { color: #cfe9ff; }
       Please include your <strong>PayPal Order ID</strong> in your message so we can help you faster.
     </p>
 
-    <div style="height:1px;background:#2a2a2a;margin:16px 0"></div>
+    <div style="height:1px;background:rgba(255,105,180,0.3);margin:16px 0"></div>
 
-    <h4 style="margin-bottom:6px">Refunds & Order Issues</h4>
+    <h4 style="margin-bottom:6px;color:#ff69b4">Refunds & Order Issues</h4>
 
     <p style="font-size:13px;line-height:1.5;color:#aaa">
       Payments are processed securely through PayPal.  
@@ -1059,22 +1062,52 @@ async function loadProducts() {
 }
 
 function getProductImages(prod) {
-  const urls = new Set();
+  const bestByKey = new Map(); // key -> { url, score }
 
-  if (prod?.thumbnail_url) urls.add(prod.thumbnail_url);
-  if (prod?.sync_product?.thumbnail_url) urls.add(prod.sync_product.thumbnail_url);
+  const normalizeKey = (url, fileObj) => {
+    if (fileObj?.hash) return `hash:${fileObj.hash}`;
+    const noQuery = (url || '').split('?')[0];
+    const filename = (fileObj?.filename || noQuery.substring(noQuery.lastIndexOf('/') + 1))
+      .replace(/(_preview|_thumb)/ig, '');
+    return filename ? `file:${filename}` : noQuery || url;
+  };
+
+  // higher score wins for a given key
+  const scoreFor = (url, fileObj) => {
+    if (!url) return -Infinity;
+    if (fileObj?.preview_url === url) return 3;
+    if (fileObj?.thumbnail_url === url) return 2;
+    return 1; // fallback raw url
+  };
+
+  const add = (url, fileObj) => {
+    if (!url) return;
+    const key = normalizeKey(url, fileObj);
+    const score = scoreFor(url, fileObj);
+    const current = bestByKey.get(key);
+    if (!current || score > current.score) {
+      bestByKey.set(key, { url, score });
+    }
+  };
+
+  add(prod?.thumbnail_url, null);
+  add(prod?.sync_product?.thumbnail_url, null);
 
   if (Array.isArray(prod?.sync_variants)) {
     prod.sync_variants.forEach(v => {
+      add(v?.product?.image, { filename: 'product_image' });
+
       if (Array.isArray(v.files)) {
         v.files.forEach(f => {
-          const url = f.preview_url || f.thumbnail_url;
-          if (url) urls.add(url);
+          add(f.preview_url, f);
+          add(f.thumbnail_url, f);
+          add(f.url, f);
         });
       }
     });
   }
-  return [...urls];
+
+  return [...bestByKey.values()].map(x => x.url);
 }
 
 function renderProducts() {
