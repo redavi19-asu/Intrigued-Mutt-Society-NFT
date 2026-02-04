@@ -1036,9 +1036,19 @@ async function checkoutCartWithPayPal() {
       res = await fetchWithTimeout(url, { ...options, headers: await authHeaders() }, 15000);
     }
 
-    if (!res.ok) throw new Error(`Server error: ${res.status} ${res.statusText}`);
+    const data = await res.json().catch(() => ({}));
 
-    let data = await res.json();
+    // ✅ If shipping is incomplete, Worker returns 400 with missingFields
+    if (!res.ok) {
+      if (res.status === 400 && data?.missingFields?.length) {
+        alert("Please complete shipping: " + data.missingFields.join(", "));
+        return; // stop checkout
+      }
+      alert(data?.error || "Checkout failed. Please try again.");
+      return;
+    }
+
+    // success - ensure we have approveUrl
     if (!data.ok || !data.approveUrl) {
       console.error("❌ PayPal order failed:", data);
       alert("PayPal order failed. Please try again.");
