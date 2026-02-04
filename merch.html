@@ -806,6 +806,12 @@ function normalizeShippingForWorker(formObj) {
   };
 }
 
+function validateShipping(shipping) {
+  const required = ["name", "address1", "city", "state", "zip", "country", "phone"];
+  const missing = required.filter((k) => !String(shipping?.[k] ?? "").trim());
+  return { ok: missing.length === 0, missing };
+}
+
 function shippingLooksValid(shipping) {
   if (!shipping || !shipping.address) return false;
   const a = shipping.address;
@@ -815,7 +821,8 @@ function shippingLooksValid(shipping) {
     (a.city || "").trim() &&
     (a.state_code || "").trim() &&
     (a.zip || "").trim() &&
-    (a.country_code || "").trim()
+    (a.country_code || "").trim() &&
+    (shipping.phone || "").trim()
   );
 }
 
@@ -869,8 +876,21 @@ function readShippingForm() {
 function validateAndSaveShipping(showAlerts = true) {
   const shipping = readShippingForm();
 
-  if (!shippingLooksValid(shipping)) {
-    if (showAlerts) alert("Please fill: name, address, city, state, zip, country.");
+  // Use comprehensive validation
+  const flatShipping = {
+    name: shipping.name,
+    address1: shipping.address?.address1,
+    city: shipping.address?.city,
+    state: shipping.address?.state_code,
+    zip: shipping.address?.zip,
+    country: shipping.address?.country_code,
+    phone: shipping.phone,
+  };
+
+  const { ok, missing } = validateShipping(flatShipping);
+
+  if (!ok) {
+    if (showAlerts) alert("Please complete shipping: " + missing.join(", "));
     return null;
   }
 
@@ -963,9 +983,29 @@ async function checkoutCartWithPayPal() {
   const shipping = await ensureShippingOrOpenModal();
   if (!shipping) return;
 
+  // Validate shipping before calling backend
+  const flatShipping = {
+    name: shipping.name,
+    address1: shipping.address?.address1,
+    city: shipping.address?.city,
+    state: shipping.address?.state_code,
+    zip: shipping.address?.zip,
+    country: shipping.address?.country_code,
+    phone: shipping.phone,
+  };
+
+  const { ok, missing } = validateShipping(flatShipping);
+
+  if (!ok) {
+    // Minimal UI: one alert (fastest / simplest)
+    alert("Please complete shipping: " + missing.join(", "));
+    return; // ✅ stops checkout before calling backend
+  }
+
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Creating PayPal order...";
 
+  // ✅ only runs if shipping is valid
   try {
     const url = `${PAYPAL_WORKER_BASE}/paypal/order`;
     const options = {
