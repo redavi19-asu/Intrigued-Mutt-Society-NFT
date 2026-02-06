@@ -369,8 +369,13 @@ code { color: #cfe9ff; }
 
     <div class="cartFooter">
       <div class="cartTotals">
-        <div style="font-weight:900">Subtotal</div>
+        <div style="font-weight:900">Retail subtotal</div>
         <div style="font-weight:900" id="cartSubtotal">$0.00</div>
+      </div>
+
+      <div class="cartTotals" style="opacity:.9">
+        <div>Production subtotal</div>
+        <div id="cartProdSubtotal">$—</div>
       </div>
 
       <div class="cartTotals" style="opacity:.9">
@@ -383,7 +388,7 @@ code { color: #cfe9ff; }
         <div id="cartTax">$—</div>
       </div>
 
-      <div class="cartTotals" style="margin-top:8px;border-top:1px solid #333;padding-top:10px">
+      <div class="cartTotals" style="margin-top:8px;border-top:1px solid #333;padding-top:10px;font-size:18px">
         <div style="font-weight:900">Estimated Total</div>
         <div style="font-weight:900" id="cartTotal">$—</div>
       </div>
@@ -558,6 +563,7 @@ const cartBack = document.getElementById("cartBack");
 const closeCartBtn = document.getElementById("closeCartBtn");
 const cartItemsEl = document.getElementById("cartItems");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
+const cartProdSubtotalEl = document.getElementById("cartProdSubtotal");
 const cartShipEl = document.getElementById("cartShip");
 const cartTaxEl = document.getElementById("cartTax");
 const cartTotalEl = document.getElementById("cartTotal");
@@ -921,6 +927,7 @@ async function estimateCartTotals() {
   cartShipEl.textContent = "$—";
   cartTaxEl.textContent = "$—";
   cartTotalEl.textContent = "$—";
+  paypalTotalNote.style.display = "none";
 
   if (!cart.length) return;
 
@@ -963,9 +970,18 @@ async function estimateCartTotals() {
     }
     if (!data.ok) throw new Error(data.error || "Estimate failed");
 
-    cartShipEl.textContent = money(data.totals.shipping);
-    cartTaxEl.textContent = money(data.totals.tax);
-    cartTotalEl.textContent = money(data.totals.total);
+    const pf = data.totals;
+
+    cartShipEl.textContent = money(Number(pf.shipping));
+    cartTaxEl.textContent = money(Number(pf.tax));
+
+    const retailSubtotal = calcSubtotal(getCart());
+    const finalTotal =
+      retailSubtotal +
+      Number(pf.shipping) +
+      Number(pf.tax);
+
+    cartTotalEl.textContent = money(finalTotal);
 
   } catch (e) {
     console.log("estimateCartTotals error:", e);
