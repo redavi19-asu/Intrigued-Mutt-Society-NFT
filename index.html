@@ -40,6 +40,15 @@
 
     .layer{ position:absolute; inset:0; display:none; }
     .layer.active{ display:block; }
+    .layer video{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    #stocksVideo{
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      display: block !important;
+      opacity: 1 !important;
+    }
 
     .landing{
       min-height: 100vh;
@@ -602,6 +611,12 @@
       </video>
     </div>
 
+    <div class="layer" id="layerStocks">
+      <video id="stocksVideo" playsinline muted preload="auto">
+        <source src="./intriguedstock.mp4" type="video/mp4" />
+      </video>
+    </div>
+
     <div class="layer" id="layerMancave">
       <video id="mancaveVideo" autoplay loop playsinline muted preload="auto" playbackRate="1.0">
         <source src="./interactive.mp4" type="video/mp4" />
@@ -704,6 +719,7 @@
 
     const layerLanding = document.getElementById("layerLanding");
     const layerDoor = document.getElementById("layerDoor");
+    const layerStocks = document.getElementById("layerStocks");
     const layerMancave = document.getElementById("layerMancave");
     const layerMerch = document.getElementById("layerMerch");
     const layerAbout = document.getElementById("layerAbout");
@@ -711,6 +727,7 @@
 
     const doorVideo = document.getElementById("doorVideo");
     const mancaveVideo = document.getElementById("mancaveVideo");
+    const stocksVideo = document.getElementById("stocksVideo");
     const merchVideo = document.getElementById("merchVideo");
     const aboutVideo = document.getElementById("aboutVideo");
     const nftsVideo = document.getElementById("nftsVideo");
@@ -742,6 +759,7 @@
     let soundOn = false;
     let fitMode = false;
     let lastTapTime = 0;
+    let stocksVideoPlaying = false;
     
     document.body.style.overscrollBehavior = 'none';
     
@@ -869,6 +887,10 @@
     }
 
     function goLanding(){
+      if (stocksVideoPlaying) {
+        console.log("stocks paused by system?");
+        return;
+      }
       doorVideo.pause();
       mancaveVideo.pause();
       merchVideo.pause();
@@ -884,6 +906,10 @@
     }
 
     async function goMancave(skipHash){
+      if (stocksVideoPlaying) {
+        console.log("stocks paused by system?");
+        return;
+      }
       // Reset door video and switch layers
       doorVideo.pause();
       doorVideo.currentTime = 0;
@@ -901,6 +927,11 @@
     }
 
     function setupSeamlessLoop(video){
+      // Skip setup for stocks video
+      if (video === stocksVideo) {
+        console.log("Skipping seamless loop for stocks video");
+        return;
+      }
       // Nudge playhead before the end to avoid visible pause on loop.
       const JUMP_POINT = 0.08;
       const THRESHOLD = 0.18;
@@ -942,8 +973,108 @@
       }
     }
 
+    async function startStocksVideo(){
+      console.log("stocks click");
+      stocksVideoPlaying = true;
+      
+      showLayer(layerStocks);
+      stocksVideo.currentTime = 0;
+      stocksVideo.playbackRate = 1.0;
+      stocksVideo.muted = true;
+
+      // Ensure src is set
+      stocksVideo.src = "./intriguedstock.mp4";
+      console.log("stocks src:", stocksVideo.src);
+      console.log("stocks currentSrc:", stocksVideo.currentSrc);
+      console.log("stocks readyState:", stocksVideo.readyState);
+      console.log("stocks networkState:", stocksVideo.networkState);
+      console.log("stocks bounding rect:", stocksVideo.getBoundingClientRect());
+      console.log("layer display:", window.getComputedStyle(layerStocks).display);
+      console.log("video display:", window.getComputedStyle(stocksVideo).display);
+      console.log("video opacity:", window.getComputedStyle(stocksVideo).opacity);
+
+      try {
+        // Load the video
+        stocksVideo.load();
+        console.log("stocks load() called, readyState after load:", stocksVideo.readyState);
+
+        // Use requestAnimationFrame to isolate playback
+        requestAnimationFrame(() => {
+          console.log("requesting play...");
+          console.log("readyState before play:", stocksVideo.readyState);
+          
+          const playPromise = stocksVideo.play();
+          if (playPromise) {
+            playPromise
+              .then(() => {
+                console.log("stocks video playing successfully");
+                console.log("currentTime:", stocksVideo.currentTime);
+              })
+              .catch(err => {
+                console.error("Stock video play error:", err);
+                stocksVideoPlaying = false;
+                showPanel("Video Error", "Unable to start the stocks video. " + err.message);
+              });
+          }
+        });
+        
+        if (soundOn) {
+          setTimeout(() => {
+            if (stocksVideoPlaying && !stocksVideo.paused) {
+              stocksVideo.muted = false;
+            }
+          }, 100);
+        }
+      } catch (err) {
+        console.error("Exception in startStocksVideo:", err);
+        stocksVideoPlaying = false;
+        showPanel("Video Error", "Unable to start the stocks video. " + err.message);
+      }
+    }
+
     doorVideo.addEventListener("ended", async () => {
       await goMancave();
+    });
+
+    stocksVideo.addEventListener("ended", () => {
+      console.log("stocks ended");
+      stocksVideoPlaying = false;
+      stocksVideo.currentTime = 0;
+      showLayer(layerMancave);
+    });
+
+    stocksVideo.addEventListener("pause", () => {
+      if (stocksVideoPlaying && stocksVideo.currentTime > 0 && !stocksVideo.ended) {
+        console.warn("stocks video paused unexpectedly, resuming...");
+        console.log("readyState:", stocksVideo.readyState);
+        setTimeout(() => {
+          if (stocksVideoPlaying && stocksVideo.paused) {
+            stocksVideo.play().catch(err => console.error("Resume failed:", err));
+          }
+        }, 100);
+      }
+    });
+
+    stocksVideo.addEventListener("loadedmetadata", () => {
+      console.log("stocks loadedmetadata - duration:", stocksVideo.duration);
+    });
+    stocksVideo.addEventListener("loadeddata", () => {
+      console.log("stocks loadeddata - readyState:", stocksVideo.readyState);
+    });
+    stocksVideo.addEventListener("canplay", () => {
+      console.log("stocks canplay - currentTime:", stocksVideo.currentTime);
+    });
+    stocksVideo.addEventListener("playing", () => {
+      console.log("stocks playing - currentTime:", stocksVideo.currentTime);
+    });
+    stocksVideo.addEventListener("error", (e) => {
+      console.error("stocks error:", stocksVideo.error);
+      if (stocksVideo.error) {
+        console.error("error code:", stocksVideo.error.code);
+        console.error("error message:", stocksVideo.error.message);
+      }
+      stocksVideoPlaying = false;
+      showPanel("Video Error", "Failed to load stocks video. Check console.");
     });
 
     merchVideo.addEventListener("ended", () => {
@@ -1087,7 +1218,7 @@
         aboutVideo.currentTime = 0;
         aboutVideo.play();
       } else if (action === "stocks") {
-        showPanel("Intrigued Stocks", "Intrigued Stocks is coming soon.");
+        startStocksVideo();
       } else if (action === "merch") {
         showLayer(layerMerch);
         merchVideo.play();
