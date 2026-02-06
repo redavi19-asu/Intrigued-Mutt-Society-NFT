@@ -42,12 +42,47 @@
     .layer.active{ display:block; }
     .layer video{ width:100%; height:100%; object-fit:cover; display:block; }
 
+    #stocksOverlay{
+      position: fixed;
+      inset: 0;
+      background: black;
+      overflow: hidden;
+      z-index: 99999;
+    }
+
+    #stocksOverlay video{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      background: black;
+    }
+
     #stocksVideo{
+      position: fixed !important;
+      inset: 0 !important;
+
       width: 100vw !important;
       height: 100vh !important;
+
       object-fit: cover !important;
+      object-position: center center !important;
+      transform: scale(1.05);
+
+      background: black;
+
       display: block !important;
       opacity: 1 !important;
+      border: none !important;
+      outline: none !important;
+      padding: 0;
+      margin: 0;
+    }
+
+    body.stocks-playing #stage{
+      opacity: 0 !important;
     }
 
     .landing{
@@ -587,6 +622,37 @@
       .panel h3{ font-size: 13px; }
       .panel p{ font-size: 11px; }
     }
+
+    /* === Smart fullscreen for stocks video === */
+    #stocksOverlay video {
+      object-fit: cover !important;
+      object-position: center center !important;
+
+      width: 100% !important;
+      height: 100% !important;
+
+      transform: scale(0.94) !important;
+      transform-origin: center center;
+
+      background: black;
+    }
+
+    /* === FINAL STOCKS VIDEO FIT FIX === */
+    #stocksOverlay {
+      background: black !important;
+    }
+
+    #stocksVideo {
+      width: 100vw !important;
+      height: 100vh !important;
+
+      object-fit: contain !important;
+      object-position: center center !important;
+
+      transform: scale(1.06) !important;
+
+      background: black !important;
+    }
   </style>
 </head>
 
@@ -608,12 +674,6 @@
     <div class="layer" id="layerDoor">
       <video id="doorVideo" playsinline muted preload="auto">
         <source src="./thewalktodoor.mp4" type="video/mp4" />
-      </video>
-    </div>
-
-    <div class="layer" id="layerStocks">
-      <video id="stocksVideo" playsinline muted preload="auto">
-        <source src="./intriguedstock.mp4" type="video/mp4" />
       </video>
     </div>
 
@@ -674,7 +734,7 @@
 
     <div class="layer" id="layerNfts">
       <video id="nftsVideo" playsinline muted preload="auto">
-        <source src="./grok-video-240f3a12-788c-43f2-a4ad-366678dec6bf.mp4" type="video/mp4" />
+        <source src="./Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4" type="video/mp4" />
       </video>
 
       <div class="hud">
@@ -706,6 +766,12 @@
     <div style="position:fixed; bottom:90px; left:12px; padding:12px; text-align:left; font-size:12px; color:#ff69b4; pointer-events:none; z-index:5;">© 2026 Intrigued Mutts Society. All rights reserved.</div>
   </div>
 
+  <div class="layer" id="stocksOverlay">
+    <video id="stocksVideo" playsinline muted preload="auto">
+      <source src="./intriguedstock.mp4" type="video/mp4" />
+    </video>
+  </div>
+
   <script>
     (function(){
       const setVh = () => {
@@ -719,7 +785,7 @@
 
     const layerLanding = document.getElementById("layerLanding");
     const layerDoor = document.getElementById("layerDoor");
-    const layerStocks = document.getElementById("layerStocks");
+    const layerStocks = document.getElementById("stocksOverlay");
     const layerMancave = document.getElementById("layerMancave");
     const layerMerch = document.getElementById("layerMerch");
     const layerAbout = document.getElementById("layerAbout");
@@ -780,6 +846,18 @@
       layerAbout.classList.remove("active");
       layerNfts.classList.remove("active");
       which.classList.add("active");
+    }
+
+    function exitStocksVideo(){
+      console.log("stocks cleanup");
+      document.body.classList.remove("stocks-playing");
+      const overlay = document.getElementById("stocksOverlay");
+      overlay.style.display = "none";
+
+      const video = document.getElementById("stocksVideo");
+      video.pause();
+      video.currentTime = 0;
+      video.removeAttribute("src");
     }
 
     function showPanel(title, message, options = {}){
@@ -844,6 +922,8 @@
       aboutVideo.style.objectPosition = 'center';
       nftsVideo.style.objectFit = fitValue;
       nftsVideo.style.objectPosition = 'center';
+      stocksVideo.style.objectFit = fitMode ? 'contain' : 'cover';
+      stocksVideo.style.objectPosition = 'center';
 
       btnFitFill.textContent = label;
 
@@ -976,6 +1056,8 @@
     async function startStocksVideo(){
       console.log("stocks click");
       stocksVideoPlaying = true;
+      document.body.classList.add("stocks-playing");
+      layerStocks.style.display = "block";
       
       showLayer(layerStocks);
       stocksVideo.currentTime = 0;
@@ -1013,6 +1095,7 @@
               .catch(err => {
                 console.error("Stock video play error:", err);
                 stocksVideoPlaying = false;
+                exitStocksVideo();
                 showPanel("Video Error", "Unable to start the stocks video. " + err.message);
               });
           }
@@ -1028,6 +1111,7 @@
       } catch (err) {
         console.error("Exception in startStocksVideo:", err);
         stocksVideoPlaying = false;
+        exitStocksVideo();
         showPanel("Video Error", "Unable to start the stocks video. " + err.message);
       }
     }
@@ -1039,7 +1123,7 @@
     stocksVideo.addEventListener("ended", () => {
       console.log("stocks ended");
       stocksVideoPlaying = false;
-      stocksVideo.currentTime = 0;
+      exitStocksVideo();
       showLayer(layerMancave);
     });
 
@@ -1074,7 +1158,24 @@
         console.error("error message:", stocksVideo.error.message);
       }
       stocksVideoPlaying = false;
+      exitStocksVideo();
       showPanel("Video Error", "Failed to load stocks video. Check console.");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && stocksVideoPlaying) {
+        stocksVideoPlaying = false;
+        exitStocksVideo();
+        showLayer(layerMancave);
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && stocksVideoPlaying) {
+        stocksVideoPlaying = false;
+        exitStocksVideo();
+        showLayer(layerMancave);
+      }
     });
 
     merchVideo.addEventListener("ended", () => {
@@ -1224,6 +1325,8 @@
         merchVideo.play();
       } else if (action === "nfts") {
         showLayer(layerNfts);
+        nftsVideo.src = "./Grok-Video-88B7A380-EBD7-4408-A095-0478DC312F08.mp4";
+        nftsVideo.load();
         nftsVideo.currentTime = 0;
         nftsVideo.muted = !soundOn;
         nftsVideo.play().catch(() => {});
