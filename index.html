@@ -625,7 +625,7 @@
 
     /* === Smart fullscreen for stocks video === */
     #stocksOverlay video {
-      object-fit: cover !important;
+      object-fit: fill !important;
       object-position: center center !important;
 
       width: 100% !important;
@@ -646,7 +646,7 @@
       width: 100vw !important;
       height: 100vh !important;
 
-      object-fit: cover !important;
+      object-fit: fill !important;
       object-position: center center !important;
 
       transform: scale(1.02) !important;
@@ -930,7 +930,7 @@
       aboutVideo.style.objectPosition = 'center';
       nftsVideo.style.objectFit = fitValue;
       nftsVideo.style.objectPosition = 'center';
-      stocksVideo.style.objectFit = fitMode ? 'contain' : 'cover';
+      stocksVideo.style.objectFit = 'fill';
       stocksVideo.style.objectPosition = 'center';
 
       btnFitFill.textContent = label;
