@@ -237,12 +237,12 @@
 
     .landing img{
       position:absolute; inset:0; width:100%; height:100%;
-      object-fit:contain;
+      object-fit:fill;
       object-position:center;
     }
     
     @media (orientation: portrait){
-      .landing img{ object-fit: contain; object-position: center; }
+      .landing img{ object-fit: fill; object-position: center; }
     }
     @media (orientation: landscape) and (max-width: 1200px){
       /* Mobile landscape: media query already handles hiding desktop hotspots and showing bar via max-width rule */
@@ -911,12 +911,11 @@
 
     function applyFitMode(){
       const landingImg = document.querySelector('.landing img');
-
-      const fitValue = fitMode ? 'contain' : 'fill';
-      const label = fitMode ? 'View: Fit' : 'View: Stretch';
+      const fitValue = 'fill';
+      const label = 'View: Stretch';
 
       if (landingImg) {
-        landingImg.style.objectFit = 'contain';
+        landingImg.style.objectFit = 'fill';
         landingImg.style.objectPosition = 'center';
       }
 
