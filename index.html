@@ -653,6 +653,14 @@
 
       background: black !important;
     }
+
+    @media (max-width: 480px) and (orientation: portrait) {
+      #stocksOverlay video,
+      #stocksVideo {
+        object-fit: contain !important;
+        transform: scale(1) !important;
+      }
+    }
   </style>
 </head>
 
